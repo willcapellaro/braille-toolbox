@@ -27,31 +27,32 @@
 /*composer sheet*/
 
 textarea {
-margin-left: 0;
-margin-right: 10%;
+
 margin-top: .1em;
-background-color: white;
-height: 600px;
-width: 100%;
+margin-right: 0;
+padding: 1px 11px 1px 11px;
+/*background-color: transparent;
+*/background-color: white;
+/*width: 100%;*/
 box-sizing: border-box;
+width: 100%;
+min-height: 4em;
 border-width: 1px;
+border-radius: 3px;
 color: black;
-padding: 10px;
-padding-top: 50px;
-font-size: 36px;
+font-size: 10em;
 font-family: 'MyWebFont', Fallback, sans-serif;
-font-variant-ligatures: discretionary-ligatures; 
-line-height: 3em;
-
-resize: vertical;
-
+/*font-variant-ligatures: discretionary-ligatures; 
+*/resize: vertical;
 }
 
 
 textarea:focus {
 border-width: 2px;
-padding: 9px;
-padding-top: 49px;
+padding: 0 10px 0 10px;
+
+/*padding: 9px;
+padding-top: 49px;*/
 outline: none;
 }
 
@@ -243,8 +244,8 @@ h1 a {
 padding: 1em 4em 4em 4em; }
 
 textarea {
-	width: 100%;
-	height: 10em;
+/*	width: 100%;
+	height: 10em;*/
 }
 
 button {
@@ -406,6 +407,15 @@ font-size: 14px;
 	margin-top: 1em;
 }
 
+.legal {
+	text-align: center;
+	font-size: .75em;
+	opacity: .75;
+	margin-top: 3em;
+	margin-left: auto;
+	margin-right: auto;
+}
+
 /*a:hover {
 	color: pink;
 	padding-bottom: 2px;
@@ -418,7 +428,7 @@ body {
 Font-Family: 'Rubik', Sans-Serif;
 	font-weight: 100;
 	color: black;
-	background-color: #f9dc5a;
+	background-color: whitesmoke;
 	padding-top: 10px;
 /*    animation: mymove 20s normal forwards;*/
 }
