@@ -1,3 +1,11 @@
+body {
+width: 100%;
+	width: auto;
+	padding-left: 4em;
+	padding-right: 4em;
+	margin: 0 auto;
+}
+
 @font-face {
   font-family: 'brailleone';
   src: url('braille_one.ttf'); /* IE9 Compat Modes */
@@ -20,10 +28,7 @@
 	color: red;
 	font-size: 80%;
 	text-transform: uppercase;
-
 }
-
-
 
 /*composer sheet*/
 
@@ -49,8 +54,6 @@ resize: vertical;
 
 
 width: 100%;
-
-
 border-radius: 5px;
     background-color: white;
     list-style-type: none;
@@ -134,6 +137,7 @@ label {
 	border-radius: 10px;
 	background-color: #F5F5F5;
 }
+/*not used?*/
 .content {
   padding: 0 18px;
   background-color: white;
@@ -247,7 +251,7 @@ label {
 
              */      
 
-
+/*not sure if used*/
 label {
 	-webkit-user-select: none; /* Safari */        
 -moz-user-select: none; /* Firefox */
@@ -255,12 +259,14 @@ label {
 user-select: none; /* Standard */
 }
 
+/*used?*/
 .textboxcontrols {
 	margin-top: 4px;
 	display: grid;
 	grid-template-columns: 1fr auto;
 }
 
+/*same*/
 .textboxcontrols div {
 	display: inline;
 }
@@ -272,6 +278,7 @@ a {
     transition: padding-bottom .25s;
 }
 
+/*pretty sure unused*/
 .site_slogan {
 	text-align: center;
 	Font-Family: 'Old Standard TT', Serif;
@@ -279,6 +286,7 @@ a {
 	margin-top: 0;
 }
 
+/*is thiss a thing?*/
 span.line {
   display: inline-block;
 }
@@ -293,6 +301,7 @@ h1 a {
 	border: none;
 }
 
+/*included but not looked into*/
 .prompter_container 
 { background-color: white;
 padding: 1em 4em 4em 4em; }
@@ -302,6 +311,7 @@ textarea {
 	height: 10em;*/
 }
 
+/*used for prompter?*/
 button {
 	color: white;
 	border: none;
@@ -312,12 +322,14 @@ button {
 	font-size: 16px;
 }
 
+/*used for prompter?*/
 #counter {
 	margin-top: 6px;
 	margin-bottom: 1em;
+	display: inline;
 }
 
-
+/*used for prompter or composer?*/
 #textBox {
 	font-size: 30px;
 }
@@ -374,7 +386,7 @@ border: none;
 /* index small start*/
 
 
-
+/*pretty sure not used*/
 .index {
 	display: grid;
 /*	height: 600px;
@@ -445,6 +457,7 @@ font-size: 14px;
 
 
 
+/*included but worth a look*/
 #play {
 	background-color: green;
 }
@@ -457,9 +470,7 @@ font-size: 14px;
 	background-color: grey
 }
 
-.controlrowright {
-	margin-top: 1em;
-}
+
 
 .legal {
 	text-align: center;
@@ -481,6 +492,7 @@ font-size: 14px;
 body {
 Font-Family: 'Rubik', Sans-Serif;
 	font-weight: 100;
+
 	color: black;
 	background-color: whitesmoke;
 	padding-top: 10px;
@@ -525,6 +537,8 @@ p  {font-size: 18px;}
   from {color: brown;}
   to {color: #EEE;}
 }*/
+
+/*nope*/
 p, h1, h2, h4, h5, h6, li {
 	color: black;
     animation: mymove3 20s normal forwards;
@@ -611,86 +625,110 @@ ul {
 	margin: 10px auto;
 }
 
+/*??? used, busre, but overridden heavily ???*/
+
 .contractions {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	margin: 0 auto;
 	color: red;
-
 }
+
+.flexonly {
+	display: flex;
+	background-color: red;
+}
+
+.flexonly li 
+{background-color: brown;}
 
 .ten {
 	grid-template-columns: repeat(5, 80px);
 	grid-template-rows: repeat(2, auto);
-	width: 444px;
+	width: auto;
 }
 
 .nine {
+	display: flex;
 	grid-template-columns: repeat(5, 80px);
 	grid-template-rows: repeat(2, auto);
-	width: 444px;
+	width: auto;
 
 }
 
 .eight {
+	display: flex;
 	grid-template-columns: repeat(4, 80px);
 	grid-template-rows: repeat(2, auto);
 	width: 444px;
 }
 
 .seven {
+	display: flex;
 	grid-template-columns: repeat(4, 80px);
 	grid-template-rows: repeat(2, auto);
-	width: 260px;
+	width: auto;
 }
 
 .six {
-	grid-template-columns: repeat(3, 80px);
+	display: flex;
+	/*grid-template-columns: repeat(3, 80px);
 	grid-template-rows: repeat(2, auto);
-	width: 440px;
+	*/width: auto;
 }
 
 .five {
+	display: flex;
 	grid-template-columns: repeat(5, 80px);
-	width: 444px;
+	width: auto;
 }
 
 .four {
+	display: flex;
 	grid-template-columns: repeat(5, 80px);
-	width: 260px;
+	width: auto;
 }
 
 .three {
+	display: flex;
 	grid-template-columns: repeat(5, 80px);
-	width: 440px;
+	width: auto;
 }
 
 .two {
+	display: flex;
 	grid-template-columns: repeat(5, 80px);
-	width: 125px;
+	width: auto;
 }
 
 .one {
+	display: flex;
 	grid-template-columns: repeat(5, 80px);
-	width: 80px;
+	width: auto;
 }
 
 .mobile6 {
 	grid-template-columns: repeat(6, 58px);
-	width: 444px;
+	width: auto;
+		display: flex;
+
 }
 
 
 .mobile8 {
 	grid-template-columns: repeat(2, 58px);
-	width: 444px;
+	width: auto;
+		display: flex;
+
 }
 
 
 
 .mobile10 {
 	grid-template-columns: repeat(1, 58px);
-	width: 444px;
+	width: auto;
+	display: flex;
+
 }
 
 .span1x {
@@ -784,8 +822,10 @@ li {
 
 
 li img {
-	height: 25px;
+	height: 75px;
 }
+
+/*not used methinks*/
 
 li div:nth-child(2) img {
 	height: 16px;
@@ -794,6 +834,7 @@ li div:nth-child(2) img {
 	margin: 0 2px;
 }
 
+/*bring back text inset images*/
 h4 img { height: 20px; 
 	background-color: yellow;
 	border: black;
@@ -811,7 +852,6 @@ h4 img { height: 20px;
 	transition: .5s;
 	padding-bottom: 0px;
 	line-height: 0px;
-
 }
 
 .contractions:hover li div:nth-child(2) {
@@ -820,6 +860,8 @@ h4 img { height: 20px;
 	padding-bottom: 0px;
 	line-height: 25px;
 }
+
+/*i think not used*/
 
 .intro div:nth-child(2) {
 	font-size: 16px;
@@ -889,8 +931,7 @@ ul:hover li {
 
 body {
 	/*background-color: forestgreen;*/
-	width: 500px;
-	margin: 0 auto;
+
 }
 
 body .locked {
@@ -1105,7 +1146,9 @@ body {
 }
 
 
-
+li img {
+	height: 25px;
+}
 
 
 

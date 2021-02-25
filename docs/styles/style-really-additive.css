@@ -1,0 +1,420 @@
+@font-face {
+  font-family: 'brailleone';
+  src: url('braille_one.ttf'); /* IE9 Compat Modes */
+  src: url('braille_one.ttf') format('truetype'), /* Safari, Android, iOS */
+
+           font-weight: normal;
+    font-style: normal;
+}
+
+body {
+width: 100%;
+	width: auto;
+	padding-left: 2em;
+	padding-right: 2em;
+	margin: 0 auto;
+}
+
+@font-face {
+  font-family: 'brailleone';
+  src: url('braille_one.ttf'); /* IE9 Compat Modes */
+  src: url('braille_one.ttf') format('truetype'), /* Safari, Android, iOS */
+  font-weight: normal;
+  font-style: normal;
+}
+
+.microcopy {
+	color: brown;
+	font-size: 90%;
+	text-align: center;
+}
+
+.betatag {
+	border: 1px solid;
+	padding: 3px 6px 2px 6px;
+	margin-right: 5px;
+	color: red;
+	font-size: 80%;
+	text-transform: uppercase;
+}
+
+
+textarea {
+
+width: 80%;
+border-radius: 5px;
+background-color: white;
+list-style-type: none;
+text-align: center;
+font-weight: 500;
+padding: 10px 10px 10px 10px;
+box-shadow: 0 10px 20px rgb(0 0 0 / 9%), 0 3px 3px rgb(0 0 0 / 15%);
+outline: none;
+border: none;
+min-height: 4em;
+font-size: 10em;
+font-family: 'MyWebFont', Fallback, sans-serif;
+resize: vertical;
+text-align: left;
+padding: 1px 11px 1px 21px;
+overflow-y: scroll;
+}
+
+textarea:focus {
+    box-shadow: 0 10px 20px rgb(0 0 0 / 9%), 0 3px 3px rgb(0 0 0 / 35%);
+}
+
+
+label {
+  display: none;
+}
+.flip {
+  transform: rotateY(180deg);
+}
+.flip label {
+  transform: rotateY(-180deg);
+}
+
+/* width */
+::-webkit-scrollbar {
+	width: 30px;
+	background-color: transparent;
+	padding: 3px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+border-radius: 10px;
+background-color: transparent;
+margin-right: 1em;
+padding: 3px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+border: 8px solid rgba(0, 0, 0, 0);
+border-radius: 20px;
+-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+background-color: #D62929;
+margin-right: 1em;
+padding: 3px;
+background-clip: padding-box;
+-webkit-box-shadow: inset -1px -1px 0px rgba(0, 0, 0, 0.05), inset 1px 1px 0px rgba(0, 0, 0, 0.05);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background-color: red;
+}
+
+::-webkit-resizer {
+  background: black;
+  width: 30px;
+  	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	border-radius: 10px;
+	background-color: #F5F5F5;
+}
+
+.select-css {
+    display: block;
+    font-size: 16px;
+    font-family: sans-serif;
+    font-weight: 700;
+    color: #444;
+    line-height: 1.3;
+    padding: .6em 1.4em .5em .8em;
+    width: 100%;
+    max-width: 100%; /* useful when width is set to anything other than 100% */
+    box-sizing: border-box;
+    margin: 0;
+    border: 1px solid #aaa;
+    box-shadow: 0 1px 0 1px rgba(0,0,0,.04);
+    border-radius: .5em;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: #fff;
+    /* note: bg image below uses 2 urls. The first is an svg data uri for the arrow icon, and the second is the gradient. 
+        for the icon, if you want to change the color, be sure to use `%23` instead of `#`, since it's a url. You can also swap in a different svg icon or an external image reference
+        
+    */
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'),
+      linear-gradient(to bottom, #ffffff 0%,#e5e5e5 100%);
+    background-repeat: no-repeat, repeat;
+    /* arrow icon position (1em from the right, 50% vertical) , then gradient position*/
+    background-position: right .7em top 50%, 0 0;
+    /* icon size, then gradient */
+    background-size: .65em auto, 100%;
+}
+/* Hide arrow icon in IE browsers */
+.select-css::-ms-expand {
+    display: none;
+}
+/* Hover style */
+.select-css:hover {
+    border-color: #888;
+}
+/* Focus style */
+.select-css:focus {
+    border-color: #aaa;
+    /* It'd be nice to use -webkit-focus-ring-color here but it doesn't work on box-shadow */
+    box-shadow: 0 0 1px 3px rgba(59, 153, 252, .7);
+    box-shadow: 0 0 0 3px -moz-mac-focusring;
+    color: #222; 
+    outline: none;
+}
+
+/* Set options to normal weight */
+.select-css option {
+    font-weight:normal;
+}
+
+/* Support for rtl text, explicit support for Arabic and Hebrew */
+*[dir="rtl"] .select-css, :root:lang(ar) .select-css, :root:lang(iw) .select-css {
+    background-position: left .7em top 50%, 0 0;
+    padding: .6em .8em .5em 1.4em;
+}
+
+/* Disabled styles */
+.select-css:disabled, .select-css[aria-disabled=true] {
+    color: graytext;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22graytext%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'),
+      linear-gradient(to bottom, #ffffff 0%,#e5e5e5 100%);
+}
+
+.select-css:disabled:hover, .select-css[aria-disabled=true] {
+    border-color: #aaa;
+}
+
+a {
+	border-bottom: 2px solid white;
+	text-decoration: none;
+	transition: border-bottom .25s;
+    transition: padding-bottom .25s;
+}
+
+h1 {
+	margin-bottom: 0;
+	padding-bottom: .2em;
+	border: none;
+}
+
+h1 a {
+	border: none;
+}
+
+/*included but didn't really look into*/
+
+/*included but worth a look*/
+
+.btn {
+    padding: 1em;
+    margin: 1em;
+    text-align: center;
+    background-color: white;
+    border-radius: 5px;
+
+    box-shadow: 0 10px 20px rgb(0 0 0 / 9%), 0 3px 3px rgb(0 0 0 / 15%);
+color: white;
+}
+#play {
+	background-color: green;
+}
+
+#stop {
+	background-color: red;
+}
+
+#restart {
+	background-color: grey
+}
+
+.controlrowright {
+	margin-top: 1em;
+}
+
+.legal {
+	text-align: center;
+	font-size: .75em;
+	opacity: .75;
+	margin-top: 3em;
+	margin-left: auto;
+	margin-right: auto;
+}
+body {
+Font-Family: 'Rubik', Sans-Serif;
+	font-weight: 100;
+	
+	color: black;
+	background-color: whitesmoke;
+	padding-top: 10px;
+/*    animation: mymove 20s normal forwards;*/
+}
+h1, h2, h3, h4, h5, h6 {
+/*Font-Family: 'Cormorant Garamond', Serif;*/
+Font-Family: 'Old Standard TT', Serif;
+Font-Size: 55px;
+text-align: center;
+}
+
+p {
+font-weight: 300;
+margin: 2em auto 1em auto;
+font-size: 15px;
+line-height: 1.6em;
+opacity: .9;
+}
+
+h1 {font-size: 32px;}
+h2 {font-size: 24px;}
+h3 {font-size: 30px; text-transform: uppercase; padding-top: 2em;}
+h4 {font-size: 28px;}
+h5 {font-size: 26px;}
+h6 {font-size: 22px;}
+p  {font-size: 18px;}
+
+
+img {
+	border: 1px #E5E5E5 solid;
+	border-radius: 2px;
+	height: 25px;
+}
+
+.salmon {
+	border-top: 7px solid /*salmon*/ brown;
+	border-radius: 5px;
+}
+
+ul {
+	border-radius: 5px;
+	background-color: white;
+	list-style-type:none;
+	text-align: center;
+	font-weight: 500;
+	padding: 10px 10px 10px 10px;
+	box-shadow: 0 10px 20px rgba(0,0,0,0.09), 0 3px 3px rgba(0,0,0,0.15);
+	margin: 10px auto;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+li {
+margin: .5em;
+color: #6e6e6e;
+	font-size: 30px;
+}
+
+
+.contractions li div:nth-child(2) {
+	font-size: 30px;
+	font-family: 'Brailleblocks', Fallback, monospace;
+/*	padding-left: 5px;
+*/	opacity: 0;
+	transition: .5s;
+	padding-bottom: 0px;
+	line-height: 0px;
+}
+
+.contractions:hover li div:nth-child(2) {
+	opacity: 1;
+	transition: .5s;
+	padding-bottom: 0px;
+	line-height: 25px;
+}
+
+.braillewriter {
+	font-size: 2em;
+	padding: 1em;
+	margin-bottom: 1em;
+}
+
+#counter {
+	margin-top: 6px;
+	margin-bottom: 1em;
+}
+
+/*used?*/
+.textboxcontrols {
+	margin-top: 4px;
+	display: grid;
+	grid-template-columns: 1fr auto;
+}
+
+/*same*/
+.textboxcontrols div {
+	display: inline;
+}
+
+#alphabet-image {
+	height: 200px;
+	margin-bottom: 1em;
+	background-color: white;
+	border: 1px grey #aaa;
+	border-radius: 3px;
+}
+
+@media (min-width: 900px) {  /* - - - - - - - - - - - - - - - - - - */
+
+                                                         
+
+
+
+
+/*  
+
+
+ /$$$$$$$        /$$$$$$        /$$$$$$ 
+| $$__  $$      |_  $$_/       /$$__  $$
+| $$  \ $$        | $$        | $$  \__/
+| $$$$$$$         | $$        | $$ /$$$$
+| $$__  $$        | $$        | $$|_  $$
+| $$  \ $$        | $$        | $$  \ $$
+| $$$$$$$/       /$$$$$$      |  $$$$$$/
+|_______/       |______/       \______/ 
+                                        
+                                        
+                                        
+*/
+
+
+
+body {
+	width: 800px;
+	margin: 0 auto;
+}
+
+img {
+	border: 1px #E5E5E5 solid;
+	border-radius: 2px;
+	height: 25px;
+
+}
+
+ul {
+	width: auto;
+	border-radius: 5px;
+	background-color: white;
+	list-style-type:none;
+	text-align: center;
+	font-weight: 500;
+	padding: 10px 10px 10px 10px;
+	box-shadow: 0 10px 20px rgba(0,0,0,0.09), 0 3px 3px rgba(0,0,0,0.15);
+	display: flex;
+	grid-row-gap: 30px; 
+	grid-column-gap: 10px;
+	margin: 10px auto;
+}
+
+li {
+	margin-right: 1em;
+
+}
+
+
+textarea {
+
+width: 100%;
+}
+
+}
