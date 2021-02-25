@@ -259,7 +259,7 @@ text-align: center;
 
 p {
 font-weight: 300;
-margin: 2em auto 1em auto;
+margin: 2em auto 3em auto;
 font-size: 15px;
 line-height: 1.6em;
 opacity: .9;
@@ -272,13 +272,6 @@ h4 {font-size: 28px;}
 h5 {font-size: 26px;}
 h6 {font-size: 22px;}
 p  {font-size: 18px;}
-
-
-img {
-	border: 1px #E5E5E5 solid;
-	border-radius: 2px;
-	height: 25px;
-}
 
 .salmon {
 	border-top: 7px solid /*salmon*/ brown;
@@ -297,13 +290,10 @@ ul {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
+	color: #6e6e6e;
+
 }
 
-li {
-margin: .5em;
-color: #6e6e6e;
-	font-size: 30px;
-}
 
 
 .contractions li div:nth-child(2) {
@@ -354,12 +344,18 @@ color: #6e6e6e;
 	border-radius: 3px;
 }
 
-@media (min-width: 900px) {  /* - - - - - - - - - - - - - - - - - - */
+img {
+border: 1px #E5E5E5 solid;
+border-radius: 2px;
+height: 1em;
+}
 
-                                                         
+li {
+margin: .5em;
+font-size: 30px;
+}
 
-
-
+@media only screen and (min-width: 1050px)  {  /* - - - - - - - - - - - - - - - - - - */
 
 /*  
 
@@ -372,24 +368,23 @@ color: #6e6e6e;
 | $$  \ $$        | $$        | $$  \ $$
 | $$$$$$$/       /$$$$$$      |  $$$$$$/
 |_______/       |______/       \______/ 
-                                        
-                                        
-                                        
+                                                                                
 */
 
 
+img {
+	height: 1em;
+}
+
+li {
+}
 
 body {
-	width: 800px;
+	width: 900px;
 	margin: 0 auto;
-}
+/*	background-color: yellow;
+*/}
 
-img {
-	border: 1px #E5E5E5 solid;
-	border-radius: 2px;
-	height: 25px;
-
-}
 
 ul {
 	width: auto;
@@ -408,7 +403,6 @@ ul {
 
 li {
 	margin-right: 1em;
-
 }
 
 

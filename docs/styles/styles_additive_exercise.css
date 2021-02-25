@@ -1125,8 +1125,9 @@ font-size: 16px;}
 
 body {
 /*	background-color: purple;
-*/	width: 950px;
+*/	width: 1150px;
 	margin: 0 auto;
+	background-color: red;
 }
 
 .index {
