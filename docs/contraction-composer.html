@@ -3,14 +3,14 @@
 <html>
 
 <head>
+<title>Braille Toolbox</title>
 
 <meta charset="utf-8">
 <title>braille-long</title>
-
 <!-- <link rel="stylesheet" type="text/css" href="styles/styles_additive_exercise.css"> -->
-
-<link rel="stylesheet" type="text/css" href="styles/style-really-additive.css">
-<link href="https://fonts.googleapis.com/css?family=Old+Standard+TT:400i|Rubik" rel="stylesheet">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="styles/minimalist.css">
+<!-- <link rel="stylesheet" type="text/css" href="styles/style-really-additive.css"> -->
 
 <style>
   @font-face {
@@ -22,28 +22,37 @@
 */
 }
 </style>
-<style>
-
-</style>
 
 </head>
 
 <body>
 
 
+
 <h1 id="toc_0"><a href="index.html">Braille Toolbox</a></h1>
 
 <div class="site_slogan">Decode and learn about braille</span></div>
 
-<!--<span class="line"> to avoid breaks-->
+<ul class="nav nav-pills justify-content-center">
+  <li class="nav-item">
+    <a class="nav-link" href="braille-explainer.html">Braille Explainer</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="quick-reference.html">Quick Reference</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link active" href="contraction-composer.html">Contraction Composer</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="slate-stylus-help.html">Slate & Stylus Help</a>
+  </li>
+    <li class="nav-item">
+    <a class="nav-link" href="braillewriter-help.html">Braillewriter Help</a>
+  </li>
+</ul>
 
-<p><select class="select-css" onchange="location = this.value;">
-    <option class="current" value="contraction-composer.html">Contraction Composer</option>
-    <option class="" value="braille-explainer.html">Braille Explainer</option>
-    <option class="" value="quick-reference.html">Quick Reference</option>
-    <option class="" value="braillewriter-help.html">Braillewriter Help</option>
-    <option class="" value="slate-stylus-help.html">Slate & Stylus Help</option>
-</select></p>
+<div class="afternav">
+
 
 <h2>Contraction Composer</h2>
 <p class="microcopy"><span class="betatag">Beta Feature</span> This page is a proof-of-concept with limited function and accessibility.</em></p> 
@@ -60,6 +69,8 @@
   <textarea autofocus>type or paste text here</textarea>
 </form>
 
+<!-- end afternav -->
+</div> 
 
  <p class="legal">©2021 Will Capellaro & Braille Toolbox</p>
 
