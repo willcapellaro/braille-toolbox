@@ -1,81 +1,93 @@
+<!DOCTYPE html>
 <html>
 
 <head>
-    <title>Braille Toolbox</title>
 
+<meta charset="utf-8">
+<title>Braille Toolbox</title>
 <!-- <link rel="stylesheet" type="text/css" href="styles/styles_additive_exercise.css"> -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 <link rel="stylesheet" type="text/css" href="styles/minimalist.css">
 <!-- <link rel="stylesheet" type="text/css" href="styles/style-really-additive.css"> -->
 
+</style>
+<script src="scripts/braillewriter.js"></script>
+
 </head>
 
 <body>
 
-<h1 id="toc_0"><a href="index.html">Braille Toolbox</a></h1>
 
-<div class="site_slogan">Decode and learn about braille</span></div>
+<nav class="navbar navbar-expand-lg navbar-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="index.html">Braille Toolbox</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link " aria-current="page" href="quick-reference.html">Quick Reference</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" aria-current="page" href="intro-to-braille.html#">Intro to Braille</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="contraction-composer.html">Contraction Composer</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="dot-decoder.html">Dot Decoder</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="braillewriter-help.html">Braillewriter Help</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="slate-stylus-help.html">Slate & Stylus Help</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="otherpage">
 
 
-
-<h2>Braillewriter Help</h2>
-<p class="microcopy"><span class="betatag">Beta Feature</span> This page is a proof-of-concept with limited function and accessibility.</em></p> 
-
-<ul class="nav nav-pills justify-content-center">
-  <li class="nav-item">
-    <a class="nav-link" href="braille-explainer.html">Braille Explainer</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="quick-reference.html">Quick Reference</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="contraction-composer.html">Contraction Composer</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="slate-stylus-help.html">Slate & Stylus Help</a>
-  </li>
-    <li class="nav-item">
-    <a class="nav-link active" href="braillewriter-help.html">Braillewriter Help</a>
-  </li>
-</ul>
-
-<div class="afternav">
+<p class="microcopy"><span class="betatag">Beta Feature</span> This page has not been tested for accessibility.</em></p> 
+<h1>Braillewriter Help</h1>
 
 
 <div class="prompter_container">
-	<div>
-        <div class="row text-center">
-            <h4>Step 1: Compose Text</h4>
+    <div class="step1">
+                    <h4>Step 1: Compose Text</h4>
             <p>Enter the text you want to write in braille</p>
 
-            <div class="input-group">
+        <div class="input-group">
                 <textarea maxlength="700" id="textBox" name="textBox" class="form-control textBox braillewriter" aria-label="With textarea" placeholder="Add text here" onkeyup="textCount()"></textarea>
             </div>
             <div class="textboxcontrols">
-            	<div>
-            		<div id="counter" class="w-100 text-right">0/700</div> Characters
-				</div>
-				<div>
-				<input class="alignright" type="checkbox" name="myCheck" id="myCheck" onclick="myFunction()" value="Lockinput">
-				<label for="myCheck" class="alignright">Lock Text</label>Lock Text
-				</div>
-	        </div>
+                <div>
+                    <div id="counter" class="w-100 text-right">0/700</div> Characters
+                </div>
+                <div>
+                <input class="alignright" type="checkbox" name="myCheck" id="myCheck" onclick="myFunction()" value="Lockinput">
+                <label for="myCheck" class="alignright">Lock Text</label>Lock Text
+                </div>
+            </div>
     </div>
-          <h4>Step 2: Write Braille</h4>
+    <div class="step2">
+                  <h4>Step 2: Write Braille</h4>
             <p>Follow the prompts to produce braille using 6-key braille writing.</p>
-        <div class="row">
-        <div id="parent-img" class="mx-auto">
+                <div id="parent-img" class="mx-auto">
             <img class="rounded mx-auto d-block" id="alphabet-image" src="imgs/letter-default.svg" width="500" height="200">
             <!-- may not need the id on ^ this -->
         </div>
-    </div>
-    <div class="controlrow">
-        <div class="controlrowleft">
+                <div class="controlrowleft">
             <button id="play" type="submit" class="btn btn-success" onclick="play(); active(this.id)">Play</button>
             <button id="stop" type="submit" class="btn btn-info" onclick="stop(); active(this.id)">Pause</button>
             <button id="restart" type="submit" class="btn btn-link" onclick="restart(); active(this.id)">Restart</button>
         </div>
-        <div class="controlrowright">
+
+                <div class="controlrowright">
             <div>
                 <input class="form-control flip floatright" type="range" onchange="ageOutputId.value = (Math.round((60/((speed.value/500))))) +' letters per minute' " oninput="ageOutputId.value = (Math.round((60/((speed.value/500))))) +' letters per minute' " min="100" max="2000" value="500" id="speed" >
                 <label class="floatright" for="">Speed</label>
@@ -83,29 +95,12 @@
 
         </div>
     </div>
-    <div class="speedOutput">
-        <output name="ageOutputName" id="ageOutputId"></output>
-    </div>
-
-              <h4>Step 3: Proofread Braille</h4>
-            <p>Check your braille page for any errors.</p>
-
-    </div>
-
-    <!-- end afternav -->
 </div> 
 
+
 <p class="legal">©2021 Will Capellaro & Braille Toolbox</p>
-
 </body>
-
-
-</html>
-
-<!-- <textarea autofocus id="textzone"></textarea>
- -->
 <script>
-
 function myFunction() {
   // Get the checkbox
   var checkBox = document.getElementById("myCheck");
@@ -119,6 +114,8 @@ function myFunction() {
     textarea.removeAttribute("disabled", "");
     textarea.setAttribute("enabled", "");  }
 }
-
 </script>
 
+
+
+</html>

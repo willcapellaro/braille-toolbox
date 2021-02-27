@@ -57,55 +57,60 @@ function myFunction2() {
 
 <nav class="navbar navbar-expand-lg navbar-light">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">Braille Toolbox</a>
+    <a class="navbar-brand" href="index.html">Braille Toolbox</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a class="nav-link" aria-current="page" href="#">Quick Reference</a>
+          <a class="nav-link" aria-current="page" href="quick-reference.html">Quick Reference</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">Intro to Braille</a>
+          <a class="nav-link active" aria-current="page" href="intro-to-braille.html#">Intro to Braille</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="contraction-composer.html">Contraction Composer</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Braillewriter Help</a>
+          <a class="nav-link" href="dot-decoder.html">Dot Decoder</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Slate & Stylus Help</a>
+          <a class="nav-link" href="braillewriter-help.html">Braillewriter Help</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="slate-stylus-help.html">Slate & Stylus Help</a>
         </li>
       </ul>
     </div>
   </div>
 </nav>
 
-<div class="afternav">
+<div class="intropage">
 
-
-<h2 id="toc_1">Introduction to Braille</h2>
 <p class="microcopy"><span class="betatag">Beta Feature</span> This page has not been tested for accessibility.</em></p> 
+
+<h1 id="toc_1">Introduction to Braille</h1>
 
 
 <h3 id="toc_2">The Very Basics</h3>
 
 
-<p>Braille is an alphabet, not a language. This page will talk about braille in English. Each braille character, or <strong>cell</strong> is made of up to six dots. With braille characters representing letters, you can write anything in English. They work by creating tactile shapes the blind can learn to read by touch. <span id="dots"> </span><span id="more"> <br><br>Dots are simple; they either raised or not, and they should always be the same size and depth. The dot arrangement is also very regimented; characters are arrangements of a 2x3 grid of <strong>cells</strong>, an arrangement of two dots wide by three dots high. Specific dots are referred to by number. The three left dots are 1, 2 and 3, and the three rights dots are 4, 5, and 6. A letter d is called a &quot;dot 1 4 5.&quot;</span><button onclick="myFunction()" id="myBtn1" class="inline">More</button></p>
+<p>Firstly, think of braille as the same ABC alphabet that we use in English, but made for touch reading. Each braille character, or <strong>cell</strong> is made of up to six dots. With braille characters representing letters, you can write anything in English (and many languages). Braille work by creating tactile shapes the blind can learn to read by touch. <span id="dots"> </span><span id="more"> <br><br>Dots are simple; they either raised or not, and they should always be the same size and depth. The dot arrangement is also very regimented; characters are arrangements of a 2x3 grid of <strong>cells</strong>, an arrangement of two dots wide by three dots high. Specific dots are referred to by number. The three left dots are 1, 2 and 3, and the three rights dots are 4, 5, and 6. A letter d is called a &quot;dot 1 4 5.&quot;</span><button onclick="myFunction()" id="myBtn1" class="inline">More</button></p>
 
-<ul class= "salmon">
-    <li><div><img src="braille/dot1_a.svg" alt="" title=""></div><div>a dot</div></li>
-    <li><div><img src="braille/dot123456_for.svg" alt="" title=""></div><div>a cell</div></li>
-    <li><div><img src="braille/dot1235_r.svg" alt="" title=""></div><div>the letter r</div></li>
+<br>
+
+<ul class= "intro contractions salmon">
+    <li><div><img src="braille/dot1_a.svg" alt="" title=""></div><div>a</div><div>a dot</div></li>
+    <li><div><img src="braille/dot123456_for.svg" alt="" title=""></div><div>for</div><div>a cell</div></li>
+    <li><div><img src="braille/dot1235_r.svg" alt="" title=""></div><div>r</div><div>the letter r</div></li>
 <!--     <li><div><img src="braille/dot123_l.svg" alt="" title=""></div><div>dots 123</div><div></div></li>
     <li><div><img src="braille/dot456.svg" alt="" title=""></div><div>dots 456</div><div></div></li> -->
 </ul>
 
 <p>There are only so many combinations a 2x3 grid can create. Most often a cell represents a letters or punctuation marks, but often enough more than one cell is used to represent a character. Cells flow from left to right forming phrases and sentences, breaking to new lines top to bottom to fill pages of text, just like print.</p>
 
-<ul class= "contractions salmon">
+<ul class= "intro contractions salmon">
     <li><div><img src="braille/comp_question.svg" alt="" title=""></div><div>?</div><div>a question mark</div></li>
     <li><div><img src="braille/word_radical!.svg" alt="" title=""></div><div>radical!</div><div>radical!</div><div></div></li>
 </ul>
@@ -117,7 +122,7 @@ function myFunction2() {
 
 <p>Braille’s first ten letters use only the top four dots.</p>
 
-<ul class="salmon">
+<ul class="intro salmon">
     <li><img src="braille/dot1_a.svg" alt="a is a single dot 1. It's the easiest to remember." title="a is a single dot 1. It's the easiest to remember."><br>a</li>
     <li><img src="braille/dot12_b.svg" alt="b is dot 1 2." title="b is dot 1 2."><br>b</li>
     <li><img src="braille/dot14_c.svg" alt="c is dot 1 4." title="c is dot 1 4."><br>c</li>
@@ -134,7 +139,7 @@ function myFunction2() {
 
 <p>The second set of letters repeats the same dots as letters A to J but adds the bottom left dot.</p>
 
-<ul class="salmon">
+<ul class="intro salmon">
     <li><img src="braille/dot13_k.svg" alt="k is dot 1 3." title="k is dot 1 3."><br>k</li>
     <li><img src="braille/dot123_l.svg" alt="l is dot 1 2 3." title="l is dot 1 2 3."><br>l</li>
     <li><img src="braille/dot134_m.svg" alt="m is dot 1 3 4." title="m is dot 1 3 4."><br>m</li>
@@ -151,7 +156,7 @@ function myFunction2() {
 
 <p>The end of the alphabet follows the same pattern again, with these characters adding the bottom dots to the letters A to E. W is a weird one though...  <span id="dots2"> </span><span id="more2"> <br><br>The letter W resembles a J, but adds the bottom right dot, instead of both bottom dots (like it&#39;s end-of-of-the-alphabet neighbors). <br><br>So why is W out of place like this? Blame France; When braille was invented there, France hadn't adopted the letter.</span><button onclick="myFunction2()" id="myBtn2" class="inline">More</button></p>
 
-<ul class="salmon">
+<ul class="intro salmon">
     <li><img src="braille/dot136_u.svg" alt="u is dot 1 3 6." title="u is dot 1 3 6."><br>u</li>
     <li><img src="braille/dot1236_v.svg" alt="v is dot 1 2 3 6." title="v is dot 1 2 3 6."><br>v</li>
     <li><img src="braille/dot1346_x.svg" alt="x is dot 1 3 4 6." title="x is dot 1 3 4 6."><br>x</li>
@@ -162,11 +167,9 @@ function myFunction2() {
 
 <h3 id="toc_8">Numbers</h3>
 
-<p>Basic numbers and math are written by using the number symbol as a prefix. Texts with lots of math are usually written in a specialized braille code called Nemeth Braille.</p>
+<p>Basic numbers are written by using the number symbol which converts letters A (for 1) through J (for 0). The number prefix starts the number format, then things return to letters after a space. Texts with lots of math are usually written in a specialized braille code called Nemeth Braille.</p>
 
-<p>Use the Number Sign and everything afterward becomes a number. Letters A through I are one through nine and J is a zero.</p>
-
-<ul class="salmon contractions">
+<ul class="intro salmon contractions">
     <li><div><img src="braille/num1.svg" alt=""></div><div>#a</div><div>1</div></li>
     <li><div><img src="braille/num2.svg" alt=""></div><div>#b</div><div>2</div></li>
     <li><div><img src="braille/num3.svg" alt=""></div><div>#c</div><div>3</div></li>
@@ -187,25 +190,25 @@ function myFunction2() {
 
 <p>A capital sign signals that an uppercase character is next. Use it once for an initial cap, twice to capitalize the whole word. Three starts an uppercase passage, with two more ending it.</p>
 
-<ul class="salmon contractions">
+<ul class="intro salmon contractions">
     <li><div><img src="braille/comp_cap_sign.svg" alt=""></div><div>&#8593;</div><div>&#8593;</div></li>
     <li><div><img src="braille/comp_cap.svg" alt=""></div><div>&#8593;Cap</div><div>Cap</div></li>
     <li><div><img src="braille/comp_word.svg" alt=""></div><div>&#8593;&#8593;WORD</div><div>WORD</div></li>
-    <li><div><img src="braille/comp_cap_it_all.svg" alt=""></div><div>&#8593;&#8593;&#8593;CAP IT ALL&#8593;&#8593;</div><div>CAP IT ALL!</div></li>
-</ul>
+<!--     <li><div><img src="braille/comp_cap_it_all.svg" alt=""></div><div>&#8593;&#8593;&#8593;CAP IT ALL&#8593;&#8593;</div><div>CAP IT ALL!</div></li>
+ --></ul>
 
 <h4 id="toc_11">Italics</h4>
 
 <p>Italics use an italic symbol followed by a second character that indicates the length of italic style use.</p>
 
-<ul class="salmon">
+<ul class="intro salmon">
     <li class=""><img src="braille/comp_ital.svg"><br>italic character</li>
     <li class=""><img src="braille/comp_n.svg"><br><em>n</em></li>
     <li class=""><img src="braille/comp_ital_word.svg"><br>italic word</li>
-    <li class=""><img src="braille/comp_oh.svg"><br><em>oh!</em></li>
-    <li class=""><img src="braille/comp_ital_passage.svg"><br>begin italic passage</li>
-    <li class=""><img src="braille/comp_ital_passage_end.svg"><br>end italic passage</li>  
-    <li class=""><img src="braille/comp_as_if.svg"><br><em>as if!</em></li>
+<!--     <li class=""><img src="braille/comp_oh.svg"><br><em>oh!</em></li> -->
+    <li class=""><img src="braille/comp_ital_passage.svg"><br>begin <!-- italic  -->passage</li>
+    <li class=""><img src="braille/comp_ital_passage_end.svg"><br>end <!-- italic --> passage</li>  
+<!--     <li class=""><img src="braille/comp_as_if.svg"><br><em>as if!</em></li> -->
 </ul>
 
 <h3 id="toc_12">Punctuation</h3>
@@ -214,7 +217,7 @@ function myFunction2() {
 
 <p>Punctuate sentences by following them with these characters.</p>
 
-<ul class="salmon">
+<ul class="intro salmon">
     <li><img src="braille/comp_period.svg" alt="" title=""><br>.</li>
     <li><img src="braille/comp_comma.svg" alt="" title=""><br>,</li>
     <li><img src="braille/comp_exclamation.svg" alt="" title=""><br>!</li>
@@ -227,33 +230,33 @@ function myFunction2() {
 
 <p>Quotes are opening and closing signs that enclose a word or words.</p>
 
-<ul class="ten">
+<ul class="intro salmon">
     <li><img src="braille/comp_quotes.svg" alt="" title=""><br>&ldquo;</li>
     <li><img src="braille/comp_quotes_end.svg" alt="" title=""><br>&rdquo;</li>
-    <li class="span3x spanx5"><img src="braille/comp_quotes_ahem.svg" alt="" title=""><br>&ldquo;ahem&rdquo;</li>
-    <li class="span6x spanx7"><img src="braille/comp_single_quotes.svg" alt="" title=""><br>&#8216;</li>
+<!--     <li class="span3x spanx5"><img src="braille/comp_quotes_ahem.svg" alt="" title=""><br>&ldquo;ahem&rdquo;</li>
+ -->    <li class="span6x spanx7"><img src="braille/comp_single_quotes.svg" alt="" title=""><br>&#8216;</li>
     <li class="span7x spanx8"><img src="braille/comp_single_quotes_end.svg" alt="" title=""><br>&#8217;</li>
-    <li class="span8x spanx0"><img src="braille/comp_single_quotes_true.svg" alt="" title=""><br>&#8216;true&#8217;</li>
-</ul>
+<!--     <li class="span8x spanx0"><img src="braille/comp_single_quotes_true.svg" alt="" title=""><br>&#8216;true&#8217;</li>
+ --></ul>
 
 <h4 id="toc_15">Parentheses and other enclosures</h4>
 
 <p>Parenthesis and brackets are opening and closing signs that enclose a word or words.</p>
 
-<ul class="salmon">
+<ul class="intro salmon">
     <li><img src="braille/comp_parens.svg" alt="" title=""><br>(</li>
     <li><img src="braille/comp_parens_end.svg" alt="" title=""><br>)</li>
-    <li class="span3x spanx5"><img src="braille/comp_parens_aside.svg" alt="" title=""><br>(aside)</li>
-    <li class="span6x spanx7"><img src="braille/comp_brackets.svg" alt="" title=""><br>[</li>
+<!--     <li class="span3x spanx5"><img src="braille/comp_parens_aside.svg" alt="" title=""><br>(aside)</li>
+ -->    <li class="span6x spanx7"><img src="braille/comp_brackets.svg" alt="" title=""><br>[</li>
     <li class="span7x spanx8"><img src="braille/comp_brackets_end.svg" alt="" title=""><br>]</li>
-    <li class="span8x spanx0"><img src="braille/comp_brackets_edited.svg" alt="" title=""><br>[edited]</li>
-</ul>
+<!--     <li class="span8x spanx0"><img src="braille/comp_brackets_edited.svg" alt="" title=""><br>[edited]</li>
+ --></ul>
 
 <h4 id="toc_16">Other punctuation</h4>
 
 <p>Hyphens, dashes, apostrophes, asterisks, and ellipses can be placed anywhere.</p>
 
-<ul class="salmon">
+<ul class="intro salmon">
     <li><img src="braille/comp_hyphen.svg" alt="" title=""><br>-</li>
     <li><img src="braille/comp_dash.svg" alt="" title=""><br>–</li>
     <li><img src="braille/comp_apostrophe.svg" alt="" title=""><br>‘</li>
@@ -266,7 +269,7 @@ function myFunction2() {
 
 <p>Currency symbols such as the dollar, pound, euro, and yen are created with a currency sign (dot 4), followed by the letter depicted in the print symbol. </p>
 
-<ul class="salmon">
+<ul class="intro salmon">
     <li class="span1x spanx3"><img src="braille/comp_currency.svg" alt="" title=""><br>currency sign</li>
     <li><img src="braille/comp_dollar.svg" alt="" title=""><br>$</li>
     <li><img src="braille/comp_euro.svg" alt="" title=""><br>€</li>
@@ -276,13 +279,13 @@ function myFunction2() {
 
 <h3 id="toc_18">Contractions</h3>
 
-<p>To fit more information on the page, English braille uses letters and special characters in forms called contractions. These take time to learn but is able to reduce the number of characters down as much as 300%.</p>
+<p>To communicate efficiently, English braille uses letters and special characters called contractions, which save space and effort similar textspeak or SMS language. Braille books can get large, so contractions can help reduce text length by as much as 300%.</p>
 
-<p>Some contractions are only valid as whole words, and some are only used as suffixes or prefixes.</p>
+<p>Some contractions are only valid as whole words, and some are only used as suffixes or prefixes, and are indicated here. A great way to see how contractions work is to try our <a href="contraction-composer.html"> Contraction Composer</a> feature.</p>
 
 <h4 id="toc_19">A contractions</h4>
 
-<ul class="contractions salmon">
+<ul class="contractions salmon intro">
 <li><div><img src="braille/con_about.svg   " alt=" contraction for word about: dot 1 dot 12    "></div><div>   ab  </div><div> about   </div></li>
 <li><div><img src="braille/con_above.svg   " alt=" contraction for word above: dot 14 dot 12 dot 1236  "></div><div>   abv </div><div> above   </div></li>
 <li><div><img src="braille/con_according.svg   " alt=" contraction for word according: dot 1 dot 14    "></div><div>   ac  </div><div> according   </div></li>
@@ -308,7 +311,7 @@ function myFunction2() {
 
 <h4 id="toc_20">B contractions</h4>
 
-<ul class="contractions salmon">
+<ul class="contractions salmon intro">
 <li><div><img src="braille/con_bb.svg  " class="inner" alt=" contraction for inner string bb: dot 23 "></div><div>   dot*23  </div><div> ⌂bb⌂    </div></li>
 <li><div><img src="braille/con_be.svg  " alt=" contraction for word or prefix be: dot 23   "></div><div>   dot*23  </div><div> be or be⌂   </div></li>
 <li><div><img src="braille/con_because.svg " alt=" contraction for word because: dot 23 dot 14 "></div><div>   dot*23c </div><div> because </div></li>
@@ -326,7 +329,7 @@ function myFunction2() {
 
 <h4 id="toc_21">C contractions</h4>
 
-<ul class="contractions salmon">
+<ul class="contractions salmon intro">
 <li><div><img src="braille/con_can.svg " alt=" contraction for word can: dot 14    "></div><div>   c   </div><div> can </div></li>
 <li><div><img src="braille/con_cannot.svg  " alt=" contraction for word cannot: dot 456 dot 14 "></div><div>   dot*456c    </div><div> cannot  </div></li>
 <li><div><img src="braille/con_cc.svg  " alt=" contraction for inner string cc: dot 25 "></div><div>   dot*25  </div><div> ⌂cc⌂    </div></li>
@@ -342,7 +345,7 @@ function myFunction2() {
 
 <h4 id="toc_22">D contractions</h4>
 
-<ul class="contractions salmon">
+<ul class="contractions salmon intro">
 <li><div><img src="braille/con_day.svg " alt=" contraction for word day: dot 5 dot 145 "></div><div>   dot*5d  </div><div> day </div></li>
 <li><div><img src="braille/con_deceive.svg " alt=" contraction for word deceive: dot 145 dot 14 dot 1236   "></div><div>   dcv </div><div> deceive </div></li>
 <li><div><img src="braille/con_deceiving.svg   " alt=" contraction for word deceiving: dot 145 dot 14 dot 1236 dot 1245    "></div><div>   dcvg    </div><div> deceiving   </div></li>
@@ -354,7 +357,7 @@ function myFunction2() {
 
 <h4 id="toc_23">E contractions</h4>
 
-<ul class="contractions salmon">
+<ul class="contractions salmon intro">
 <li><div><img src="braille/con_ea.svg  " alt=" contraction for inner string ea: dot 2  "></div><div>   dot*2   </div><div> ⌂ea⌂    </div></li>
 <li><div><img src="braille/con_ed.svg  " alt=" contraction for string ed: dot 1246 "></div><div>   dot*1246    </div><div> ed  </div></li>
 <li><div><img src="braille/con_either.svg  " alt=" contraction for word either: dot 15 dot 24  "></div><div>   ei  </div><div> either  </div></li>
@@ -368,7 +371,7 @@ function myFunction2() {
 
 <h4 id="toc_24">F contractions</h4>
 
-<ul class="contractions salmon">
+<ul class="contractions salmon intro">
 <li><div><img src="braille/con_father.svg  " alt=" contraction for word father: dot 5 dot 124  "></div><div>   dot*5f  </div><div> father  </div></li>
 <li><div><img src="braille/con_ff.svg  " alt=" contraction for inner string ff: dot 124    "></div><div>   f   </div><div> ⌂ff⌂    </div></li>
 <li><div><img src="braille/con_first.svg   " alt=" contraction for word first: dot 124 dot 34  "></div><div>   fdot*34 </div><div> first   </div></li>
@@ -380,7 +383,7 @@ function myFunction2() {
 
 <h4 id="toc_25">G contractions</h4>
 
-<ul class="contractions salmon">
+<ul class="contractions salmon intro">
 <li><div><img src="braille/con_gg.svg  " alt=" contraction for inter string gg: dot 2356   "></div><div>   dot*2356    </div><div> ⌂gg⌂    </div></li>
 <li><div><img src="braille/con_gh.svg  " alt=" contraction for string gh: dot 126  "></div><div>   dot*126 </div><div> gh  </div></li>
 <li><div><img src="braille/con_go.svg  " alt=" contraction for word go: dot 1245   "></div><div>   g   </div><div> go  </div></li>
@@ -390,7 +393,7 @@ function myFunction2() {
 
 <h4 id="toc_26">H contractions</h4>
 
-<ul class="contractions salmon">
+<ul class="contractions salmon intro">
 <li><div><img src="braille/con_had.svg " alt=" contraction for word had: dot 456 dot 125   "></div><div>   dot*456h    </div><div> had </div></li>
 <li><div><img src="braille/con_have.svg    " alt=" contraction for word have: dot 125  "></div><div>   h   </div><div> have    </div></li>
 <li><div><img src="braille/con_here.svg    " alt=" contraction for word here: dot 5 dot 125    "></div><div>   dot*5h  </div><div> here    </div></li>
@@ -402,7 +405,7 @@ function myFunction2() {
 
 <h4 id="toc_27">I contractions</h4>
 
-<ul class="contractions salmon">
+<ul class="contractions salmon intro">
 <li><div><img src="braille/con_immediate.svg   " alt=" contraction for word immediate: dot 24 dot 134 dot 134  "></div><div>   imm </div><div> immediate   </div></li>
 <li><div><img src="braille/con_in.svg  " alt=" contraction for word in: dot 35 "></div><div>   dot*35  </div><div> in  </div></li>
 <li><div><img src="braille/con_ing.svg " alt=" contraction for word ing: dot 146   "></div><div>   dot*146 </div><div> ing </div></li>
@@ -414,20 +417,20 @@ function myFunction2() {
 
 <h4 id="toc_28">J contractions</h4>
 
-<ul class="contractions salmon">
+<ul class="contractions salmon intro">
 <li><div><img src="braille/con_just.svg    " alt=" contraction for word just: dot 145  "></div><div>   j   </div><div> just    </div></li>                                                                     
 </ul>
 
 <h4 id="toc_29">K contractions</h4>
 
-<ul class="contractions salmon">
+<ul class="contractions salmon intro">
 <li><div><img src="braille/con_know.svg    " alt=" contraction for word know: dot 5 dot 13 "></div><div>   dot*5k  </div><div> know    </div></li>
 <li><div><img src="braille/con_knowledge.svg   " alt=" contraction for word knowledge: dot 13  "></div><div>   k   </div><div> knowledge   </div></li>
 </ul>
 
 <h4 id="toc_30">L contractions</h4>
 
-<ul class="contractions salmon">
+<ul class="contractions salmon intro">
 <li><div><img src="braille/con_less.svg    " alt=" contraction for suffix less: dot 46 "></div><div>   dot*46s </div><div> ⌂less   </div></li>
 <li><div><img src="braille/con_letter.svg  " alt=" contraction for word letter: dot 123 dot 1235   "></div><div>   lr  </div><div> letter  </div></li>
 <li><div><img src="braille/con_like.svg    " alt=" contraction for word like: dot 123  "></div><div>   l   </div><div> like    </div></li>
@@ -437,7 +440,7 @@ function myFunction2() {
 
 <h4 id="toc_31">M contractions</h4>
 
-<ul class="contractions salmon">
+<ul class="contractions salmon intro">
 <li><div><img src="braille/con_many.svg    " alt=" contraction for word many: dot 456 dot 134  "></div><div>   dot*456m    </div><div> many    </div></li>
 <li><div><img src="braille/con_ment.svg    " alt=" contraction for suffix ment: dot 56 dot 2345    "></div><div>   dot*56t </div><div> ⌂ment   </div></li>
 <li><div><img src="braille/con_more.svg    " alt=" contraction for word more: dot 134  "></div><div>   m   </div><div> more    </div></li>
@@ -449,7 +452,7 @@ function myFunction2() {
 
 <h4 id="toc_32">N contractions</h4>
 
-<ul class="contractions salmon">
+<ul class="contractions salmon intro">
 <li><div><img src="braille/con_name.svg    " alt=" contraction for word name: dot 5 dot 1345   "></div><div>   dot*5n  </div><div> name    </div></li>
 <li><div><img src="braille/con_necessary.svg   " alt=" contraction for word necessary: dot 1345 dot 15 dot 14  "></div><div>   nec </div><div> necessary   </div></li>
 <li><div><img src="braille/con_neither.svg " alt=" contraction for word neither: dot 1345 dot 15 dot 24    "></div><div>   nei </div><div> neither </div></li>
@@ -459,7 +462,7 @@ function myFunction2() {
 
 <h4 id="toc_33">O contractions</h4>
 
-<ul class="contractions salmon">
+<ul class="contractions salmon intro">
 <li><div><img src="braille/con_of.svg  " alt=" contraction for word of: dot 12356  "></div><div>   dot*12356   </div><div> of  </div></li>
 <li><div><img src="braille/con_one.svg " alt=" contraction for word one: dot 5 dot 135 "></div><div>   dot*5o  </div><div> one </div></li>
 <li><div><img src="braille/con_oneself.svg " alt=" contraction for word oneself: dot 5 dot 135 dot 124 "></div><div>   dot*5of </div><div> oneself </div></li>
@@ -475,7 +478,7 @@ function myFunction2() {
 
 <h4 id="toc_34">P contractions</h4>
 
-<ul class="contractions salmon">
+<ul class="contractions salmon intro">
 <li><div><img src="braille/con_paid.svg    " alt=" contraction for word paid: dot1234 dot 145  "></div><div>   pd  </div><div> paid    </div></li>
 <li><div><img src="braille/con_part.svg    " alt=" contraction for word part: dot 5 dot 1234   "></div><div>   dot*5p  </div><div> part    </div></li>
 <li><div><img src="braille/con_people.svg  " alt=" contraction for word people: dot 1234   "></div><div>   p   </div><div> people  </div></li>
@@ -486,7 +489,7 @@ function myFunction2() {
 
 <h4 id="toc_35">Q contractions</h4>
 
-<ul class="contractions salmon">
+<ul class="contractions salmon intro">
 <li><div><img src="braille/con_question.svg    " alt=" contraction for word question: dot 5 dot 12345  "></div><div>   dot*5q  </div><div> question    </div></li>
 <li><div><img src="braille/con_quick.svg   " alt=" contraction for word quick: dot 123 dot 13  "></div><div>   qk  </div><div> quick   </div></li>
 <li><div><img src="braille/con_quite.svg   " alt=" contraction for word quite: dot 12345   "></div><div>   q   </div><div> quite   </div></li>
@@ -494,7 +497,7 @@ function myFunction2() {
 
 <h4 id="toc_36">R contractions</h4>
 
-<ul class="contractions salmon">
+<ul class="contractions salmon intro">
 <li><div><img src="braille/con_rather.svg  " alt=" contraction for word rather: dot 1235   "></div><div>   r   </div><div> rather  </div></li>
 <li><div><img src="braille/con_receive.svg " alt=" contraction for word receive: dot 1235 dot 1245 dot 1236    "></div><div>   rcv </div><div> receive </div></li>
 <li><div><img src="braille/con_receiving.svg   " alt=" contraction for word receiving: dot 1235 dot 1245 dot 1236 dot 1245 "></div><div>   rcvg    </div><div> receiving   </div></li>
@@ -505,7 +508,7 @@ function myFunction2() {
 
 <h4 id="toc_37">S contractions</h4>
 
-<ul class="contractions salmon">
+<ul class="contractions salmon intro">
 <li><div><img src="braille/con_said.svg    " alt=" contraction for word said: dot 124 dot 145  "></div><div>   sd  </div><div> said    </div></li>
 <li><div><img src="braille/con_sh.svg  " alt=" contraction for prefix sh: dot 146  "></div><div>   dot*146 </div><div> sh  </div></li>
 <li><div><img src="braille/con_shall.svg   " alt=" contraction for word shall: dot 146 "></div><div>   dot*146 </div><div> shall   </div></li>
@@ -521,7 +524,7 @@ function myFunction2() {
 
 <h4 id="toc_38">T contractions</h4>
 
-<ul class="contractions salmon">
+<ul class="contractions salmon intro">
 <li><div><img src="braille/con_th.svg  " alt=" contraction for prefix th: dot 1456 "></div><div>   dot*1456    </div><div> th  </div></li>
 <li><div><img src="braille/con_that.svg    " alt=" contraction for word that: dot 2345 "></div><div>   t   </div><div> that    </div></li>
 <li><div><img src="braille/con_the.svg " alt=" contraction for word the: dot 2346  "></div><div>   dot*2346    </div><div> the </div></li>
@@ -543,7 +546,7 @@ function myFunction2() {
 
 <h4 id="toc_39">U contractions</h4>
 
-<ul class="contractions salmon">
+<ul class="contractions salmon intro">
 <li><div><img src="braille/con_under.svg   " alt=" contraction for word under: dot5 dot13  "></div><div>   dot*5u  </div><div> under   </div></li>
 <li><div><img src="braille/con_upon.svg    " alt=" contraction for word upon: dot 45 dot 136   "></div><div>   dot*45u </div><div> upon    </div></li>
 <li><div><img src="braille/con_us.svg  " alt=" contraction for word us: dot 136    "></div><div>   u   </div><div> us  </div></li>
@@ -551,13 +554,13 @@ function myFunction2() {
 
 <h4 id="toc_40">V contractions</h4>
 
-<ul class="contractions salmon">
+<ul class="contractions salmon intro">
 <li><div><img src="braille/con_very.svg    " alt=" contraction for word very: dot 1236 "></div><div>   v   </div><div> very    </div></li>
 </ul>
 
 <h4 id="toc_41">W contractions</h4>
 
-<ul class="contractions salmon">
+<ul class="contractions salmon intro">
 <li><div><img src="braille/con_was.svg " alt=" contraction for word was: dot 356   "></div><div>   dot*356 </div><div> was </div></li>
 <li><div><img src="braille/con_were.svg    " alt=" contraction for word were: dot 2356 "></div><div>   dot*2356    </div><div> were    </div></li>
 <li><div><img src="braille/con_wh.svg  " alt=" contraction for prefix wh: dot 156  "></div><div>   dot*156 </div><div> wh  </div></li>
@@ -574,7 +577,7 @@ function myFunction2() {
 
 <h4 id="toc_42">Y contractions</h4>
 
-<ul class="contractions salmon">
+<ul class="contractions salmon intro">
 <li><div><img src="braille/con_you.svg " alt=" contraction for word you: dot 13456 "></div><div>   y   </div><div> you </div></li>
 <li><div><img src="braille/con_young.svg   " alt=" contraction for word young: dot5 dot13456   "></div><div>   dot*5y  </div><div> young   </div></li>
 <li><div><img src="braille/con_your.svg    " alt=" contraction for word your: dot13456 dot135  "></div><div>   yr  </div><div> your    </div></li>
@@ -602,10 +605,37 @@ A unique features of English braille is the use of contractions. Contractions ar
 
 -->
 
+<button onclick="topFunction()" id="scrolltop" title="Scroll to top">Return to Top</button>
 
 <p class="legal">©2021 Will Capellaro & Braille Toolbox</p>
 
 
 </body>
+
+<script>
+
+    //Get the button:
+mybutton = document.getElementById("scrolltop");
+
+// When the user scrolls down 20px from the top of the document, show the button
+window.onscroll = function() {scrollFunction()};
+
+function scrollFunction() {
+  if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+    mybutton.style.display = "block";
+    mybutton.style.opacity = 1;
+  } else {
+    mybutton.style.display = "block";
+    mybutton.style.opacity = 0;
+  }
+}
+
+// When the user clicks on the button, scroll to the top of the document
+function topFunction() {
+  document.body.scrollTop = 0; // For Safari
+  document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+}
+</script>
+
 
 </html>

@@ -1,0 +1,149 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Braille Toolbox</title>
+
+<meta charset="utf-8">
+<title>braille-long</title>
+<!-- <link rel="stylesheet" type="text/css" href="styles/styles_additive_exercise.css"> -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="styles/minimalist.css">
+<!-- <link rel="stylesheet" type="text/css" href="styles/style-really-additive.css"> -->
+
+<style>
+  @font-face {
+  font-family: 'MyWebFont';
+  
+  src: url(fonts/OverpassMono-Braille.otf);
+
+/*   src: url(fonts/OverpassMono-Regular.ttf);
+*/
+}
+</style>
+<style>
+  @font-face {
+  font-family: 'Brailleblocks';
+  src: url(fonts/Brailleblocks.otf);
+</style>
+</head>
+
+<body>
+
+
+
+<nav class="navbar navbar-expand-lg navbar-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="index.html">Braille Toolbox</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" aria-current="page" href="quick-reference.html">Quick Reference</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" aria-current="page" href="intro-to-braille.html#">Intro to Braille</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="contraction-composer.html">Contraction Composer</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="dot-decoder.html">Dot Decoder</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="braillewriter-help.html">Braillewriter Help</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="slate-stylus-help.html">Slate & Stylus Help</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="intropage">
+
+
+<p class="microcopy"><span class="betatag">Beta Feature</span> This page is a proof-of-concept with limited function and accessibility.</em></p> 
+
+<h1>Dot Decoder</h1>
+<p class="center">Turn dots on and off in a braille cell to see what it might be.</p>
+
+<div class="decoderlayout">
+
+<div>
+	<form class="decoderinput" action="#">
+	  <p>
+	    <input type="checkbox" id="dot1" checked/>
+	    <label for="dot1"><span class="hidelabel">Red</span></label>
+	  </p>
+	  <p>
+
+<input type="checkbox" class="checkit" name="smoking" id="smoking" value="1" onclick="yesno('smoking','yesnos','nosyes');" />
+<label for="smoking" name="yesnos" id="ff"><span class="hidelabel">asdfa</span></label>
+
+
+
+	  </p>
+	    <p>
+	    <input type="checkbox" id="dot3"  />
+	    <label for="dot3"><span class="hidelabel">Yellow</span></label>
+	  </p>
+	      <p>
+	    <input type="checkbox" id="dot4"  />
+	    <label for="dot4"><span class="hidelabel">Yellow</span></label>
+	  </p>
+	      <p>
+	    <input type="checkbox" id="dot5"  />
+	    <label for="dot5"><span class="hidelabel">Yellow</span></label>
+	  </p>
+	      <p>
+	    <input type="checkbox" id="dot6"  />
+	    <label for="dot6"><span class="hidelabel">Yellow</span></label>
+	  </p>
+	</form>
+</div>
+
+<div>
+
+<div class="decoderoutput">
+	<h3 id="yesnos">The letter <strong>a</strong></h3>
+	<p id="nosyes">A single dot is most often the letter a.
+		<br>
+		When preceded by a number sign, it's the number 1. 
+		As a standalone character, besides the article <strong>a</strong> is a contraction for the word <strong>about</strong>.
+	</p>
+</div>
+
+
+
+
+<!-- end afternav -->
+</div> 
+</div>
+ <p class="legal">©2021 Will Capellaro & Braille Toolbox</p>
+
+
+
+</body>
+
+<script>
+	function yesno(thecheckbox, thetitle, thedescription){
+            var checkboxvar = document.getElementById(thecheckbox);
+            var titvar = document.getElementById(thetitle);
+            var descvar = document.getElementById(thedescription);
+            if (checkboxvar.checked == false){
+                titvar.innerHTML = "The letter <strong>a</strong>";
+                descvar.innerHTML = "A single dot is most often the letter a.<br>When preceded by a number sign, it's the number 1. As a standalone character, besides the article <strong>a</strong> is a contraction for the word <strong>about</strong>.";
+            }
+            else{
+                titvar.innerHTML = "The letter <strong>b</strong>";
+                descvar.innerHTML = "What's better than letter b?<br>When preceded by a number sign, it's the number 2. As a standalone character or a prefix, it's short for <strong>but<strong>.";
+            }
+        }
+</script>
+
+</html>

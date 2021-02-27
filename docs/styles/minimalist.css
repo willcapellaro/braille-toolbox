@@ -4,23 +4,52 @@ body {
 	margin-right: auto;
 }
 
-.afternav ul {
+ul {
 	border-radius: 5px;
 	background-color: white;
-	list-style-type:none;
+	list-style-type: none;
 	text-align: center;
 	font-weight: 500;
 	padding: 20px 10px 20px 10px;
 	box-shadow: 0 10px 20px rgba(0,0,0,0.09), 0 3px 3px rgba(0,0,0,0.15);
-/*	margin: 10px auto;
-*/	display: flex;
+	color: #6e6e6e;
+	margin-bottom: 20px;
+}
+
+
+.intropage ul {
+	display: grid;
+  	grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+	justify-content: center;
+
+}
+
+.otherpage ul {
+	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
 	color: #6e6e6e;
 	margin-bottom: 20px;
 }
 
-.afternav li {
+.navbar-nav {
+	background-color: whitesmoke;
+	border: none;
+	box-shadow: none;
+}
+
+.otherpage li {
+margin: 1em;
+display: grid;
+grid-template-rows: 40px auto auto;
+font-size: 36px;
+grid-row-gap: 5px;
+margin: .5em;
+text-align: center;
+line-height: 12px;
+}
+
+.intropage li {
 margin: 1em;
 display: grid;
 grid-template-rows: 40px auto auto;
@@ -35,11 +64,38 @@ line-height: 12px;
 	line-height: 36px;
 }
 
-.afternav li img {
+.intropage li img {
 margin-left: auto;
 margin-right: auto;
 }
 
+.otherpage li img {
+margin-left: auto;
+margin-right: auto;
+}
+
+#scrolltop {
+  display: none; /* Hidden by default */
+  position: fixed; /* Fixed/sticky position */
+  bottom: 20px; /* Place the button at the bottom of the page */
+  right: 30px; /* Place the button 30px from the right */
+  z-index: 99; /* Make sure it does not overlap */
+  border: none; /* Remove borders */
+  outline: none; /* Remove outline */
+  background-color: #D1B; /* Set a background color */
+  color: white; /* Text color */
+  cursor: pointer; /* Add a mouse pointer on hover */
+  padding: 15px; /* Some padding */
+  border-radius: 10px; /* Rounded corners */
+  font-size: 18px; /* Increase font size */
+box-shadow: 0 10px 20px rgb(0 0 0 / 9%), 0 3px 3px rgb(0 0 0 / 15%);
+transition: .2s;
+}
+
+#scrolltop:hover {
+  background-color: brown; 
+  transition: .2s;
+}
 
 .salmon {
 	border-top: 7px solid /*salmon*/ brown;
@@ -50,11 +106,34 @@ margin-right: auto;
 	color: brown;
 	font-size: 90%;
 	text-align: center;
+	line-height: 12px;
 }
+
+.decoderinput {
+	width: 4em;
+	display: grid;
+	grid-template-rows: auto auto auto;
+/*	grid-template-columns: 2em 2em;
+*/	grid-auto-flow: column;
+}
+
+.decoderinput label {
+/*	display: none;
+*/}
+
+.hidelabel {
+	display: none;
+}
+
+.decoderinput li {
+	border-radius: 2em;
+}
+
 
 #more,#more2 {
 	display: none;
 }
+
 
 .betatag {
 	border: 1px solid;
@@ -73,7 +152,7 @@ margin-right: auto;
 }
 
 .navbar-brand {
-		border-bottom: solid 4px white;
+		border-bottom: solid 4px whitesmoke;
 }
 
 .navbar .container-fluid 
@@ -90,15 +169,100 @@ h1, h2, h3, h4, h5, h6, .site_slogan {
 	text-align: center; 
 	text-transform: capitalize; 
 	margin-bottom: 1em;
+	max-width: 900;
 }
 
 
+
+.decoderlayout {
+	display: grid;
+	grid-template-columns: 6em 1fr;
+	margin-top: 1em;
+	grid-column-gap: 1em;
+	max-width: 900px;
+	margin-left: auto;
+	margin-right: auto;
+	background-color: white;
+	padding: 2em;
+
+
+	border-radius: 5px;
+	background-color: white;
+	box-shadow: 0 10px 20px rgba(0,0,0,0.09), 0 3px 3px rgba(0,0,0,0.15);
+	color: #6e6e6e;
+}
+
+.decoderlayout div:nth-child(1) {
+	grid-column: 1 / 2;
+	padding-left: 1em;
+	padding-top: 1em;
+/*		background-color: red;*/
+
+}
+
+.decoderlayout div:nth-child(2) {
+	grid-column: 2 / 3;
+/*	background-color: yellow;
+*/
+}
+
+.decoderlayout div:nth-child(2) h3 {
+	padding: 0;
+	margin: 0;
+	text-align: left;
+	text-transform: none;
+}
+
+.decoderlayout div:nth-child(3) p {
+	margin-top: 1em;
+}
+
+
+.decoderlayout div:nth-child(3) h3 strong {
+font-size: 1.5em;
+font-weight: 100;
+}
 
 img {
 	border: 1px #E5E5E5 solid;
 	border-radius: 2px;
 	height: 100%;
 }
+
+.legal {
+position: absolute;
+margin-left: auto;
+margin-right: auto;
+left: 0;
+right: 0;
+text-align: center;
+bottom: 0;
+opacity: .6;
+font-size: 11px;
+display: none;
+}
+
+textarea {
+width: 100%;
+border-radius: 5px;
+background-color: white;
+padding: 10px 10px 10px 10px;
+box-shadow: 0 10px 20px rgb(0 0 0 / 9%), 0 3px 3px rgb(0 0 0 / 15%);
+border: none;
+min-height: 3em;
+font-size: 10em;
+font-family: 'MyWebFont', Fallback, sans-serif;
+resize: vertical;
+text-align: left;
+padding: 11px 11px 1px 21px;
+overflow-y: scroll;
+line-height: .7em;
+}
+
+textarea:focus {
+    box-shadow: 0 10px 20px rgb(0 0 0 / 9%), 0 3px 3px rgb(0 0 0 / 35%);
+}
+
 
 .contractions li div:nth-child(2) {
 	font-size: 30px;
@@ -117,6 +281,10 @@ img {
 	padding-top: 10px;
 }
 
+.introgrid {
+}
+
+
 
 .inline {
 	display: inline;
@@ -125,8 +293,173 @@ img {
 	color: #D1B;
 	float: right;
 	border: none;
+	background-color: whitesmoke;
 }
 
+.spaceafter {
+	margin-bottom: 10em;
+}
+
+.prompter_container {
+	display: grid;
+	grid-template-columns: 2fr 1fr;
+}
+
+.step1 {
+/*	background-color: red;
+*/	grid-column: 1 / 2;
+	padding: 2em;
+}
+
+.step2 {
+/*	background-color: yellow;
+*/	grid-column: 2 / 3;
+	padding: 2em;
+}
+
+/*.prompter_container:nth-child(3) {
+	background-color: blue;
+}
+*/
+/* Base for label styling */
+
+
+
+	[type="checkbox"]:not(:checked),
+	[type="checkbox"]:checked {
+		position: absolute;
+		left: 0;
+		opacity: 0.01;
+
+	}
+	[type="checkbox"]:not(:checked) + label,
+	[type="checkbox"]:checked + label {
+		position: relative;
+		padding-left: 2.3em;
+		font-size: 1.05em;
+		line-height: 1.7;
+		cursor: pointer;
+	}
+
+	/* checkbox aspect */
+
+
+	[type="checkbox"]:not(:checked) + label:before,
+	[type="checkbox"]:checked + label:before {
+		font-family: 'Brailleblocks', Fallback, monospace;
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 1.4em;
+		height: 1.4em;
+		border: 1px solid #DDD;
+		background: #FFF;
+		border-radius: 1.2em;
+		box-shadow: inset 0 1px 3px rgba(0,0,0, .1), 0 0 0 rgba(203, 34, 237, .2);
+		-webkit-transition: all .275s;
+				transition: all .275s;
+				color: red;
+	}
+
+	/* checked mark aspect */
+	[type="checkbox"]:not(:checked) + label:after,
+	[type="checkbox"]:checked + label:after {
+
+/*			content: '✕';
+		top: .525em;
+		left: .18em;
+		font-size: 1.375em;
+*/
+		font-family: 'Brailleblocks', Fallback, monospace;
+
+		content: 'ooo';
+		position: absolute;
+		top: 15px;
+		left: 0px;
+		font-size: 2.2em;
+		color: black;
+		line-height: 0;
+		-webkit-transition: all .2s;
+				transition: all .2s;
+	}
+
+	/* checked mark aspect changes */
+	[type="checkbox"]:not(:checked) + label:after {
+		opacity: 0;
+		-webkit-transform: scale(0) rotate(45deg);
+				transform: scale(0) rotate(45deg);
+
+	}
+
+	[type="checkbox"]:checked + label:after {
+		opacity: 1;
+		-webkit-transform: scale(1) rotate(0);
+				transform: scale(1) rotate(0);
+	}
+
+	/* Disabled checkbox */
+	[type="checkbox"]:disabled:not(:checked) + label:before,
+	[type="checkbox"]:disabled:checked + label:before {
+		box-shadow: none;
+		border-color: #bbb;
+		background-color: #e9e9e9;
+	}
+
+	[type="checkbox"]:disabled:checked + label:after {
+		color: #777;
+	}
+
+	[type="checkbox"]:disabled + label {
+		color: #aaa;
+	}
+
+	/* Accessibility */
+	[type="checkbox"]:checked:focus + label:before,
+	[type="checkbox"]:not(:checked):focus + label:before {
+		box-shadow: inset 0 1px 3px rgba(0,0,0, .1), 0 0 0 6px rgba(203, 34, 237, .2);
+	}
+
+
+
+
+
+body {
+  font-family: "Open Sans", "Segoe WP", "Segoe UI", Helvetica, Arial, sans-serif;
+  background-color: whitesmoke;
+}
+
+.indextoolbox {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+	display: grid;
+	grid-template-rows: auto auto;
+	grid-template-columns: auto auto auto;
+}
+
+.indextoolbox li {
+	height: 200px;
+	border: 1px #E5E5E5 solid;
+	border-radius: 4px;
+	margin: 2em;
+	text-align: center;
+	padding: 2em;
+}
+
+.indextoolbox li img {
+ border: none;
+}
+
+p, .intro {
+	max-width: 900px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.microcopycenter {
+	text-align: center;
+}
 
 @media only screen and (min-width: 1000px)  {  /* - - - - - - - - - - - - - - - - - - */
 
@@ -146,8 +479,18 @@ img {
 
 
 body {
-	width: 900px;
 	margin: 0 auto;
+}
+
+.introgrid {
+		width: 900px;
+}
+
+.refgrid {
+	display: grid;
+	grid-template-columns: 2fr 1fr;
+	grid-column-gap: 2em;
+	grid-template-rows: auto auto;
 }
 
 /*img {
