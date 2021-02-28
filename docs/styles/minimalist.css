@@ -526,23 +526,6 @@ margin: 0;
 */	grid-column: 2 / 3;
 }
 
-.betatag {
-	display: inline;
-	border: 1px solid;
-	padding: 3px 6px 2px 6px;
-	margin-right: 5px;
-	color: red;
-	font-size: 80%;
-	text-transform: uppercase;
-}
-
-.microcopy {
-	display: block;
-	color: brown;
-	font-size: 90%;
-	text-align: center;
-	line-height: 12px;
-}
 
 .indextoolbox {
 
@@ -566,3 +549,39 @@ font-size: 38px;
 
 
 }
+
+@media only screen and (min-width: 1600px)  {  /* - - - - - - - - - - - - - - - - - - 
+
+/*  
+
+
+ /$$$$$$$        /$$$$$$        /$$$$$$        /$$$$$$ 
+| $$__  $$      |_  $$_/       /$$__  $$      /$$__  $$
+| $$  \ $$        | $$        | $$  \__/     | $$  \__/
+| $$$$$$$         | $$        | $$ /$$$$     | $$ /$$$$
+| $$__  $$        | $$        | $$|_  $$     | $$|_  $$
+| $$  \ $$        | $$        | $$  \ $$     | $$  \ $$
+| $$$$$$$/       /$$$$$$      |  $$$$$$/     |  $$$$$$/
+|_______/       |______/       \______/       \______/ 
+                                                                                
+*/
+
+
+.betatag {
+	display: inline;
+	border: 1px solid;
+	padding: 3px 6px 2px 6px;
+	margin-right: 5px;
+	color: red;
+	font-size: 80%;
+	text-transform: uppercase;
+}
+
+.microcopy {
+	display: block;
+	color: brown;
+	font-size: 90%;
+	text-align: center;
+	line-height: 12px;
+}
+
