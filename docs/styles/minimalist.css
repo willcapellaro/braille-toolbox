@@ -284,7 +284,7 @@ textarea:focus {
 }
 
 .contractions:hover li div:nth-child(2) {
-	opacity: 1;
+	opacity: .8;
 	transition: .5s;
 	padding-bottom: 0px;
 	line-height: 25px;
@@ -438,6 +438,10 @@ grid-template-columns: auto auto;
 line-height: 1em;
 }
 
+.indextoolbox {
+	grid-template-columns: auto auto ;
+	grid-template-rows: auto auto auto;
+}
 
 @media only screen and (min-width: 1000px)  {  /* - - - - - - - - - - - - - - - - - - 
 
