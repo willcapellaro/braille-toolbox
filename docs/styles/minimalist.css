@@ -274,6 +274,28 @@ textarea:focus {
 }
 
 
+/*use when copyediting*/
+
+.contractions li div:nth-child(2) {
+	font-size: 30px;
+	font-family: 'Brailleblocks', Fallback, monospace;
+	opacity: 0;
+	transition: .5s;
+	padding-bottom: 0px;
+	line-height: 0px;
+		opacity: .8;
+	transition: .5s;
+	padding-bottom: 0px;
+	line-height: 25px;
+	padding-top: 10px;
+}
+
+.contractions:hover li div:nth-child(2) {
+
+}
+
+/*use in final*/
+/*
 .contractions li div:nth-child(2) {
 	font-size: 30px;
 	font-family: 'Brailleblocks', Fallback, monospace;
@@ -290,7 +312,7 @@ textarea:focus {
 	line-height: 25px;
 	padding-top: 10px;
 }
-
+*/
 
 .inline {
 	display: inline;
