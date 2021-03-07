@@ -16,10 +16,10 @@
         <circle id="Oval-Copy-5" fill="#808080" cx="122.5" cy="12.5" r="7.5"></circle>
         <circle id="Oval-Copy-6" fill="#808080" cx="143.5" cy="12.5" r="7.5"></circle>
         <circle id="Oval-Copy" fill="#808080" cx="177.5" cy="35.5" r="7.5"></circle>
-        <circle id="Oval-Copy-2" fill="#808080" cx="198.5" cy="35.5" r="7.5"></circle>
-        <circle id="Oval-Copy-3" fill="#808080" cx="177.5" cy="58.5" r="7.5"></circle>
+<!--         <circle id="Oval-Copy-2" fill="#808080" cx="198.5" cy="35.5" r="7.5"></circle>
+ -->        <circle id="Oval-Copy-3" fill="#808080" cx="177.5" cy="58.5" r="7.5"></circle>
         <circle id="Oval-Copy-4" fill="#808080" cx="198.5" cy="58.5" r="7.5"></circle>
         <circle id="Oval-Copy-5" fill="#808080" cx="177.5" cy="12.5" r="7.5"></circle>
-        <circle id="Oval-Copy-6" fill="#808080" cx="198.5" cy="12.5" r="7.5"></circle>
-    </g>
+<!--         <circle id="Oval-Copy-6" fill="#808080" cx="198.5" cy="12.5" r="7.5"></circle>
+ -->    </g>
 </svg>
