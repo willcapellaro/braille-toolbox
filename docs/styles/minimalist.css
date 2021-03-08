@@ -21,6 +21,10 @@ ul {
 	margin-bottom: 20px;
 }
 
+.subs {
+	font-size: .7em;
+}
+
 
 .intropage ul {
 	display: grid;
