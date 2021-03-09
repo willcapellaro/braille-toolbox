@@ -38,6 +38,17 @@ ul {
   transform: scaleX(-1);
 }
 
+.skiplink {
+	color: whitesmoke;
+}
+
+.skiplink:focus {
+	padding: 6px 6px 2px 6px;
+	border-radius: 4px;
+	background-color: #b1b;
+	color: white;
+	outline: none;
+}
 
 
 .otherpage ul {
@@ -109,12 +120,20 @@ transition: .2s;
 }
 
 #scrolltop:hover {
-  background-color: brown; 
+  background-color: purple; 
   transition: .2s;
 }
 
+a {
+	color: #b1b;
+}
+
+a:hover {
+	color: #b1b;
+}
+
 .salmon {
-	border-top: 7px solid /*salmon*/ brown;
+	border-top: 7px solid /*salmon*/ #b1b;
 	border-radius: 5px;
 }
 
