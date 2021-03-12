@@ -25,7 +25,16 @@ ul {
 	font-size: .7em;
 }
 
-
+.ham_icon img {
+	width: 1em;
+	border: solid 2px red;
+	background-color: red;
+}
+/*.collapsing {
+    -webkit-transition: none;
+    transition: none;
+    display: none;
+}*/
 .intropage ul {
 	display: grid;
   	grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -189,7 +198,14 @@ a:hover {
 }
 
 .active {
-	border-bottom: solid 4px #B1B;
+border-bottom: solid 4px #B1B;
+/*font-weight: 700;
+/*background-color: #d1b;
+*//*color: white;*/
+}
+
+.dropdown .active {
+border: none;
 }
 
 h1, h2, h3, h4, h5, h6, .site_slogan {
@@ -538,7 +554,13 @@ justify-content: end;
 line-height: 1em;
 }
 
+.active {
+	border-bottom: solid 4px #B1B;
+}
 
+.dropdown .active {
+	border-bottom: none;
+}
 
 .prompter_container {
 	display: grid;

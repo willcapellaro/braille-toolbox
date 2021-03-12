@@ -1,123 +1,105 @@
-
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-<title>Braille Toolbox</title>
+  <meta charset="utf-8">
+  <title>Braille Toolbox</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="styles/minimalist.css">
+  <link rel="stylesheet" type="text/css" href="styles/range-override.css">
+  <link rel="stylesheet" type="text/css" href="styles/special-checks-decoder.css">
+  <script src="scripts/braillewriter.js" async=""></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous" async=""></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous" async=""></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous" async=""></script>
+  <style>  @font-face { font-family: 'MyWebFont';  src: url(fonts/OverpassMono-Braille.otf);}</style>
+  <style>  @font-face { font-family: 'Brailleblocks'; src: url(fonts/Brailleblocks.otf);</style>
 
-<meta charset="utf-8">
-<title>braille-long</title>
-<!-- <link rel="stylesheet" type="text/css" href="styles/styles_additive_exercise.css"> -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-<link rel="stylesheet" type="text/css" href="styles/minimalist.css">
-<link rel="stylesheet" type="text/css" href="styles/special-checks-decoder.css">
-
-<!-- <link rel="stylesheet" type="text/css" href="styles/style-really-additive.css"> -->
-
-<style>
-  @font-face {
-  font-family: 'MyWebFont';
-  
-  src: url(fonts/OverpassMono-Braille.otf);
-
-/*   src: url(fonts/OverpassMono-Regular.ttf);
-*/
-}
-</style>
-<style>
-  @font-face {
-  font-family: 'Brailleblocks';
-  src: url(fonts/Brailleblocks.otf);
-</style>
 </head>
-
 <body>
-    <a href="#maincontent" class="skiplink">Skip to content</a>
 
-
+  <a href="#maincontent" class="skiplink">Skip to content</a>
 
 <nav class="navbar navbar-expand-lg navbar-light">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="index.html">Braille Toolbox</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNavDropdown">
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link" aria-current="page" href="quick-reference.html">Quick Reference</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" aria-current="page" href="intro-to-braille.html#">Intro to Braille</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="contraction-composer.html">Contraction Composer</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active" href="dot-decoder.html">Dot Decoder</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="braillewriter-help.html">Braillewriter Help</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="slate-stylus-help.html">Slate & Stylus Help</a>
-        </li>
-      </ul>
-    </div>
-      <p class="microcopy"><span class="betatag">Beta Product</span>Limited functionality and accessibility</em></p> 
+  <a class="navbar-brand" href="index.html">Braille Toolbox</a>
+  <button class="navbar-toggler" style="height: 2em; border: none;" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span>    <img class="ham_icon" src="braille/con_for.svg" alt="braille cell icon">
+</span>
+  </button>
 
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="intro-to-braille.html">Intro to Braille<span class="sr-only"></span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="quick-reference.html">Quick Reference<span class="sr-only"></span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="write-in-braille.html">Write in Braille<span class="sr-only"></a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          More Tools
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="slate-stylus-help.html">Slate & Stylus Quick Reference</a>
+          <a class="dropdown-item active" href="dot-decoder.html">Dot Decoder</a>
+          <a class="dropdown-item" href="braillewriter-help.html">Braillewriter Help</a>
+        </div>
+      </li>
+    </ul>
   </div>
-
 </nav>
+
 
 <div class="intropage">
 
 
 
 <h1 id="maincontent">Dot Decoder</h1>
-<h2>Single Character</h2>
-<p class="center">Turn dots on and off to see what a braille cell stands for</p>
+<!-- <h2>Single Character</h2>
+ --><p class="center">Turn dots on and off to see what a braille cell stands for.</p>
 
 <div class="decoderlayout">
 
 <div>
-	<form class="decoderinput" action="#">
-	  <p>
-	    <input type="checkbox" id="dot1" checked/>
-	    <label for="dot1"><span class="hidelabel">Dot 1</span></label>
-	  </p>
-	  <p>
+  <form class="decoderinput" action="#">
+    <p>
+      <input type="checkbox" id="dot1" checked/>
+      <label for="dot1"><span class="hidelabel">Dot 1</span></label>
+    </p>
+    <p>
       <input type="checkbox" class="checkit" name="smoking" id="smoking" value="1" onclick="yesno('smoking','yesnos','nosyes');" />
       <label for="smoking" name="yesnos" id="ff"><span class="hidelabel">Dot 2</span></label>
-	  </p>
-	    <p>
-	    <input type="checkbox" id="dot3"  />
-	    <label for="dot3"><span class="hidelabel">Dot 3</span></label>
-	  </p>
-	      <p>
-	    <input type="checkbox" id="dot4"  />
-	    <label for="dot4"><span class="hidelabel">Dot 4</span></label>
-	  </p>
-	      <p>
-	    <input type="checkbox" id="dot5"  />
-	    <label for="dot5"><span class="hidelabel">Dot 5</span></label>
-	  </p>
-	      <p>
-	    <input type="checkbox" id="dot6"  />
-	    <label for="dot6"><span class="hidelabel">Dot 6</span></label>
-	  </p>
-	</form>
+    </p>
+      <p>
+      <input type="checkbox" id="dot3"  />
+      <label for="dot3"><span class="hidelabel">Dot 3</span></label>
+    </p>
+        <p>
+      <input type="checkbox" id="dot4"  />
+      <label for="dot4"><span class="hidelabel">Dot 4</span></label>
+    </p>
+        <p>
+      <input type="checkbox" id="dot5"  />
+      <label for="dot5"><span class="hidelabel">Dot 5</span></label>
+    </p>
+        <p>
+      <input type="checkbox" id="dot6"  />
+      <label for="dot6"><span class="hidelabel">Dot 6</span></label>
+    </p>
+  </form>
 </div>
 
 <div>
 
 <div class="decoderoutput">
-	<h3 id="yesnos">The letter <strong>a</strong></h3>
-	<p id="nosyes">A single dot is most often the letter a.
-		<br>
-		When preceded by a number sign, it's the number 1. 
-		As a standalone character, besides the article <strong>a</strong> is a contraction for the word <strong>about</strong>.
-	</p>
+  <h3 id="yesnos">The letter <strong>a</strong></h3>
+  <p id="nosyes">A single dot is most often the letter a.
+    <br>
+    When preceded by a number sign, it's the number 1. 
+    As a standalone character, besides the article <strong>a</strong> is a contraction for the word <strong>about</strong>.
+  </p>
 </div>
 
 
@@ -127,15 +109,13 @@
 </div> 
 
 
-
-</div>
- <p class="legal">©2021 Will Capellaro & Braille Toolbox</p>
+<p class="legal">©2021 Will Capellaro & Braille Toolbox</p>
 
 
 </body>
 
 <script>
-	function yesno(thecheckbox, thetitle, thedescription){
+  function yesno(thecheckbox, thetitle, thedescription){
             var checkboxvar = document.getElementById(thecheckbox);
             var titvar = document.getElementById(thetitle);
             var descvar = document.getElementById(thedescription);
@@ -151,3 +131,9 @@
 </script>
 
 </html>
+
+
+
+<!-- <div class="otherpage">-->
+
+
