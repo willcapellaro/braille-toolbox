@@ -12,7 +12,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous" async=""></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous" async=""></script>
   <style>  @font-face { font-family: 'MyWebFont';  src: url(fonts/OverpassMono-Braille.otf);}</style>
-  <style>  @font-face { font-family: 'Brailleblocks'; src: url(fonts/Brailleblocks.otf);</style>
+  <style>  @font-face { font-family: 'Brailleblocks'; src: url(fonts/Brailleblocks.otf);}</style>
 
 </head>
 <body>
@@ -25,7 +25,6 @@
     <span>    <img class="ham_icon" src="braille/con_for.svg" alt="braille cell icon">
 </span>
   </button>
-
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
@@ -51,66 +50,57 @@
   </div>
 </nav>
 
-
 <div class="intropage">
 
+  <h1 id="maincontent">Dot Decoder</h1>
+  <!-- <h2>Single Character</h2>
+   --><p class="center">Turn dots on and off to see what a braille cell stands for.</p>
 
-
-<h1 id="maincontent">Dot Decoder</h1>
-<!-- <h2>Single Character</h2>
- --><p class="center">Turn dots on and off to see what a braille cell stands for.</p>
-
-<div class="decoderlayout">
-
-<div>
-  <form class="decoderinput" action="#">
-    <p>
-      <input type="checkbox" id="dot1" checked/>
-      <label for="dot1"><span class="hidelabel">Dot 1</span></label>
-    </p>
-    <p>
-      <input type="checkbox" class="checkit" name="smoking" id="smoking" value="1" onclick="yesno('smoking','yesnos','nosyes');" />
-      <label for="smoking" name="yesnos" id="ff"><span class="hidelabel">Dot 2</span></label>
-    </p>
-      <p>
-      <input type="checkbox" id="dot3"  />
-      <label for="dot3"><span class="hidelabel">Dot 3</span></label>
-    </p>
+  <div class="decoderlayout">
+    <div>
+      <form class="decoderinput" action="#">
         <p>
-      <input type="checkbox" id="dot4"  />
-      <label for="dot4"><span class="hidelabel">Dot 4</span></label>
-    </p>
+          <input type="checkbox" id="dot1" checked/>
+          <label for="dot1"><span class="hidelabel">Dot 1</span></label>
+        </p>
         <p>
-      <input type="checkbox" id="dot5"  />
-      <label for="dot5"><span class="hidelabel">Dot 5</span></label>
-    </p>
-        <p>
-      <input type="checkbox" id="dot6"  />
-      <label for="dot6"><span class="hidelabel">Dot 6</span></label>
-    </p>
-  </form>
+          <input type="checkbox" class="checkit" id="dot2" onclick="yesno('dot2','yesnos','nosyes');" />
+          <label for="dot2" id="ff"><span class="hidelabel">Dot 2</span></label>
+        </p>
+          <p>
+          <input type="checkbox" id="dot3"  />
+          <label for="dot3"><span class="hidelabel">Dot 3</span></label>
+        </p>
+            <p>
+          <input type="checkbox" id="dot4"  />
+          <label for="dot4"><span class="hidelabel">Dot 4</span></label>
+        </p>
+            <p>
+          <input type="checkbox" id="dot5"  />
+          <label for="dot5"><span class="hidelabel">Dot 5</span></label>
+        </p>
+            <p>
+          <input type="checkbox" id="dot6"  />
+          <label for="dot6"><span class="hidelabel">Dot 6</span></label>
+        </p>
+      </form>
+    </div>
+    <div>
+      <div class="decoderoutput">
+        <h3 id="yesnos">The letter <strong>a</strong></h3>
+        <p id="nosyes">A single dot is most often the letter a.
+          <br>
+          When preceded by a number sign, it's the number 1. 
+          As a standalone character, besides the article <strong>a</strong> is a contraction for the word <strong>about</strong>.
+        </p>
+      </div>
+    </div> 
+  </div>
 </div>
 
-<div>
 
-<div class="decoderoutput">
-  <h3 id="yesnos">The letter <strong>a</strong></h3>
-  <p id="nosyes">A single dot is most often the letter a.
-    <br>
-    When preceded by a number sign, it's the number 1. 
-    As a standalone character, besides the article <strong>a</strong> is a contraction for the word <strong>about</strong>.
-  </p>
-</div>
-
-
-
-
-<!-- end afternav -->
-</div> 
-
-
-<p class="legal">©2021 Will Capellaro & Braille Toolbox</p>
-
+<!-- <p class="legal">©2021 Will Capellaro & Braille Toolbox</p>
+ -->
 <script>
   function yesno(thecheckbox, thetitle, thedescription){
             var checkboxvar = document.getElementById(thecheckbox);
