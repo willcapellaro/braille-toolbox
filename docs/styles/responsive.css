@@ -77,7 +77,7 @@ ul {
 .otherpage li {
 margin: 1em;
 display: grid;
-grid-template-rows: 40px auto auto;
+grid-template-rows: 100px auto auto;
 font-size: 36px;
 grid-row-gap: 5px;
 margin: .5em;
@@ -316,7 +316,7 @@ textarea:focus {
 /*use when copyediting*/
 
 .contractions li div:nth-child(2) {
-	font-size: 30px;
+	font-size: 1.875em;
 	font-family: 'Brailleblocks', Fallback, monospace;
 	opacity: 0;
 	transition: .5s;
@@ -357,7 +357,7 @@ textarea:focus {
 	display: inline;
 	border-bottom: 1px solid;
 	background-color: white;
-	color: #D110B1;
+	color: #D1B;
 	float: right;
 	border: none;
 	background-color: whitesmoke;
@@ -504,7 +504,23 @@ line-height: 1em;
 	grid-template-rows: auto auto auto;
 }
 
+.navbar-brand {
+	font-size: 4em;
+/*	background-color: red;
+*/}
 
+.navbar-toggler {
+/*	background-color: blue;
+*/	font-size: 3em;
+}
+
+p {
+	font-size: 2em;
+}
+
+li img {
+	height: 3em;
+}
 
 
 
@@ -528,6 +544,11 @@ line-height: 1em;
 
 body {
 	margin: 0 auto;
+}
+
+.otherpage li {
+grid-template-rows: 40px auto auto;
+
 }
 
 .introgrid {
