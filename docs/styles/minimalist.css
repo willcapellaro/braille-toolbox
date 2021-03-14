@@ -137,8 +137,14 @@ a {
 	color: #b1b;
 }
 
+.inline:hover {
+	cursor: pointer;
+	text-decoration: underline;
+}
+
 a:hover {
 	color: #b1b;
+	text-decoration: underline;
 }
 
 .salmon {
