@@ -78,7 +78,7 @@ ul {
 margin: 1em;
 display: grid;
 grid-template-rows: 40px auto auto;
-font-size: 36px;
+font-size: 2.25em;
 grid-row-gap: 5px;
 margin: .5em;
 text-align: center;
@@ -89,7 +89,7 @@ line-height: 12px;
 margin: 1em;
 display: grid;
 grid-template-rows: 40px auto auto;
-font-size: 36px;
+font-size: 2.25em;
 grid-row-gap: 5px;
 margin: .5em;
 text-align: center;
@@ -123,7 +123,7 @@ margin-right: auto;
   cursor: pointer; /* Add a mouse pointer on hover */
   padding: 15px; /* Some padding */
   border-radius: 10px; /* Rounded corners */
-  font-size: 18px; /* Increase font size */
+  font-size: 1.125em; /* Increase font size */
 box-shadow: 0 10px 20px rgb(0 0 0 / 9%), 0 3px 3px rgb(0 0 0 / 15%);
 transition: .2s;
 }
@@ -293,7 +293,7 @@ right: 0;
 text-align: center;
 bottom: 0;
 opacity: .6;
-font-size: 11px;
+font-size: .688em;
 display: none;
 }
 
@@ -322,7 +322,7 @@ textarea:focus {
 /*use when copyediting*/
 
 .contractions li div:nth-child(2) {
-	font-size: 30px;
+	font-size: 1.875em;
 	font-family: 'Brailleblocks', Fallback, monospace;
 	opacity: 0;
 	transition: .5s;
@@ -469,7 +469,7 @@ body {
 	background-color: white;
 	height: 13em;
 	box-shadow: 0 10px 20px rgba(0,0,0,0.09), 0 3px 3px rgba(0,0,0,0.15);
-	font-size: 20px;
+	font-size: 1.25em;
 	padding-bottom: 3em;
 	transition: .2s;
 	border: 10px solid white;
@@ -638,14 +638,14 @@ font-size: 38px;
 	padding: 3px 6px 2px 6px;
 	margin-right: 5px;
 	color: red;
-	font-size: 80%;
+	font-size: .8em;
 	text-transform: uppercase;
 }
 
 .microcopy {
 	display: block;
 	color: brown;
-	font-size: 90%;
+	font-size: .9em;
 	text-align: center;
 	line-height: 12px;
 }

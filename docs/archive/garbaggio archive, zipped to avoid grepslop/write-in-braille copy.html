@@ -1,0 +1,90 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Braille Toolbox</title>
+
+<meta charset="utf-8">
+<title>braille-long</title>
+<!-- <link rel="stylesheet" type="text/css" href="styles/styles_additive_exercise.css"> -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="styles/minimalist.css">
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<style>
+  @font-face {
+  font-family: 'MyWebFont';
+  
+  src: url(fonts/OverpassMono-Braille.otf);
+
+/*   src: url(fonts/OverpassMono-Regular.ttf);
+*/
+}
+</style>
+
+</head>
+
+<body>
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+      <a href="#maincontent" class="skiplink">Skip to content</a>
+
+<nav class="navbar navbar-expand-lg navbar-light">
+  <a class="navbar-brand" href="#">Braille Toolbox</a>
+  <button class="navbar-toggler" style="height: 2em; border: none;" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <img class="ham_icon" src="braille/con_for.svg" alt="braille cell icon">
+  </button>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="intro-to-braille.html">Intro to Braille<span class="sr-only"></span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="quick-reference.html">Quick Reference<span class="sr-only"></span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" href="write-in-braille.html">Write in Braille<span class="sr-only"></a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Special Tools
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="write-in-braille.html">Slate & Stylus Quick Reference</a>
+          <a class="dropdown-item" href="dot-decoder.html">Dot Decoder</a>
+          <a class="dropdown-item active" href="braillewriter-help.html">Braillewriter Help</a>        
+        </div>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+
+<div class="afternav">
+
+
+
+
+<h1 id="maincontent">Contraction Composer</h1>
+<p>Enter some text below to see how it translates to braille. To learn about the mechanics of braille, refer to the <a href="braille-explainer.html">Braille Explainer</a> section.</p>
+
+<form> 
+  <!-- action="/action_page.php" -->
+  <label for="fname">Type or paste text to see it written in braille</label><br>
+  <textarea class="spaceafter" placeholder="your braille here"></textarea>
+ 
+</form>
+<!-- end afternav -->
+</div> 
+
+ <p class="legal">©2021 Will Capellaro & Braille Toolbox</p>
+
+
+
+</body>
+
+</html>

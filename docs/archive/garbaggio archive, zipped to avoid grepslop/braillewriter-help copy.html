@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="utf-8">
+<title>Braille Toolbox</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="styles/minimalist.css">
+<link rel="stylesheet" type="text/css" href="styles/range-override.css">
+
+</style>
+<script src="scripts/braillewriter.js"></script>
+
+</head>
+<body>
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+      <a href="#maincontent" class="skiplink">Skip to content</a>
+
+
+
+
+<nav class="navbar navbar-expand-lg navbar-light">
+  <a class="navbar-brand" href="#">Braille Toolbox</a>
+  <button class="navbar-toggler" style="height: 2em; border: none;" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <img class="ham_icon" src="braille/con_for.svg" alt="braille cell icon">
+  </button>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="intro-to-braille.html">Intro to Braille<span class="sr-only"></span></a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="quick-reference.html">Quick Reference<span class="sr-only"></span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="write-in-braille.html">Write in Braille<span class="sr-only"></a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="navbarDropdown" aria-haspopup="true" aria-expanded="false">
+          Special Tools
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="write-in-braille.html">Slate & Stylus Quick Reference</a>
+          <a class="dropdown-item" href="dot-decoder.html">Dot Decoder</a>
+          <a class="dropdown-item" href="braillewriter-help.html">Braillewriter Help</a>
+        </div>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+
+<div class="otherpage">
+
+
+
+<h1 id="maincontent">Braillewriter Help</h1>
+<div class="prompter_container">
+    <div class="step1">
+                    <h2>Step 1: Compose Text</h2>
+            <p>Enter the text you want to write in braille</p>
+
+        <div class="input-group">
+                <textarea maxlength="700" id="textBox" name="textBox" class="form-control textBox braillewriter" aria-label="With textarea" placeholder="Add text here" onkeyup="textCount()"></textarea>
+            </div>
+            <div class="controlrow">
+                <div>
+                    <div id="counter" class="text-right">0/700</div> Characters
+                </div>
+                <div>
+                <input class="" type="checkbox" name="myCheck" id="myCheck" onclick="myFunction()" value="Lockinput">
+                <label for="myCheck" class="alignright">Lock Text</label>
+                </div>
+            </div>
+    </div>
+    <div class="step2">
+                  <h2>Step 2: Write Braille</h2>
+            <p>Follow the prompts to produce braille on a braillewriter.</p>
+                <div id="parent-img" class="mx-auto">
+            <img class="rounded mx-auto d-block" id="alphabet-image" src="imgs/letter-default.svg" width="500" height="200">
+            <!-- may not need the id on ^ this -->
+        </div>
+            <div class="controlrow">
+                <div>
+                    <button id="play" type="submit" class="btn btn-success" onclick="play(); active(this.id)">  &#9654; Play</button>
+                    <button id="stop" type="submit" class="btn btn-info" onclick="stop(); active(this.id)"> &#9612;&#9612; Pause</button>
+                    <button id="restart" type="submit" class="btn btn-link" onclick="restart(); active(this.id)">&#x21e4; Restart</button>
+                </div>
+                <div class="speedcontrol">
+                    <label class="floatright" for="speed">Speed</label>
+                    <input class="flip" type="range" onchange="ageOutputId.value = (Math.round((60/((speed.value/500))))) +' letters per minute' " oninput="ageOutputId.value = (Math.round((60/((speed.value/500))))) +' letters per minute' " min="100" max="2000" value="500" id="speed" >
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
+
+
+<p class="legal">©2021 Will Capellaro & Braille Toolbox</p>
+</body>
+<script>
+function myFunction() {
+  // Get the checkbox
+  var checkBox = document.getElementById("myCheck");
+  var textarea = document.getElementById("textBox")
+
+  // If the checkbox is checked, display the output text
+  if (checkBox.checked == true){
+    textarea.removeAttribute("enabled", "");
+    textarea.setAttribute("disabled", "");
+  } else {
+    textarea.removeAttribute("disabled", "");
+    textarea.setAttribute("enabled", "");  }
+}
+</script>
+
+
+
+</html>
