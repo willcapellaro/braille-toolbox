@@ -169,7 +169,7 @@ a:hover {
 */}
 
 .hidelabel {
-	/*display: none;*/
+	display: none;
 }
 
 .decoderinput li {
@@ -272,7 +272,7 @@ font-weight: 100;
 }
 
 .decoderoutput {
-	margin-left: 10em; /*temp*/
+	/*margin-left: 10em;*/ /*temp*/
 }
 
 .contractions img 
