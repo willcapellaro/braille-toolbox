@@ -358,8 +358,8 @@
 			"descvar" : "This is the 000001 content"
 		}, 
 		"dataDecoded" : {
-			"titvar" : "Letter A (decoded example)", 
-			"descvar" : "Click the dots on and off to see the decoded meaning of any braille character. This, dot 1, is an example of a letter A, or number 1 (if preceded by a number sign)."
+			"titvar" : "Letter A", 
+			"descvar" : "This, dot 1, is an example of a letter A, or number 1 (if preceded by a number sign)."
 		}
 	}, 
 	{
