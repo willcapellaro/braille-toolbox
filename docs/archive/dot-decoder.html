@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Braille Toolbox</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="styles/minimalist.css">
+  <link rel="stylesheet" type="text/css" href="styles/range-override.css">
+  <link rel="stylesheet" type="text/css" href="styles/special-checks-decoder.css">
+  <script src="scripts/braillewriter.js" async=""></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous" async=""></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous" async=""></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous" async=""></script>
+  <style>  @font-face { font-family: 'MyWebFont';  src: url(fonts/OverpassMono-Braille.otf);}</style>
+  <style>  @font-face { font-family: 'Brailleblocks'; src: url(fonts/Brailleblocks.otf);</style>
+
+</head>
+<body>
+
+  <a href="#maincontent" class="skiplink">Skip to content</a>
+
+<nav class="navbar navbar-expand-lg navbar-light">
+  <a class="navbar-brand" href="index.html">Braille Toolbox</a>
+  <button class="navbar-toggler" style="height: 2em; border: none;" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span>    <img class="ham_icon" src="braille/con_for.svg" alt="braille cell icon">
+</span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="intro-to-braille.html">Intro to Braille<span class="sr-only"></span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="quick-reference.html">Quick Reference<span class="sr-only"></span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="write-in-braille.html">Write in Braille<span class="sr-only"></a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          More Tools
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="slate-stylus-help.html">Slate & Stylus Quick Reference</a>
+          <a class="dropdown-item active" href="dot-decoder.html">Dot Decoder</a>
+          <a class="dropdown-item" href="braillewriter-help.html">Braillewriter Help</a>
+        </div>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+
+<div class="intropage">
+
+
+
+<h1 id="maincontent">Dot Decoder</h1>
+<!-- <h2>Single Character</h2>
+ --><p class="center">Turn dots on and off to see what a braille cell stands for.</p>
+
+<div class="decoderlayout">
+
+<div>
+  <form class="decoderinput" action="#" onchange="verify();">
+    <p>
+      <input type="checkbox" id="dot1"/>
+      <label for="dot1"><span class="hidelabel">Dot 1</span></label>
+    </p>
+    <p>
+      <input type="checkbox" id="dot2"/>
+      <label for="dot2"><span class="hidelabel">Dot 2</span></label>
+    </p>
+      <p>
+      <input type="checkbox" id="dot3"  />
+      <label for="dot3"><span class="hidelabel">Dot 3</span></label>
+    </p>
+        <p>
+      <input type="checkbox" id="dot4"  />
+      <label for="dot4"><span class="hidelabel">Dot 4</span></label>
+    </p>
+        <p>
+      <input type="checkbox" id="dot5"  />
+      <label for="dot5"><span class="hidelabel">Dot 5</span></label>
+    </p>
+        <p>
+      <input type="checkbox" id="dot6"  />
+      <label for="dot6"><span class="hidelabel">Dot 6</span></label>
+    </p>
+  </form>
+</div>
+<div>
+<div class="decoderoutput">
+  <h3 id="yesnos"></h3>
+  <p id="nosyes"></p>
+</div>
+<!-- end afternav -->
+</div> 
+<p class="legal">©2021 Will Capellaro & Braille Toolbox</p>
+</body>
+<script>
+  var characters = [];
+
+  var portions = (window.location + '').split('/');
+  var link = '';
+  for (var i = 0; i < (portions.length - 1); i++)
+  {
+    link += portions[i] + '/';
+  }
+  link += 'dot-decoder-content-blank.json';
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.open("GET", link, true);
+  xhttp.setRequestHeader("Content-Type", "application/json");
+  xhttp.send();
+  xhttp.onreadystatechange = function() {
+    if (xhttp.readyState == 4 && xhttp.status == 200)
+    {
+      characters = JSON.parse(xhttp.responseText);
+      document.getElementById('dot1').checked = true;
+      document.getElementById('dot2').checked = false;
+      document.getElementById('dot3').checked = false;
+      document.getElementById('dot4').checked = false;
+      document.getElementById('dot5').checked = false;
+      document.getElementById('dot6').checked = false;
+      verify();
+    }
+  };
+  
+  function verify()
+  {
+    var binaryString = '';
+    for (var i = 6; i > 0; i--)
+    {
+      if (document.getElementById('dot' + i).checked)
+      {
+        binaryString += '1';
+      }
+      else
+      {
+        binaryString += '0';
+      }
+    }
+    var intValue = parseInt(binaryString, 2);
+    for (var i = 0; i < characters.length; i++)
+    {
+      if (characters[i]['binary'] == binaryString)
+      {
+        console.log(characters[i]['data']['titvar']);
+        document.getElementById('yesnos').innerHTML = characters[i]['data']['titvar'];
+        document.getElementById('nosyes').innerHTML = characters[i]['data']['descvar'];
+      }
+    }
+  }
+</script>
+</html>
+<!-- <div class="otherpage">-->
