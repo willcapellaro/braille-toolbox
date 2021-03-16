@@ -11,7 +11,7 @@
 		}
 	}, 
 	{
-		"binary" : "100000", 
+		"binary" : "000001", 
 		"data" : {
 			"titvar" : "Title 100000", 
 			"descvar" : "This is the 100000 content"
@@ -22,7 +22,7 @@
 		}
 	}, 
 	{
-		"binary" : "010000", 
+		"binary" : "000010", 
 		"data" : {
 			"titvar" : "Title 010000", 
 			"descvar" : "This is the 010000 content"
@@ -33,7 +33,7 @@
 		}
 	}, 
 	{
-		"binary" : "110000", 
+		"binary" : "000011", 
 		"data" : {
 			"titvar" : "Title 110000", 
 			"descvar" : "This is the 110000 content"
@@ -44,7 +44,7 @@
 		}
 	}, 
 	{
-		"binary" : "001000", 
+		"binary" : "000100", 
 		"data" : {
 			"titvar" : "Title 001000", 
 			"descvar" : "This is the 001000 content"
@@ -55,7 +55,7 @@
 		}
 	}, 
 	{
-		"binary" : "101000", 
+		"binary" : "000101", 
 		"data" : {
 			"titvar" : "Title 101000", 
 			"descvar" : "This is the 101000 content"
@@ -66,7 +66,7 @@
 		}
 	}, 
 	{
-		"binary" : "011000", 
+		"binary" : "000110", 
 		"data" : {
 			"titvar" : "Title 011000", 
 			"descvar" : "This is the 011000 content"
@@ -77,7 +77,7 @@
 		}
 	}, 
 	{
-		"binary" : "111000", 
+		"binary" : "000111", 
 		"data" : {
 			"titvar" : "Title 111000", 
 			"descvar" : "This is the 111000 content"
@@ -88,7 +88,7 @@
 		}
 	}, 
 	{
-		"binary" : "000100", 
+		"binary" : "001000", 
 		"data" : {
 			"titvar" : "Title 000100", 
 			"descvar" : "This is the 000100 content"
@@ -99,7 +99,7 @@
 		}
 	}, 
 	{
-		"binary" : "100100", 
+		"binary" : "001001", 
 		"data" : {
 			"titvar" : "Title 100100", 
 			"descvar" : "This is the 100100 content"
@@ -110,7 +110,7 @@
 		}
 	}, 
 	{
-		"binary" : "010100", 
+		"binary" : "001010", 
 		"data" : {
 			"titvar" : "Title 010100", 
 			"descvar" : "This is the 010100 content"
@@ -121,7 +121,7 @@
 		}
 	}, 
 	{
-		"binary" : "110100", 
+		"binary" : "001011", 
 		"data" : {
 			"titvar" : "Title 110100", 
 			"descvar" : "This is the 110100 content"
@@ -143,7 +143,7 @@
 		}
 	}, 
 	{
-		"binary" : "101100", 
+		"binary" : "001101", 
 		"data" : {
 			"titvar" : "Title 101100", 
 			"descvar" : "This is the 101100 content"
@@ -154,7 +154,7 @@
 		}
 	}, 
 	{
-		"binary" : "011100", 
+		"binary" : "001110", 
 		"data" : {
 			"titvar" : "Title 011100", 
 			"descvar" : "This is the 011100 content"
@@ -165,7 +165,7 @@
 		}
 	}, 
 	{
-		"binary" : "111100", 
+		"binary" : "001111", 
 		"data" : {
 			"titvar" : "Title 111100", 
 			"descvar" : "This is the 111100 content"
@@ -176,7 +176,7 @@
 		}
 	}, 
 	{
-		"binary" : "000010", 
+		"binary" : "010000", 
 		"data" : {
 			"titvar" : "Title 000010", 
 			"descvar" : "This is the 000010 content"
@@ -187,7 +187,7 @@
 		}
 	}, 
 	{
-		"binary" : "100010", 
+		"binary" : "010001", 
 		"data" : {
 			"titvar" : "Title 100010", 
 			"descvar" : "This is the 100010 content"
@@ -209,7 +209,7 @@
 		}
 	}, 
 	{
-		"binary" : "110010", 
+		"binary" : "010011", 
 		"data" : {
 			"titvar" : "Title 110010", 
 			"descvar" : "This is the 110010 content"
@@ -220,7 +220,7 @@
 		}
 	}, 
 	{
-		"binary" : "001010", 
+		"binary" : "010100", 
 		"data" : {
 			"titvar" : "Title 001010", 
 			"descvar" : "This is the 001010 content"
@@ -231,7 +231,7 @@
 		}
 	}, 
 	{
-		"binary" : "101010", 
+		"binary" : "010101", 
 		"data" : {
 			"titvar" : "Title 101010", 
 			"descvar" : "This is the 101010 content"
@@ -242,7 +242,7 @@
 		}
 	}, 
 	{
-		"binary" : "011010", 
+		"binary" : "010110", 
 		"data" : {
 			"titvar" : "Title 011010", 
 			"descvar" : "This is the 011010 content"
@@ -253,7 +253,7 @@
 		}
 	}, 
 	{
-		"binary" : "111010", 
+		"binary" : "010111", 
 		"data" : {
 			"titvar" : "Title 111010", 
 			"descvar" : "This is the 111010 content"
@@ -264,7 +264,7 @@
 		}
 	}, 
 	{
-		"binary" : "000110", 
+		"binary" : "011000", 
 		"data" : {
 			"titvar" : "Title 000110", 
 			"descvar" : "This is the 000110 content"
@@ -275,7 +275,7 @@
 		}
 	}, 
 	{
-		"binary" : "100110", 
+		"binary" : "011001", 
 		"data" : {
 			"titvar" : "Title 100110", 
 			"descvar" : "This is the 100110 content"
@@ -286,7 +286,7 @@
 		}
 	}, 
 	{
-		"binary" : "010110", 
+		"binary" : "011010", 
 		"data" : {
 			"titvar" : "Title 010110", 
 			"descvar" : "This is the 010110 content"
@@ -297,7 +297,7 @@
 		}
 	}, 
 	{
-		"binary" : "110110", 
+		"binary" : "011011", 
 		"data" : {
 			"titvar" : "Title 110110", 
 			"descvar" : "This is the 110110 content"
@@ -308,7 +308,7 @@
 		}
 	}, 
 	{
-		"binary" : "001110", 
+		"binary" : "011100", 
 		"data" : {
 			"titvar" : "Title 001110", 
 			"descvar" : "This is the 001110 content"
@@ -319,7 +319,7 @@
 		}
 	}, 
 	{
-		"binary" : "101110", 
+		"binary" : "011101", 
 		"data" : {
 			"titvar" : "Title 101110", 
 			"descvar" : "This is the 101110 content"
@@ -341,7 +341,7 @@
 		}
 	}, 
 	{
-		"binary" : "111110", 
+		"binary" : "011111", 
 		"data" : {
 			"titvar" : "Title 111110", 
 			"descvar" : "This is the 111110 content"
@@ -352,7 +352,7 @@
 		}
 	}, 
 	{
-		"binary" : "000001", 
+		"binary" : "100000", 
 		"data" : {
 			"titvar" : "Title 000001", 
 			"descvar" : "This is the 000001 content"
@@ -374,7 +374,7 @@
 		}
 	}, 
 	{
-		"binary" : "010001", 
+		"binary" : "100010", 
 		"data" : {
 			"titvar" : "Title 010001", 
 			"descvar" : "This is the 010001 content"
@@ -385,7 +385,7 @@
 		}
 	}, 
 	{
-		"binary" : "110001", 
+		"binary" : "100011", 
 		"data" : {
 			"titvar" : "Title 110001", 
 			"descvar" : "This is the 110001 content"
@@ -396,7 +396,7 @@
 		}
 	}, 
 	{
-		"binary" : "001001", 
+		"binary" : "100100", 
 		"data" : {
 			"titvar" : "Title 001001", 
 			"descvar" : "This is the 001001 content"
@@ -407,7 +407,7 @@
 		}
 	}, 
 	{
-		"binary" : "101001", 
+		"binary" : "100101", 
 		"data" : {
 			"titvar" : "Title 101001", 
 			"descvar" : "This is the 101001 content"
@@ -418,7 +418,7 @@
 		}
 	}, 
 	{
-		"binary" : "011001", 
+		"binary" : "100110", 
 		"data" : {
 			"titvar" : "Title 011001", 
 			"descvar" : "This is the 011001 content"
@@ -429,7 +429,7 @@
 		}
 	}, 
 	{
-		"binary" : "111001", 
+		"binary" : "100111", 
 		"data" : {
 			"titvar" : "Title 111001", 
 			"descvar" : "This is the 111001 content"
@@ -440,7 +440,7 @@
 		}
 	}, 
 	{
-		"binary" : "000101", 
+		"binary" : "101000", 
 		"data" : {
 			"titvar" : "Title 000101", 
 			"descvar" : "This is the 000101 content"
@@ -451,7 +451,7 @@
 		}
 	}, 
 	{
-		"binary" : "100101", 
+		"binary" : "101001", 
 		"data" : {
 			"titvar" : "Title 100101", 
 			"descvar" : "This is the 100101 content"
@@ -462,7 +462,7 @@
 		}
 	}, 
 	{
-		"binary" : "010101", 
+		"binary" : "101010", 
 		"data" : {
 			"titvar" : "Title 010101", 
 			"descvar" : "This is the 010101 content"
@@ -473,7 +473,7 @@
 		}
 	}, 
 	{
-		"binary" : "110101", 
+		"binary" : "101011", 
 		"data" : {
 			"titvar" : "Title 110101", 
 			"descvar" : "This is the 110101 content"
@@ -484,7 +484,7 @@
 		}
 	}, 
 	{
-		"binary" : "001101", 
+		"binary" : "101100", 
 		"data" : {
 			"titvar" : "Title 001101", 
 			"descvar" : "This is the 001101 content"
@@ -506,7 +506,7 @@
 		}
 	}, 
 	{
-		"binary" : "011101", 
+		"binary" : "101110", 
 		"data" : {
 			"titvar" : "Title 011101", 
 			"descvar" : "This is the 011101 content"
@@ -517,7 +517,7 @@
 		}
 	}, 
 	{
-		"binary" : "111101", 
+		"binary" : "101111", 
 		"data" : {
 			"titvar" : "Title 111101", 
 			"descvar" : "This is the 111101 content"
@@ -528,7 +528,7 @@
 		}
 	}, 
 	{
-		"binary" : "000011", 
+		"binary" : "110000", 
 		"data" : {
 			"titvar" : "Title 000011", 
 			"descvar" : "This is the 000011 content"
@@ -539,7 +539,7 @@
 		}
 	}, 
 	{
-		"binary" : "100011", 
+		"binary" : "110001", 
 		"data" : {
 			"titvar" : "Title 100011", 
 			"descvar" : "This is the 100011 content"
@@ -550,7 +550,7 @@
 		}
 	}, 
 	{
-		"binary" : "010011", 
+		"binary" : "110010", 
 		"data" : {
 			"titvar" : "Title 010011", 
 			"descvar" : "This is the 010011 content"
@@ -572,7 +572,7 @@
 		}
 	}, 
 	{
-		"binary" : "001011", 
+		"binary" : "110100", 
 		"data" : {
 			"titvar" : "Title 001011", 
 			"descvar" : "This is the 001011 content"
@@ -594,7 +594,7 @@
 		}
 	}, 
 	{
-		"binary" : "011011", 
+		"binary" : "110110", 
 		"data" : {
 			"titvar" : "Title 011011", 
 			"descvar" : "This is the 011011 content"
@@ -605,7 +605,7 @@
 		}
 	}, 
 	{
-		"binary" : "111011", 
+		"binary" : "110111", 
 		"data" : {
 			"titvar" : "Title 111011", 
 			"descvar" : "This is the 111011 content"
@@ -616,7 +616,7 @@
 		}
 	}, 
 	{
-		"binary" : "000111", 
+		"binary" : "111000", 
 		"data" : {
 			"titvar" : "Title 000111", 
 			"descvar" : "This is the 000111 content"
@@ -627,7 +627,7 @@
 		}
 	}, 
 	{
-		"binary" : "100111", 
+		"binary" : "111001", 
 		"data" : {
 			"titvar" : "Title 100111", 
 			"descvar" : "This is the 100111 content"
@@ -638,7 +638,7 @@
 		}
 	}, 
 	{
-		"binary" : "010111", 
+		"binary" : "111010", 
 		"data" : {
 			"titvar" : "Title 010111", 
 			"descvar" : "This is the 010111 content"
@@ -649,7 +649,7 @@
 		}
 	}, 
 	{
-		"binary" : "110111", 
+		"binary" : "111011", 
 		"data" : {
 			"titvar" : "Title 110111", 
 			"descvar" : "This is the 110111 content"
@@ -660,7 +660,7 @@
 		}
 	}, 
 	{
-		"binary" : "001111", 
+		"binary" : "111100", 
 		"data" : {
 			"titvar" : "Title 001111", 
 			"descvar" : "This is the 001111 content"
@@ -671,7 +671,7 @@
 		}
 	}, 
 	{
-		"binary" : "101111", 
+		"binary" : "111101", 
 		"data" : {
 			"titvar" : "Title 101111", 
 			"descvar" : "This is the 101111 content"
@@ -682,7 +682,7 @@
 		}
 	}, 
 	{
-		"binary" : "011111", 
+		"binary" : "111110", 
 		"data" : {
 			"titvar" : "Title 011111", 
 			"descvar" : "This is the 011111 content"
