@@ -82,7 +82,7 @@ font-size: 2.25em;
 grid-row-gap: 5px;
 margin: .5em;
 text-align: center;
-line-height: 12px;
+line-height: 2;
 }
 
 .intropage li {
@@ -93,7 +93,7 @@ font-size: 2.25em;
 grid-row-gap: 5px;
 margin: .5em;
 text-align: center;
-line-height: 12px;
+line-height: 2;
 }
 
 .contractions li {
@@ -315,7 +315,7 @@ resize: vertical;
 text-align: left;
 padding: 11px 11px 1px 21px;
 overflow-y: scroll;
-line-height: .7em;
+line-height: .7;
 }
 
 textarea:focus {
@@ -326,16 +326,15 @@ textarea:focus {
 /*use when copyediting*/
 
 .contractions li div:nth-child(2) {
-	font-size: 1.875em;
-	font-family: 'Brailleblocks', Fallback, monospace;
+/*	font-size: 1.875em;
+*/	font-family: 'Brailleblocks', Fallback, monospace;
 	opacity: 0;
 	transition: .5s;
 	padding-bottom: 0px;
-	line-height: 0px;
-		opacity: .8;
+	opacity: .8;
 	transition: .5s;
 	padding-bottom: 0px;
-	line-height: 25px;
+	line-height: 1;
 	padding-top: 10px;
 }
 
@@ -448,7 +447,7 @@ margin-bottom: 1em;
 
 
 body {
-  font-family: "Open Sans", "Segoe WP", "Segoe UI", Helvetica, Arial, sans-serif;
+  font-family: "Overpass", "Segoe WP", "Segoe UI", Helvetica, Arial, sans-serif;
   background-color: whitesmoke;
 }
 

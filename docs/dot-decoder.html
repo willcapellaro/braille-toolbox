@@ -65,36 +65,34 @@
 <div>
   <form class="decoderinput" action="#" onchange="verify();">
     <p>
-      <input type="checkbox" id="dot1"/>  
-      <label for="dot1"><span class="hidelabel">Dot 1 (100000)</span></label>
+      <input type="checkbox" id="dot1"/>
+      <label for="dot1"><span class="hidelabel">Dot 1</span></label>
     </p>
     <p>
       <input type="checkbox" id="dot2"/>
-      <label for="dot2"><span class="hidelabel">Dot 2 (010000)</span></label>
-      <!--<input type="checkbox" class="checkit" name="smoking" id="smoking" value="1" onclick="yesno('smoking','yesnos','nosyes');" />
-      <label for="smoking" name="yesnos" id="ff"><span class="hidelabel">Dot 2</span></label>-->
+      <label for="dot2"><span class="hidelabel">Dot 2</span></label>
     </p>
       <p>
       <input type="checkbox" id="dot3"  />
-      <label for="dot3"><span class="hidelabel">Dot 3 (001000)</span></label>
+      <label for="dot3"><span class="hidelabel">Dot 3</span></label>
     </p>
         <p>
       <input type="checkbox" id="dot4"  />
-      <label for="dot4"><span class="hidelabel">Dot 4 (000100)</span></label>
+      <label for="dot4"><span class="hidelabel">Dot 4</span></label>
     </p>
         <p>
       <input type="checkbox" id="dot5"  />
-      <label for="dot5"><span class="hidelabel">Dot 5 (000010)</span></label>
+      <label for="dot5"><span class="hidelabel">Dot 5</span></label>
     </p>
         <p>
       <input type="checkbox" id="dot6"  />
-      <label for="dot6"><span class="hidelabel">Dot 6 (000001)</span></label>
+      <label for="dot6"><span class="hidelabel">Dot 6</span></label>
     </p>
   </form>
 </div>
 <div>
 <div class="decoderoutput">
-  <h3 id="yesnos">fdfdfsdfs</h3>
+  <h3 id="yesnos"></h3>
   <p id="nosyes"></p>
 </div>
 <!-- end afternav -->
@@ -102,420 +100,6 @@
 <p class="legal">©2021 Will Capellaro & Braille Toolbox</p>
 </body>
 <script>
-  /*var characters = [
-    {
-      "binary" : "000000", 
-      "data" : [
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }
-      ]
-    }, 
-    {
-      "binary" : "000001", 
-      "data" : [
-        {
-          "titvar" : "A space or indent", 
-          "descvar" : "This will also reset some formatting such as numbers, all caps, or italics."
-        }, 
-        {
-          "titvar" : "The letter a", 
-          "descvar" : "A single dot is most often the letter a. When preceded by a number sign, it’s the number 1. It’s also a contraction for about."
-        }
-      ]
-    }, 
-    {
-      "binary" : "000010", 
-      "data" : [
-        {
-          "titvar" : "The capital sign", 
-          "descvar" : "Used as a prefix, this will capitalize the first letter of a word. Use it twice to capitalize the whole WORD! Also, you can use it three times in a row START SHOUTING IN ALL CAPS. When you're done, you can shut  that noise down by using the capital sign twice to end the passage."
-        }, 
-        {
-          "titvar" : "Special contraction character", 
-          "descvar" : "In a word, this is a ch, or as a single word, child. Also used in a few contractions, such as character and children."
-        }
-      ]
-    }, 
-    {
-      "binary" : "000011", 
-      "data" : [
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }, 
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }
-      ]
-    }, 
-    {
-      "binary" : "000100", 
-      "data" : [
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }, 
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }
-      ]
-    }, 
-    {
-      "binary" : "000101", 
-      "data" : [
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }, 
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }
-      ]
-    }, 
-    {
-      "binary" : "000110", 
-      "data" : [
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }, 
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }
-      ]
-    }, 
-    {
-      "binary" : "000111", 
-      "data" : [
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }, 
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }
-      ]
-    }, 
-    {
-      "binary" : "001000", 
-      "data" : [
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }, 
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }
-      ]
-    }, 
-    {
-      "binary" : "000011", 
-      "data" : [
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }, 
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }
-      ]
-    }, 
-    {
-      "binary" : "000011", 
-      "data" : [
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }, 
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }
-      ]
-    }, 
-    {
-      "binary" : "000011", 
-      "data" : [
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }, 
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }
-      ]
-    }, 
-    {
-      "binary" : "000011", 
-      "data" : [
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }, 
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }
-      ]
-    }, 
-    {
-      "binary" : "000011", 
-      "data" : [
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }, 
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }
-      ]
-    }, 
-    {
-      "binary" : "000011", 
-      "data" : [
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }, 
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }
-      ]
-    }, 
-    {
-      "binary" : "000011", 
-      "data" : [
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }, 
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }
-      ]
-    }, 
-    {
-      "binary" : "000011", 
-      "data" : [
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }, 
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }
-      ]
-    }, 
-    {
-      "binary" : "000011", 
-      "data" : [
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }, 
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }
-      ]
-    }, 
-    {
-      "binary" : "000011", 
-      "data" : [
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }, 
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }
-      ]
-    }, 
-    {
-      "binary" : "000011", 
-      "data" : [
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }, 
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }
-      ]
-    }, 
-    {
-      "binary" : "000011", 
-      "data" : [
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }, 
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }
-      ]
-    }, 
-    {
-      "binary" : "000011", 
-      "data" : [
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }, 
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }
-      ]
-    }, 
-    {
-      "binary" : "000011", 
-      "data" : [
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }, 
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }
-      ]
-    }, 
-    {
-      "binary" : "000011", 
-      "data" : [
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }, 
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }
-      ]
-    }, 
-    {
-      "binary" : "000011", 
-      "data" : [
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }, 
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }
-      ]
-    }, 
-    {
-      "binary" : "000011", 
-      "data" : [
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }, 
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }
-      ]
-    }, 
-    {
-      "binary" : "000011", 
-      "data" : [
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }, 
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }
-      ]
-    }, 
-    {
-      "binary" : "000011", 
-      "data" : [
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }, 
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }
-      ]
-    }, 
-    {
-      "binary" : "000011", 
-      "data" : [
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }, 
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }
-      ]
-    }, 
-    {
-      "binary" : "000011", 
-      "data" : [
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }, 
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }
-      ]
-    }, 
-    {
-      "binary" : "000011", 
-      "data" : [
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }, 
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }
-      ]
-    }, 
-    {
-      "binary" : "000011", 
-      "data" : [
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }, 
-        {
-          "titvar" : "", 
-          "descvar" : ""
-        }
-      ]
-    }
-  ];*/
   var characters = [];
 
   var portions = (window.location + '').split('/');
@@ -534,7 +118,6 @@
     if (xhttp.readyState == 4 && xhttp.status == 200)
     {
       characters = JSON.parse(xhttp.responseText);
-      //console.log(response);
       document.getElementById('dot1').checked = true;
       document.getElementById('dot2').checked = false;
       document.getElementById('dot3').checked = false;
@@ -542,10 +125,6 @@
       document.getElementById('dot5').checked = false;
       document.getElementById('dot6').checked = false;
       verify();
-    }
-    else
-    {
-      //console.log(xhttp.status);
     }
   };
   
@@ -563,10 +142,7 @@
         binaryString += '0';
       }
     }
-    console.log(binaryString);
     var intValue = parseInt(binaryString, 2);
-    console.log(intValue);
-    console.log('-----');
     for (var i = 0; i < characters.length; i++)
     {
       if (characters[i]['binary'] == binaryString)
@@ -577,19 +153,6 @@
       }
     }
   }
-  /*function yesno(thecheckbox, thetitle, thedescription){
-            var checkboxvar = document.getElementById(thecheckbox);
-            var titvar = document.getElementById(thetitle);
-            var descvar = document.getElementById(thedescription);
-            if (checkboxvar.checked == false){
-                titvar.innerHTML = "The letter <strong>a</strong>";
-                descvar.innerHTML = "A single dot is most often the letter a.<br>When preceded by a number sign, it's the number 1. As a standalone character, besides the article <strong>a</strong> is a contraction for the word <strong>about</strong>.";
-            }
-            else{
-                titvar.innerHTML = "The letter <strong>b</strong>";
-                descvar.innerHTML = "What's better than letter b?<br>When preceded by a number sign, it's the number 2. As a standalone character or a prefix, it's short for <strong>but<strong>.";
-            }
-        }*/
 </script>
 </html>
 <!-- <div class="otherpage">-->
