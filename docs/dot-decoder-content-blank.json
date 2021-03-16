@@ -2,29 +2,29 @@
 	{
 		"binary" : "000000", 
 		"data" : {
-			"titvar" : "Title 000000", 
-			"descvar" : "This is the 000000 content"
+			"titvar" : "A space or indent", 
+			"descvar" : "This will also reset some formatting such as numbers, all caps, or italics."
 		}
 	}, 
 	{
 		"binary" : "000001", 
 		"data" : {
-			"titvar" : "Title 000001", 
-			"descvar" : "This is the 000001 content"
+			"titvar" : "The capital sign", 
+			"descvar" : "Used as a prefix, this will capitalize the first letter of a word. Use it twice to capitalize the whole WORD! Also, you can use it three times in a row START SHOUTING IN ALL CAPS. When you're done, you can shut down that noise down by using the capital sign sign twice to end the passage."
 		}
 	}, 
 	{
 		"binary" : "000010", 
 		"data" : {
-			"titvar" : "Title 000010", 
-			"descvar" : "This is the 000010 content"
+			"titvar" : "Special contraction character", 
+			"descvar" : "This is used in a lot of contraction as a prefix to another symbol. Decode the second symbol to find out what it is."
 		} 
 	}, 
 	{
 		"binary" : "000011", 
 		"data" : {
-			"titvar" : "Title 000011", 
-			"descvar" : "This is the 000011 content"
+			"titvar" : "Special contraction character", 
+			"descvar" : "Used in some contractions suffixes like -ful, -ity, -ment, -ong, -ness, or -tion. Decode other characters in the word to find out more."
 		} 
 	}, 
 	{
