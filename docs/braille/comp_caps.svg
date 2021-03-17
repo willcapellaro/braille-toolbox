@@ -4,17 +4,17 @@
     <title>comp_caps</title>
     <desc>Created with Sketch.</desc>
     <g id="comp_caps" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <circle id="Oval" fill="#808080" cx="33.5" cy="58.5" r="7.5"></circle>
-        <circle id="Oval-Copy-3" fill="#808080" cx="88.5" cy="58.5" r="7.5"></circle>
-        <circle id="Oval-Copy-5" fill="#808080" cx="122.5" cy="12.5" r="7.5"></circle>
-        <circle id="Oval-Copy-6" fill="#808080" cx="143.5" cy="12.5" r="7.5"></circle>
-        <circle id="Oval-Copy-5" fill="#808080" cx="177.5" cy="12.5" r="7.5"></circle>
-        <circle id="Oval-Copy" fill="#808080" cx="232.5" cy="35.5" r="7.5"></circle>
-        <circle id="Oval-Copy-3" fill="#808080" cx="232.5" cy="58.5" r="7.5"></circle>
-        <circle id="Oval-Copy-5" fill="#808080" cx="232.5" cy="12.5" r="7.5"></circle>
-        <circle id="Oval-Copy-6" fill="#808080" cx="253.5" cy="12.5" r="7.5"></circle>
-        <circle id="Oval" fill="#808080" cx="287.5" cy="35.5" r="7.5"></circle>
-        <circle id="Oval" fill="#808080" cx="287.5" cy="58.5" r="7.5"></circle>
-        <circle id="Oval" fill="#808080" cx="308.5" cy="12.5" r="7.5"></circle>
+        <circle id="Oval" fill="#222" cx="33.5" cy="58.5" r="7.5"></circle>
+        <circle id="Oval-Copy-3" fill="#222" cx="88.5" cy="58.5" r="7.5"></circle>
+        <circle id="Oval-Copy-5" fill="#222" cx="122.5" cy="12.5" r="7.5"></circle>
+        <circle id="Oval-Copy-6" fill="#222" cx="143.5" cy="12.5" r="7.5"></circle>
+        <circle id="Oval-Copy-5" fill="#222" cx="177.5" cy="12.5" r="7.5"></circle>
+        <circle id="Oval-Copy" fill="#222" cx="232.5" cy="35.5" r="7.5"></circle>
+        <circle id="Oval-Copy-3" fill="#222" cx="232.5" cy="58.5" r="7.5"></circle>
+        <circle id="Oval-Copy-5" fill="#222" cx="232.5" cy="12.5" r="7.5"></circle>
+        <circle id="Oval-Copy-6" fill="#222" cx="253.5" cy="12.5" r="7.5"></circle>
+        <circle id="Oval" fill="#222" cx="287.5" cy="35.5" r="7.5"></circle>
+        <circle id="Oval" fill="#222" cx="287.5" cy="58.5" r="7.5"></circle>
+        <circle id="Oval" fill="#222" cx="308.5" cy="12.5" r="7.5"></circle>
     </g>
 </svg>

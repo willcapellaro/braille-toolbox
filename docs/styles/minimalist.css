@@ -1,3 +1,6 @@
+* {
+ font-family: 'Merriweather', sans-serif;
+}
 
 html {
   scroll-behavior: smooth;
@@ -17,7 +20,7 @@ ul {
 	font-weight: 500;
 	padding: 20px 10px 20px 10px;
 	box-shadow: 0 10px 20px rgba(0,0,0,0.09), 0 3px 3px rgba(0,0,0,0.15);
-	color: #6e6e6e;
+	color: #222;
 	margin-bottom: 20px;
 }
 
@@ -64,7 +67,7 @@ ul {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
-	color: #6e6e6e;
+	color: #222;
 	margin-bottom: 20px;
 }
 
@@ -219,6 +222,7 @@ h1, h2, h3, h4, h5, h6, .site_slogan {
 	text-transform: capitalize; 
 	margin-bottom: 1em;
 	max-width: 900;
+ 	font-family: 'Francois One', sans-serif;
 }
 
 
@@ -237,7 +241,7 @@ h1, h2, h3, h4, h5, h6, .site_slogan {
 	border-radius: 5px;
 	background-color: white;
 	box-shadow: 0 10px 20px rgba(0,0,0,0.09), 0 3px 3px rgba(0,0,0,0.15);
-	color: #6e6e6e;
+	color: #222;
 }
 
 .decoderlayout div:nth-child(1) {

@@ -4,9 +4,9 @@
     <title>con_will</title>
     <desc>Created with Sketch.</desc>
     <g id="con_will" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <circle id="Oval" fill="#808080" cx="12.5" cy="34.5" r="7.5"></circle>
-        <circle id="Oval" fill="#808080" cx="33.5" cy="34.5" r="7.5"></circle>
-        <circle id="Oval" fill="#808080" cx="33.5" cy="57.5" r="7.5"></circle>
-        <circle id="Oval" fill="#808080" cx="33.5" cy="11.5" r="7.5"></circle>
+        <circle id="Oval" fill="#222" cx="12.5" cy="34.5" r="7.5"></circle>
+        <circle id="Oval" fill="#222" cx="33.5" cy="34.5" r="7.5"></circle>
+        <circle id="Oval" fill="#222" cx="33.5" cy="57.5" r="7.5"></circle>
+        <circle id="Oval" fill="#222" cx="33.5" cy="11.5" r="7.5"></circle>
     </g>
 </svg>
