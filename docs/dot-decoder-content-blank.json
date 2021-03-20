@@ -50,12 +50,8 @@
 			"descvar" : "This is the 001000 content"
 		}, 
 		"dataDecoded" : {
-			"titvar" : "Currency symbol", 
-			"descvar" : "<p>            This symbol is used as a prefix to signify a type currency. </p><p><div><img src="braille/comp_dollar.svg" alt=" dollar sign: dot 4 dot 234  ">  Followed by a letter s, this is a dollar sign.  </p>
-<p> <div><img src="braille/comp_euro.svg " alt=" euro currency sign: dot 4 dot 15  ">  Followed by an e, it’s a euro sign. </p>
-<p> <div><img src="braille/comp_pound.svg  " alt=" pound sterling sign: dot 4 dot 123  ">  Same with y and yen.  </p>
-<p> <div><img src="braille/comp_yen.svg  " alt=" yen currency sign: dot 4 dot 13456  ">  Followed by an l, it's pound sterling.  </p>
-<p>           Hint: it helps to think of the shape of the print letter to discern the different currencies. "
+			"titvar" : "The currency symbol", 
+			"descvar" : "<p>            This symbol is used as a prefix to signify a type currency. </p><p> <div><img src=\"braille/comp_dollar.svg \"alt=\" dollar sign: dot 4 dot 234  \">  Followed by a letter s, this is a dollar sign.  </p><p><div><img src=\"braille/comp_euro.svg \" alt=\" euro currency sign: dot 4 dot 15  \">  Followed by an e, it’s a euro sign. </p><p><div><img src=\"braille/comp_pound.svg  \" alt=\" pound sterling sign: dot 4 dot 123  \">  Same with y and yen.  </p><p><div><img src=\"braille/comp_yen.svg  \" alt=\" yen currency sign: dot 4 dot 13456  \">  Followed by an l, it's pound sterling.  </p><p>Hint: it helps to think of the shape of the print letter to discern the different currencies. "
 		}
 	}, 
 	{
