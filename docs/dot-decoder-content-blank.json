@@ -18,7 +18,7 @@
 		}, 
 		"dataDecoded" : {
 			"titvar" : "The capital sign", 
-			"descvar" : "Used as a prefix, this <em> will </em> capitalize the first letter of a word. Use it twice to capitalize the whole WORD! Also, you can use it three times in a row START SHOUTING IN ALL CAPS. When you're done, you can shut  that noise down by using the capital sign twice to end the passage."
+			"descvar" : "Used as a prefix, this will capitalize the first letter of a word. Use it twice to capitalize the whole WORD! Also, you can use it three times in a row START SHOUTING IN ALL CAPS. When you're done, you can shut  that noise down by using the capital sign twice to end the passage."
 		}
 	}, 
 	{
@@ -51,7 +51,11 @@
 		}, 
 		"dataDecoded" : {
 			"titvar" : "Currency symbol", 
-			"descvar" : "Followed by a letter s, this is a dollar sign. Followed by an e, it’s a euro sign. Same with y and yen, or l and pound sterling (probably because the print symbol looks like an fancy L)."
+			"descvar" : "<p>            This symbol is used as a prefix to signify a type currency. </p><p><div><img src="braille/comp_dollar.svg" alt=" dollar sign: dot 4 dot 234  ">  Followed by a letter s, this is a dollar sign.  </p>
+<p> <div><img src="braille/comp_euro.svg " alt=" euro currency sign: dot 4 dot 15  ">  Followed by an e, it’s a euro sign. </p>
+<p> <div><img src="braille/comp_pound.svg  " alt=" pound sterling sign: dot 4 dot 123  ">  Same with y and yen.  </p>
+<p> <div><img src="braille/comp_yen.svg  " alt=" yen currency sign: dot 4 dot 13456  ">  Followed by an l, it's pound sterling.  </p>
+<p>           Hint: it helps to think of the shape of the print letter to discern the different currencies. "
 		}
 	}, 
 	{

@@ -275,9 +275,15 @@ font-size: 1.5em;
 font-weight: 100;
 }
 
-.decoderoutput {
+.decoderoutput img {
 	/*margin-left: 10em;*/ /*temp*/
+ 	border: 1px #E5E5E5 solid;
+ 	border-radius: 2px;
+ 	height: 2rem;
+ 	margin-right: .25rem;
 }
+
+
 
 .contractions img 
 { 	border: 1px #E5E5E5 solid;
