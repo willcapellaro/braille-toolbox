@@ -18,7 +18,7 @@
 		}, 
 		"dataDecoded" : {
 			"titvar" : "The capital sign", 
-			"descvar" : "Used as a prefix, this will capitalize the first letter of a word. Use it twice to capitalize the whole WORD! Also, you can use it three times in a row START SHOUTING IN ALL CAPS. When you're done, you can shut  that noise down by using the capital sign twice to end the passage."
+			"descvar" : "Used as a prefix, this <em> will </em> capitalize the first letter of a word. Use it twice to capitalize the whole WORD! Also, you can use it three times in a row START SHOUTING IN ALL CAPS. When you're done, you can shut  that noise down by using the capital sign twice to end the passage."
 		}
 	}, 
 	{
