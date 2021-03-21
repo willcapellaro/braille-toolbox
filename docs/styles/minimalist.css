@@ -326,6 +326,7 @@ text-align: left;
 padding: 11px 11px 1px 21px;
 overflow-y: scroll;
 line-height: .7;
+letter-spacing: 0px;
 }
 
 textarea:focus {
