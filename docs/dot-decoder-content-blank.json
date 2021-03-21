@@ -31,7 +31,7 @@
 		"binary" : "001000", 
 		"dataDecoded" : {
 			"titvar" : "The currency symbol", 
-			"descvar" : "<p> This symbol is used as a prefix to signify a type of currency. </p><p> <div><img src=\"braille/comp_dollar.svg \"alt=\" dollar sign: dot 4 dot 234  \">  Followed by a letter s, this is a dollar sign.  </p><p><div><img src=\"braille/comp_euro.svg \" alt=\" euro currency sign: dot 4 dot 15  \">  Followed by an e, it’s a euro sign. </p><p><div><img src=\"braille/comp_pound.svg  \" alt=\" pound sterling sign: dot 4 dot 123  \">  Same with y and yen.  </p><p><div><img src=\"braille/comp_yen.svg  \" alt=\" yen currency sign: dot 4 dot 13456  \">  Followed by an l, it's pound sterling.  </p><p>Hint: it helps to think of the shape of the print letter to discern the different currencies. "
+			"descvar" : "<p>            This symbol is used as a prefix to signify a type currency. </p><p> <div><img src=\"braille/comp_dollar.svg \"alt=\" dollar sign: dot 4 dot 234  \">  Followed by a letter s, this is a dollar sign.  </p><p><div><img src=\"braille/comp_euro.svg \" alt=\" euro currency sign: dot 4 dot 15  \">  Followed by an e, it’s a euro sign. </p><p><div><img src=\"braille/comp_pound.svg  \" alt=\" pound sterling sign: dot 4 dot 123  \">  Same with y and yen.  </p><p><div><img src=\"braille/comp_yen.svg  \" alt=\" yen currency sign: dot 4 dot 13456  \">  Followed by an l, it's pound sterling.  </p><p>Hint: it helps to think of the shape of the print letter to discern the different currencies. "
 		}
 	}, 
 	{
@@ -66,7 +66,7 @@
 		"binary" : "100100", 
 		"dataDecoded" : {
 			"titvar" : "Dash or hyphen", 
-			"descvar" : "Probably a dash, possibly part of a long dash!"
+			"descvar" : "Probably a dash, possibly part of a long dash."
 		}
 	}, 
 	{
@@ -184,6 +184,10 @@
 	}, 
 	{
 		"binary" : "010110", 
+		"data" : {
+			"titvar" : "Title 010110", 
+			"descvar" : "This is the 010110 content"
+		}, 
 		"dataDecoded" : {
 			"titvar" : "Ff or exclamation mark", 
 			"descvar" : "At the end of a word, this is the best punctuation mark ever! Within a word, it's ff."
@@ -191,6 +195,10 @@
 	}, 
 	{
 		"binary" : "110110", 
+		"data" : {
+			"titvar" : "Title 110110", 
+			"descvar" : "This is the 110110 content"
+		}, 
 		"dataDecoded" : {
 			"titvar" : "The string gg or the word here", 
 			"descvar" : "A \"low g\", this is a unique contraction for the string gg."
@@ -198,6 +206,10 @@
 	}, 
 	{
 		"binary" : "001110", 
+		"data" : {
+			"titvar" : "Title 001110", 
+			"descvar" : "This is the 001110 content"
+		}, 
 		"dataDecoded" : {
 			"titvar" : "The letter s", 
 			"descvar" : "As a word contractions, it’s said. Preceded by an x, it's its."
@@ -205,6 +217,10 @@
 	}, 
 	{
 		"binary" : "101110", 
+		"data" : {
+			"titvar" : "Title 101110", 
+			"descvar" : "This is the 101110 content"
+		}, 
 		"dataDecoded" : {
 			"titvar" : "The word the.", 
 			"descvar" : "Other contractions: Also used in contractions such as their, there. But not they’re. Also, these."
@@ -212,6 +228,10 @@
 	}, 
 	{
 		"binary" : "011110", 
+		"data" : {
+			"titvar" : "Title 011110", 
+			"descvar" : "This is the 011110 content"
+		}, 
 		"dataDecoded" : {
 			"titvar" : "The letter t", 
 			"descvar" : "Contractions: It’s that as a single word."
@@ -219,6 +239,10 @@
 	}, 
 	{
 		"binary" : "111110", 
+		"data" : {
+			"titvar" : "Title 111110", 
+			"descvar" : "This is the 111110 content"
+		}, 
 		"dataDecoded" : {
 			"titvar" : "The word with", 
 			"descvar" : "Used as a whole word or within a word."
@@ -228,7 +252,7 @@
 		"binary" : "000001",  
 		"dataDecoded" : {
 			"titvar" : "Letter A", 
-			"descvar" : "Letter A is also number 1 if preceded by a number sign.",
+			"descvar" : "This (dot 1) is an example of a letter A, or number 1 (if preceded by a number sign).",
 			"wholeWord" : ""
 		}
 	}, 
