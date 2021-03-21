@@ -140,7 +140,7 @@
 		"dataDecoded" : {
 			"titvar" : "The string st, or a special contraction character", 
 			"descvar" : "Used in slash, or a st. As a freestanding word, it's still.",
-			"wholeWord" : "<img src=\"braille/con_still.svg \"alt=\"contraction for word still: dot 34\"> As a freestanding word, it's still."
+			"wholeWord" : "<img src=\"braille/comp_dollar.svg \"alt=\"contraction for word still: dot 34\"> As a freestanding word, it's still."
 		}
 	}, 
 	{
