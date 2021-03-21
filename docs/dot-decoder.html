@@ -107,6 +107,8 @@
 </div> 
 <p class="legal">©2021 Will Capellaro & Braille Toolbox</p>
 </body>
+
+<!-- find and replace content basd on input -->
 <script>
   var characters = [];
 
@@ -168,6 +170,8 @@
       {
         document.getElementById('titvarDecoded').innerHTML = characters[i]['dataDecoded']['titvar'];
         document.getElementById('descvarDecoded').innerHTML = characters[i]['dataDecoded']['descvar'];
+        document.getElementById('wholeWord').innerHTML = characters[i]['dataDecoded']['wholeWord'];
+
       }
     }
   }
