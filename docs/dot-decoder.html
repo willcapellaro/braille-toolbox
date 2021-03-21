@@ -171,12 +171,7 @@
       {
         document.getElementById('titvarDecoded').innerHTML = characters[i]['dataDecoded']['titvar'];
         document.getElementById('descvarDecoded').innerHTML = characters[i]['dataDecoded']['descvar'];
-        if ('wholeWord' in dataDecoded)
-          {document.getElementById('wholeWord').innerHTML = characters[i]['dataDecoded']['wholeWord'];
-          }
-        else {
-                    {document.getElementById('wholeWord').innerHTML = characters[i]['dataDecoded']['descvar'];
-        }
+        document.getElementById('wholeWord').innerHTML = characters[i]['dataDecoded']['wholeWord'];
 
       }
     }
