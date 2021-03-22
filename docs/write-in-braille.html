@@ -56,17 +56,33 @@
 <div class="afternav">
 
 <h1 id="maincontent">Write in Braille</h1>
+<p class="betatag">This page is in beta and is not yet accessible.</p>
+
 <p>Enter some text below to see how it translates to braille. To learn about the mechanics of braille, refer to the <a href="braille-explainer.html">Braille Explainer</a> section.</p>
+
 
 <form> 
   <label for="encoderField">Type or paste text to see it written in braille</label><br>
   <textarea class="spaceafter" id="encoderField" placeholder="your braille here"></textarea>
  
 </form>
+
 </div> 
 <p class="legal">©2021 Will Capellaro & Braille Toolbox</p>
 
+<script>
+  function flashText() {
+    var element = document.getElementById("encoderField");
+    element.classList.remove('flashStyle2')
+    element.classList.add("flashStyle");
+
+  }
+</script>
+
+
 </body>
+
+
 
 </html>
 

@@ -28,6 +28,12 @@ ul {
 	font-size: .7em;
 }
 
+caption {
+	text-align: center;
+	margin: 2rem;
+	color: red;
+}
+
 .ham_icon img {
 	width: 1em;
 	border: solid 2px red;
@@ -186,7 +192,11 @@ a:hover {
 
 
 .betatag {
-	display: none;
+	text-align: center;
+	border: 1px solid grey;
+	padding: 1em;
+	font-family: sans-serif;
+	opacity: .9;
 }
 
 .navbar {
@@ -329,16 +339,9 @@ line-height: .7;
 letter-spacing: 0px;
 }
 
-textarea:hover {
-	letter-spacing: 0px;
-}
-
 textarea:focus {
     box-shadow: 0 10px 20px rgb(0 0 0 / 9%), 0 3px 3px rgb(0 0 0 / 35%);
 }
-
-
-/*use when copyediting*/
 
 .contractions li div:nth-child(2) {
 /*	font-size: 1.875em;
