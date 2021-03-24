@@ -528,7 +528,9 @@ line-height: 1em;
 }
 
 .indextoolbox {
-	grid-template-columns: auto auto ;
+	/*testing steele solutions fix*/
+/*	grid-template-columns: auto auto ; */
+ 	grid-template-columns: none;
 	grid-template-rows: auto auto auto;
 }
 
