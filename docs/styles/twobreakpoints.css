@@ -14,6 +14,23 @@ body {
   	background-color: whitesmoke;
 }
 
+/*these are to help show what breakpoint is being used*/
+.breakpointHint {
+	position: absolute;
+	font-size: 100px;
+	opacity: .0;
+	left: 50%;
+}
+
+.hintA {
+	opacity: .2;
+}
+
+.hintB {
+	opacity: 0;
+	left: 20%;
+}
+
 p {
 	max-width: 900px;
 	margin-left: auto;
@@ -21,7 +38,6 @@ p {
 	font-size: 2.5rem;
 	padding-bottom: 2rem;
 	padding-top: 2rem;
-
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -40,6 +56,15 @@ h4 { font-size: 2.25rem;  }
 h5 { font-size: 2rem;  }
 h6 { font-size: 1.5rem;  }
 
+a {
+	color: #b1b;
+}
+
+a:hover {
+	color: #b1b;
+	text-decoration: underline;
+}
+
 ul {
 	border-radius: 5px;
 	background-color: white;
@@ -52,6 +77,11 @@ ul {
 	margin-bottom: 20px;
 }
 
+/*infostrips are the white boxes with purple piping, 
+these contain the braille translations.
+To look good on mobile, the default display is two items wide. 
+This will be overridden with some special classes below, 
+which show more items side by side*/
 .infostrip {
 	display: grid;
   	grid-template-columns: repeat(2, 1fr);
@@ -65,10 +95,12 @@ ul {
 	grid-row-gap: 3rem;
 }
 
+/*within the info strip, this is the cluster of each braille image, 
+its letter translation (when available), and the word translation*/
 .infostrip li {
 	margin: 1rem;
 	display: grid;
-	grid-template-rows: 40px auto auto;
+	grid-template-rows: 40px auto auto; /*image, letter translation, word translation*/
 	grid-row-gap: 2rem;
 	font-size: 2.25rem; 
 	/*1.25 on lg*/
@@ -76,6 +108,8 @@ ul {
 	font-size: 3rem;
 }
 
+/*braille images*/
+/*this are the braille characters as svgs files*/
 .infostrip li img {
 	margin-left: auto;
 	margin-right: auto;
@@ -84,6 +118,10 @@ ul {
 	height: 300%;
 }
 
+/*letter translation*/
+/*used on one some infostrips (contractions at the bottom), 
+this is the letter translation that sits
+below the image and above the word translation*/
 .infostrip li div:nth-child(2) {
 	font-family: 'Brailleblocks', Fallback, monospace;
 	opacity: .8;
@@ -94,26 +132,36 @@ ul {
 	/*1rem on lg*/
 }
 
+/*some infostrips contain 10 items, 
+and when space permits these should display as items 10 across,
+so they line up nicely with similar strips above and below.
+*/
 .ten {
   	grid-template-columns: repeat(5, 1fr);
 }
 
+/*used for one infostrip with too much text*/
 .tenLong {
   	grid-template-columns: repeat(3, 1fr);
 }
 
+/*used twice, this is for when an infostrip has a
+really long word translation that can't display more than one item long*/
 .singColOnMobile {
 	  grid-template-columns: repeat(1, 1fr);
 }
 
+/*sizing for custom hamburger icon*/
 .ham_icon {
 	height: 5em;
-	z-index: 10;
+	z-index: 10; /*included this, but it doesn't work, because sometimes 
+	the expanded menu cut off the graphic. I avoided the issue in some other way.*/
 	position: absolute;
 	right: 0em;
 	top: .5em;
 }
 
+/*all this nav stuff is very hacky, I'm not too familiar with bootstrap but need a nice accessible responsive nav*/
 nav {
 }
 
@@ -149,28 +197,16 @@ nav {
 	box-shadow: none;
 }
 
-.legal {
-	margin-left: auto;
-	margin-right: auto;
-	left: 0;
-	right: 0;
-	text-align: center;
-	bottom: -100px;
-	opacity: .6;
-	font-size: 2rem;
-	margin-top: 100px;
-	margin-bottom: 50px;
+.active {
+	border: solid 10px #B1B;
+	border-radius: 10px;
 }
 
-a {
-	color: #b1b;
+.dropdown .active {
+	border: none;
 }
 
-a:hover {
-	color: #b1b;
-	text-decoration: underline;
-}
-
+/*skip content link for accessibility*/
 .skiplink {
 	color: whitesmoke;
 }
@@ -183,6 +219,7 @@ a:hover {
 	outline: none;
 }
 
+/*scroll to top button that appears when the user scrolls down*/
 #scrolltop {
 	display: none; /* Hidden by default */
 	position: fixed; /* Fixed/sticky position */
@@ -206,8 +243,7 @@ a:hover {
   transition: .2s;
 }
 
-/*styles for read more less button on paragraphs; intro to braille page only*/
-
+/*this is for "read more" & "read less" button on some paragraphs*/
 .inline {
 	display: inline;
 	border-bottom: 1px solid;
@@ -226,13 +262,18 @@ a:hover {
 	display: none;
 }
 
-.active {
-	border: solid 10px #B1B;
-	border-radius: 10px;
-}
-
-.dropdown .active {
-	border: none;
+/*line of legal at the bottom*/
+.legal {
+	margin-left: auto;
+	margin-right: auto;
+	left: 0;
+	right: 0;
+	text-align: center;
+	bottom: -100px;
+	opacity: .6;
+	font-size: 2rem;
+	margin-top: 100px;
+	margin-bottom: 50px;
 }
 
 
@@ -276,17 +317,13 @@ h4 { font-size: 1.5rem;  }
 h5 { font-size: 1rem;  }
 h6 { font-size: .8rem;  }
 
-nav {
+/*these are to help show what breakpoint is being used*/
+.hintA {
+	opacity: .0;
 }
 
-.navbar {
-		font-size: 1.25rem;
-
-}
-
-.navbar-brand {
-	border-bottom: solid 4px whitesmoke;
-	font-size: 1.25rem;
+.hintB {
+	opacity: .2;
 }
 
 .active {
@@ -309,6 +346,9 @@ nav {
 	margin: 0;
 }
 
+/*infostrips are the white boxes with purple piping, 
+these contain the braille translations.
+To look good on desktop, the default is set to be a grid that fills with content automatically*/
 .infostrip {
   	grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
 	font-size: .65rem;
@@ -317,6 +357,7 @@ nav {
 	border-radius: 5px;
 }
 
+/*the next few are visual adjustments to the items so they display correctly on larger breakpoints */
 .infostrip li {
 	grid-row-gap: 0rem;
 	font-size: 1.25rem; 
@@ -332,27 +373,19 @@ nav {
 .infostrip li div:nth-child(2) {
 	font-size: 1rem;
 	padding-top: .5rem;
-	/*important*/
 }
 
+/*some infostrips contain 10 items, 
+and when space permits these should display as items 10 across,
+so they line up nicely with similar strips above and below.
+*/
 .ten {
 	display: grid;
   	grid-template-columns: repeat(10, 1fr);
 	justify-content: center;
 }
 
-.tenLong {
-	display: grid;
-  	grid-template-columns: repeat(5, 1fr);
-	justify-content: center;
-}
-
-.ten {
-	display: grid;
-  	grid-template-columns: repeat(10, 1fr);
-	justify-content: center;
-}
-
+/*these are generally still too long to display 10-wide on desktop, but if an XXL breakpoint happes that woudl be nice*/
 .tenLong {
 	display: grid;
   	grid-template-columns: repeat(5, 1fr);
@@ -363,13 +396,29 @@ nav {
 	  grid-template-columns: repeat(auto, 1fr);
 }
 
-
-.legal {
-	font-size: .688rem;
+/*all this nav stuff is very hacky, I'm not too familiar with bootstrap but need a nice accessible responsive nav*/
+nav {
 }
 
+.navbar {
+		font-size: 1.25rem;
+
+}
+
+.navbar-brand {
+	border-bottom: solid 4px whitesmoke;
+	font-size: 1.25rem;
+}
+
+
+/*scroll to top button that appears when the user scrolls down*/
 #scrolltop {
 	font-size: 1.25rem;
+}
+
+/*line of legal at the bottom*/
+.legal {
+	font-size: .688rem;
 }
 
 }
