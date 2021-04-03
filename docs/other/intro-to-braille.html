@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Braille Toolbox</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="styles/minimalist.css">
+  <link rel="stylesheet" type="text/css" href="styles/range-override.css">
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous" async=""></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous" async=""></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous" async=""></script>
+  <style>@font-face {font-family: 'Brailleblocks'; src: url("fonts/Brailleblocks.otf");}</style>
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Francois+One&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Francois+One&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <a href="#maincontent" class="skiplink">Skip to content</a>
+
+<nav class="navbar navbar-expand-lg navbar-light">
+  <a class="navbar-brand" href="index.html">Braille Toolbox</a>
+  <button class="navbar-toggler" style="height: 2em; border: none;" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span>    <img class="ham_icon" src="braille/con_for.svg" alt="braille cell icon">
+</span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="intro-to-braille.html">Intro to Braille</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="quick-reference.html">Quick Reference</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="write-in-braille.html">Write in Braille</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          More Tools
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="slate-stylus-help.html">Slate & Stylus Quick Reference</a>
+          <a class="dropdown-item" href="dot-decoder.html">Dot Decoder</a>
+          <a class="dropdown-item" href="braillewriter-help.html">Braillewriter Help</a>
+        </div>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+
+<div class="intropage">
+
+
+<h1 id="maincontent">Introduction to Braille</h1>
+
+
+<h2 id="toc_2">Super Basics</h2>
+
+
+<p>Firstly, think of braille as the same ABC alphabet that we use in English, but made for touch reading. Each braille character, or <strong>cell</strong> is made of up to six dots. With braille characters representing letters, you can write anything in English (and many languages). Braille works by creating tactile shapes the blind can learn to read by touch. <span id="dots"> </span><span id="more"> <br><br>Dots are simple; they are either raised or not, and they should always be the same size and depth. The dot arrangement is also very regimented; characters are arrangements of a 2x3 grid of <strong>cells</strong>, an arrangement of two dots wide by three dots high. The writing of each charcters is done by describing which dots are raised. They're referred to by numbers; the three left dots are numbered 1, 2, and 3, and the right ones are 4, 5, and 6. So to describe the letter r, shown below, you'd say it has dots 1, 2, 3, and 5 raised, or simply describe it as "dot 1235."</span><button onclick="myFunction()" id="myBtn1" class="inline">More</button></p>
+
+<br>
+
+<ul class= "intro contractions salmon nohover">
+  <li><div><img src="braille/dot1_a.svg" alt=" a single braille dot"></div><div>   </div><div> dot </div></li>
+  <li><div><img src="braille/dot123456_for.svg" alt=" a full braille cell: dot 123456 "></div><div>   </div><div> cell  </div></li>
+  <li><div><img src="braille/dot1235_r.svg" alt=" example braille letter r: dot 1235"></div><div>   </div><div> the letter r  </div></li>
+</ul>
+
+<p>There are only so many combinations a 2x3 grid can create. Most often a cell represents letters or punctuation marks, but often enough more than one cell is used to represent a character. Cells flow from left to right forming phrases and sentences, overflowing onto new lines top to bottom to fill pages of text, just like print.</p>
+
+<ul class= "intro contractions salmon">
+<li><div><img src="braille/comp_question.svg" alt=" example of braille question mark: dot 236 "></div><div>   </div><div> question mark </div></li>                                   
+<li><div><img src="braille/word_radical!.svg" alt=" example of braille word radical! with exclamation point written in braille: dot 1235 dot 1 dot 15 dot 14 dot 1 dot 123 dot 235"></div><div>   </div><div> radical!  </div></li>                                   </ul>
+
+
+<h2 id="toc_3">Letters</h2>
+
+<h3 id="toc_4">Letters A to J</h3>
+
+<p>Braille’s first ten letters use only the top four dots.</p>
+
+<ul class="intro salmon">
+<li><div><img src="braille/dot1_a.svg" alt=" letter a: dot 1 "></div><div>   </div><div> a </div></li>                                   
+<li><div><img src="braille/dot12_b.svg " alt=" letter b: dot 12"></div><div>   </div><div> b </div></li>                                   
+<li><div><img src="braille/dot14_c.svg " alt=" letter c: dot 14"></div><div>   </div><div> c </div></li>                                   
+<li><div><img src="braille/dot145_d.svg" alt=" letter d: dot 145 "></div><div>   </div><div> d </div></li>                                   
+<li><div><img src="braille/dot15_e.svg " alt=" letter e: dot 15"></div><div>   </div><div> e </div></li>                                   
+<li><div><img src="braille/dot124_f.svg" alt=" letter f: dot 124 "></div><div>   </div><div> f </div></li>                                   
+<li><div><img src="braille/dot1245_g.svg " alt=" letter g: dot 1245"></div><div>   </div><div> g </div></li>                                   
+<li><div><img src="braille/dot125_h.svg" alt=" letter h: dot 125 "></div><div>   </div><div> h </div></li>                                   
+<li><div><img src="braille/dot24_i.svg " alt=" letter i: dot 24"></div><div>   </div><div> i </div></li>                                   
+<li><div><img src="braille/dot245_j.svg" alt=" letter j: dot 145 "></div><div>   </div><div> j </div></li>                                   
+</ul>
+
+<h3 id="toc_5">Letters K to T</h3>
+
+<p>The second set of letters repeats the same dots as letters A to J but adds the bottom left dot.</p>
+
+<ul class="intro salmon">
+<li><div><img src="braille/dot13_k.svg " alt=" letter k: dot 13"></div><div>   </div><div> k </div></li>                                   
+<li><div><img src="braille/dot123_l.svg" alt=" letter l: dot 123 "></div><div>   </div><div> l </div></li>                                   
+<li><div><img src="braille/dot134_m.svg" alt=" letter m: dot 134 "></div><div>   </div><div> m </div></li>                                   
+<li><div><img src="braille/dot1345_n.svg " alt=" letter n: dot 1345"></div><div>   </div><div> n </div></li>                                   
+<li><div><img src="braille/dot135_o.svg" alt=" letter o: dot 135 "></div><div>   </div><div> o </div></li>                                   
+<li><div><img src="braille/dot1234_p.svg " alt=" letter p: dot 1234"></div><div>   </div><div> p </div></li>                                   
+<li><div><img src="braille/dot12345_q.svg" alt=" letter q: dot 12345 "></div><div>   </div><div> q </div></li>                                   
+<li><div><img src="braille/dot1235_r.svg " alt=" letter r: dot 1235"></div><div>   </div><div> r </div></li>                                   
+<li><div><img src="braille/dot234_s.svg" alt=" letter s: dot 234 "></div><div>   </div><div> s </div></li>                                   
+<li><div><img src="braille/dot2345_t.svg " alt=" letter t: dot 2345"></div><div>   </div><div> t </div></li>                                   
+</ul>
+
+<h3 id="toc_6">Letters U to Z (and W)</h3>
+
+<p>The end of the alphabet follows the same pattern again, with these characters adding the bottom dots to the letters A to E. W is a weird one though...  <span id="dots2"> </span><span id="more2"> <br><br>The letter W resembles a J, but adds the bottom right dot, instead of both bottom dots (like its end-of-of-the-alphabet neighbors). <br><br>So why is W out of place like this? Blame France; When braille was invented there, France hadn't adopted the letter.</span><button onclick="myFunction2()" id="myBtn2" class="inline">More</button></p>
+<br>
+
+<ul class="intro salmon">
+<li><div><img src="braille/dot136_u.svg" alt=" letter u: dot 136 "></div><div>   </div><div> u </div></li>                                   
+<li><div><img src="braille/dot1236_v.svg " alt=" letter v: dot 1236"></div><div>   </div><div> v </div></li>                                   
+<li><div><img src="braille/dot1346_x.svg " alt=" letter x: dot 1346"></div><div>   </div><div> x </div></li>                                   
+<li><div><img src="braille/dot13456_y.svg" alt=" letter y: dot 13456 "></div><div>   </div><div> y </div></li>                                   
+<li><div><img src="braille/dot1356_z.svg " alt=" letter z: dot 1356"></div><div>   </div><div> z </div></li>                                   
+<li><div><img src="braille/dot2456_w.svg " alt=" letter w: dot 2456"></div><div>   </div><div> w </div></li>                                   
+</ul>
+
+<h2 id="toc_8">Numbers</h2>
+
+<p>Basic numbers are written by using the number symbol which converts letters A (for 1) through J (for 0). The number prefix starts the number format, then things return to letters after a space. Texts with lots of math are usually written in a specialized braille code called Nemeth Braille.</p>
+
+<ul class="intro salmon contractions">
+<li><div><img src="braille/num1.svg" alt=" number 1: dot 1236 dot 1  "></div><div> #a  </div><div> 1 </div></li>                                   
+<li><div><img src="braille/num2.svg" alt=" number 2: dot  1236 dot 12  "></div><div> #b  </div><div> 2 </div></li>                                  
+<li><div><img src="braille/num3.svg" alt=" number 3: dot  1236 dot 14  "></div><div> #c  </div><div> 3 </div></li>                                  
+<li><div><img src="braille/num4.svg" alt=" number 4: dot  1236 dot 145 "></div><div> #d  </div><div> 4 </div></li>                                  
+<li><div><img src="braille/num5.svg" alt=" number 5: dot  1236 dot 15  "></div><div> #e  </div><div> 5 </div></li>                                  
+<li><div><img src="braille/num6.svg" alt=" number 6: dot  1236 dot 124 "></div><div> #f  </div><div> 6 </div></li>                                  
+<li><div><img src="braille/num7.svg" alt=" number 7: dot  1236 dot 1245  "></div><div> #g  </div><div> 7 </div></li>                                  
+<li><div><img src="braille/num8.svg" alt=" number 8: dot  1236 dot 125 "></div><div> #h  </div><div> 8 </div></li>                                  
+<li><div><img src="braille/num9.svg" alt=" number 9: dot  1236 dot 24  "></div><div> #i  </div><div> 9 </div></li>                                  
+<li><div><img src="braille/num0.svg" alt=" number 0: dot  1236 dot  145  "></div><div> #j  </div><div> 0 </div></li>                                                                   
+</ul>
+
+<h2 id="toc_9">Formatting and styling</h2>
+
+<p>Capital and italic letters are created using special characters along with the letters described above.</p>
+
+<h3 id="toc_10">Capitals</h3>
+
+<p>A capital sign signals that an uppercase character is next. Use it once for an initial cap, twice to capitalize the whole word. Three starts an uppercase passage, with two more ending it.</p>
+
+<ul class="intro salmon contractions">
+<li><div><img src="braille/comp_cap_sign.svg" alt="capital symbol: dot 6"></div><div> &#8593; </div><div> &#8593; </div></li>                                   
+<li><div><img src="braille/comp_cap.svg" alt="example of capitalized word Cap: dot 6 dot 14 dot 1 dot 1234  "></div><div> &#8593;Cap  </div><div> Cap </div></li>                                   
+<li><div><img src="braille/comp_word.svg" alt="example of uppercase word WORD: dot 6 dot 6 dot 246 dot 135 dot 1235 dot 145  "></div><div> &#8593;&#8593;WORD  </div><div> WORD  </div></li>                                                            
+</ul>
+
+<h3 id="toc_11">Italics</h3>
+
+<p>Italics use an italic symbol followed by a second character that indicates how much text will be italicized.</p>
+
+<ul class="intro salmon">
+<li><div><img src="braille/comp_ital.svg " alt=" italic character symbol: dot 46 dot 23"></div><div>   </div><div> italic character  </div></li>                                   
+<li><div><img src="braille/comp_n.svg" alt=" italiced letter n: dot 46 dot 23 dot 1345 "></div><div>   </div><div> <em>n</em>  </div></li>                                   
+<li><div><img src="braille/comp_ital_word.svg" alt=" italic word symbol: "></div><div>   </div><div> italic word </div></li>
+<li><div><img src="braille/comp_ital_passage.svg " alt=" begin italic passage"></div><div>   </div><div> begin  passage  </div></li>                                   
+<li><div><img src="braille/comp_ital_passage_end.svg " alt=" end italic passage"></div><div>   </div><div> end  passage  </div></li>                                   
+</ul>
+
+<h2 id="toc_12">Punctuation</h2>
+
+<h3 id="toc_13">Sentence punctuation</h3>
+
+<p>Punctuate sentences by following them with these characters.</p>
+
+<ul class="intro salmon">
+<li><div><img src="braille/comp_period.svg " alt=" period: dot 256 "></div><div>   </div><div> . </div></li>                                   
+<li><div><img src="braille/comp_comma.svg" alt=" comma: dot 2"></div><div>   </div><div> , </div></li>                                   
+<li><div><img src="braille/comp_exclamation.svg" alt=" exclamation mark: dot 235 "></div><div>   </div><div> ! </div></li>                                   
+<li><div><img src="braille/comp_question.svg " alt=" question mark: dot 236"></div><div>   </div><div> ? </div></li>                                   
+<li><div><img src="braille/comp_colon.svg" alt=" colon: dot 25 "></div><div>   </div><div> : </div></li>                                   
+<li><div><img src="braille/comp_semicolon.svg" alt=" semicolon: dot 23 "></div><div>   </div><div> ; </div></li>                                   
+</ul>
+
+<h3 id="toc_14">Quotation marks</h3>
+
+<p>Quotes are opening and closing signs that enclose a word or words.</p>
+
+<ul class="intro salmon">
+<li><div><img src="braille/comp_quotes.svg " alt=" opening double quote: dot 236 "></div><div>   </div><div> &#8220; </div></li>                                   
+<li><div><img src="braille/comp_quotes_end.svg " alt=" closing double quote: dot 356 "></div><div>   </div><div> &#8221; </div></li>                                   
+<li><div><img src="braille/comp_single_quotes.svg" alt=" opening single quote: dot 6 dot 236 "></div><div>   </div><div> &#8216; </div></li>                                   
+<li><div><img src="braille/comp_single_quotes_end.svg" alt=" closing single quote: dot 6 dot 356 "></div><div>   </div><div> &#8217; </div></li>                                   
+</ul>
+
+<h3 id="toc_15">Parentheses and other enclosures</h3>
+
+<p>Parenthesis and brackets are opening and closing signs that enclose a word or words.</p>
+
+<ul class="intro salmon">
+
+<li><div><img src="braille/comp_parens.svg " alt=" opening parens: dot 5 dot 126 "></div><div>   </div><div> ( </div></li>                                   
+<li><div><img src="braille/comp_parens_end.svg " alt=" closing parens: dot 5 dot 345 "></div><div>   </div><div> ) </div></li>                                   
+<li><div><img src="braille/comp_brackets.svg " alt=" opening bracket: dot 46 dot 126 "></div><div>   </div><div> [ </div></li>                                   
+<li><div><img src="braille/comp_brackets_end.svg " alt=" closing bracket: dot 46 dot 345 "></div><div>   </div><div> ] </div></li>                                   
+
+</ul>
+
+<h3 id="toc_16">Other punctuation</h3>
+
+<p>Hyphens, dashes, apostrophes, asterisks, and ellipses can be placed anywhere.</p>
+
+<ul class="intro salmon">
+<li><div><img src="braille/comp_hyphen.svg " alt=" hyphen: dot 36"></div><div>   </div><div> &#8208; </div></li>                                   
+<li><div><img src="braille/comp_dash.svg " alt=" dash: dot 6 dot 36"></div><div>   </div><div> &#8212; </div></li>                                   
+<li><div><img src="braille/comp_apostrophe.svg " alt=" apostrophe: dot 3 "></div><div>   </div><div> &#39; </div></li>                                   
+<li><div><img src="braille/comp_asterisk.svg " alt=" asterisk: dot 5 dot 35"></div><div>   </div><div> * </div></li>                                   
+<li><div><img src="braille/comp_slash.svg" alt=" slash: dot 456 dot 34 "></div><div>   </div><div> / </div></li>                                   
+<li><div><img src="braille/comp_ellipsis.svg " alt=" ellipsis: dot 256 dot 256 dot 256 "></div><div>   </div><div> ... </div></li>                                   
+</ul>
+
+<h2 id="toc_17">Currency</h2>
+
+<p>Currency symbols such as the dollar, pound, euro, and yen are created with a currency sign (dot 4), followed by the letter depicted in the print symbol. </p>
+
+<ul class="intro salmon">
+<li><div><img src="braille/comp_currency.svg " alt=" generic currency sign: dot 4"></div><div>   </div><div> currency sign </div></li>                                   
+<li><div><img src="braille/comp_dollar.svg " alt=" dollar sign: dot 4 dot 234"></div><div>   </div><div> $ </div></li>                                   
+<li><div><img src="braille/comp_euro.svg " alt=" euro currency sign: dot 4 dot 15"></div><div>   </div><div> € </div></li>                                   
+<li><div><img src="braille/comp_pound.svg" alt=" pound sterling sign: dot 4 dot 123"></div><div>   </div><div> £ </div></li>                                   
+<li><div><img src="braille/comp_yen.svg" alt=" yen currency sign: dot 4 dot 13456"></div><div>   </div><div> ¥ </div></li>                                   
+</ul>
+
+<h2 id="toc_18">Contractions</h2>
+
+<p>To communicate efficiently, English braille uses letters and special characters called contractions, which save space and effort similar to textspeak or SMS language. Braille books can get large, so contractions can help reduce text length by as much as 300%.</p>
+
+<p>Some contractions are only valid as whole words, and some are only used as suffixes or prefixes and are indicated here. A great way to see how contractions work is to try our <a href="write-in-braille.html"> Write in Braille</a> feature.</p>
+
+<h3 id="toc_19">A Contractions</h3>
+
+<ul class="contractions salmon intro">
+<li><div><img src="braille/con_about.svg" alt="contraction for word about: dot 1 dot 12"></div><div>  ab  </div><div> about </div></li>
+<li><div><img src="braille/con_above.svg" alt="contraction for word above: dot 14 dot 12 dot 1236"></div><div>  abv </div><div> above </div></li>
+<li><div><img src="braille/con_according.svg" alt="contraction for word according: dot 1 dot 14"></div><div>  ac  </div><div> according </div></li>
+<li><div><img src="braille/con_across.svg" alt="contraction for word across: dot 1 dot 14 dot 1235"></div><div> acr </div><div> across  </div></li>
+<li><div><img src="braille/con_after.svg" alt="contraction for word after: dot 1 dot 124"></div><div> af  </div><div> after </div></li>
+<li><div><img src="braille/con_afternoon.svg" alt="contraction for word afternoon: dot 1 dot 124 dot 1345"></div><div>  afn </div><div> afternoon </div></li>
+<li><div><img src="braille/con_afterward.svg" alt="contraction for word afterward: dot 1 dot 124 dot 1456"></div><div>  afw </div><div> afterward </div></li>
+<li><div><img src="braille/con_again.svg" alt="contraction for word again: dot 1 dot 1245"></div><div>  ag  </div><div> again </div></li>
+<li><div><img src="braille/con_against.svg" alt="contraction for word against: dot 1 dot 1245 dot 34"></div><div> agdot*34  </div><div> against </div></li>
+<li><div><img src="braille/con_almost.svg" alt="contraction for word almost: dot 1 dot 123 dot 134"></div><div> alm </div><div> almost  </div></li>
+<li><div><img src="braille/con_already.svg" alt="contraction for word already: dot 1 dot 123 dot 1235"></div><div>  alr </div><div> already </div></li>
+<li><div><img src="braille/con_also.svg" alt="contraction for word also: dot 1 dot 123"></div><div> al  </div><div> also  </div></li>
+<li><div><img src="braille/con_although.svg" alt="contraction for word although: dot 1 dot 123 dot 1456"></div><div>  aldot*1456  </div><div> although  </div></li>
+<li><div><img src="braille/con_altogether.svg" alt="contraction for word altogether: dot 1 dot 123 dot 2345"></div><div>  alt </div><div> altogether  </div></li>
+<li><div><img src="braille/con_always.svg" alt="contraction for word always: dot 1 dot 123 dot 1456"></div><div>  alw </div><div> always  </div></li>
+<li><div><img src="braille/con_ance.svg" alt="contraction for suffix ance: dot 46 dot 15"></div><div> dot*46e </div><div> ⌂ance </div></li>
+<li><div><img src="braille/con_and.svg" alt="contraction for word and: dot 12346"></div><div> & </div><div> and </div></li>
+<li><div><img src="braille/con_ar.svg" alt="contraction for string ar: dot 345"></div><div> dot*345 </div><div> ar  </div></li>
+<li><div><img src="braille/con_as.svg" alt="contraction for word or string as: dot 1356"></div><div>  z </div><div> as  </div></li>
+
+
+</ul>
+
+<h3 id="toc_20">B contractions</h3>
+
+<ul class="contractions salmon intro">
+<li><div><img src="braille/con_bb.svg" alt="contraction for inner string bb: dot 23"></div><div>  dot*23  </div><div> ⌂bb⌂  </div></li>
+<li><div><img src="braille/con_be.svg" alt="contraction for word or prefix be: dot 23"></div><div>  dot*23  </div><div> be or be⌂ </div></li>
+<li><div><img src="braille/con_because.svg" alt="contraction for word because: dot 23 dot 14"></div><div> dot*23c </div><div> because </div></li>
+<li><div><img src="braille/con_before.svg" alt="contraction for word before: dot 23 dot 124"></div><div>  dot*23f </div><div> before  </div></li>
+<li><div><img src="braille/con_behind.svg" alt="contraction for word behind: dot 23 dot 125"></div><div>  dot*23h </div><div> behind  </div></li>
+<li><div><img src="braille/con_below.svg" alt="contraction for word below: dot 23 dot 123"></div><div>  dot*23l </div><div> below </div></li>
+<li><div><img src="braille/con_beneath.svg" alt="contraction for word beneath: dot 23 dot 1345"></div><div> dot*23n </div><div> beneath </div></li>
+<li><div><img src="braille/con_beside.svg" alt="contraction for word beside: dot 23 dot 234"></div><div>  dot*23s </div><div> beside  </div></li>
+<li><div><img src="braille/con_between.svg" alt="contraction for word between: dot 23 dot 2345"></div><div> dot*23t </div><div> between </div></li>
+<li><div><img src="braille/con_beyond.svg" alt="contraction for word beyond: dot 23 dot 13456"></div><div>  dot*23y </div><div> beyond  </div></li>
+<li><div><img src="braille/con_blind.svg" alt="contraction for word blind: dot 23 dot 123"></div><div>  bl  </div><div> blind </div></li>
+<li><div><img src="braille/con_braille.svg" alt="contraction for word braille: dot 1 dot 1234 dot 123"></div><div>  brl </div><div> braille </div></li>
+<li><div><img src="braille/con_but.svg" alt="contraction for word but: dot 12"></div><div>  b </div><div> but </div></li>
+</ul>
+
+<h3 id="toc_21">C contractions</h3>
+
+<ul class="contractions salmon intro">
+<li><div><img src="braille/con_can.svg" alt="contraction for word can: dot 14"></div><div>  c </div><div> can </div></li>
+<li><div><img src="braille/con_cannot.svg" alt="contraction for word cannot: dot 456 dot 14"></div><div>  dot*456c  </div><div> cannot  </div></li>
+<li><div><img src="braille/con_cc.svg" alt="contraction for inner string cc: dot 25"></div><div>  dot*25  </div><div> ⌂cc⌂  </div></li>
+<li><div><img src="braille/con_ch.svg" alt="contraction for string ch: dot 16"></div><div>  dot*16  </div><div> ch  </div></li>
+<li><div><img src="braille/con_character.svg" alt="contraction for word character: dot 5 dot 16"></div><div>  dot*5dot*16 </div><div> character </div></li>
+<li><div><img src="braille/con_child.svg" alt="contraction for word child: dot 16"></div><div>  dot*16  </div><div> child </div></li>
+<li><div><img src="braille/con_children.svg" alt="contraction for word children: dot 16 dot 1345"></div><div> dot*16n </div><div> children  </div></li>
+<li><div><img src="braille/con_con.svg" alt="contraction for prefix con: dot 25"></div><div>  dot*25  </div><div> con⌂  </div></li>
+<li><div><img src="braille/con_conceive.svg" alt="contraction for word conceive: dot 25 dot 14 dot 1236"></div><div>  dot*25cv  </div><div> conceive  </div></li>
+<li><div><img src="braille/con_conceiving.svg" alt="contraction for word conceiving: dot 25 dot 14 dot 1236 dot 1245"></div><div> dot*25cvg </div><div> conceiving  </div></li>
+<li><div><img src="braille/con_could.svg" alt="contraction for word could: dot 14 dot 145"></div><div>  cd  </div><div> could </div></li>
+
+
+</ul>
+
+<h3 id="toc_22">D contractions</h3>
+
+<ul class="contractions salmon intro">
+<li><div><img src="braille/con_day.svg" alt="contraction for word day: dot 5 dot 145"></div><div> dot*5d  </div><div> day </div></li>
+<li><div><img src="braille/con_deceive.svg" alt="contraction for word deceive: dot 145 dot 14 dot 1236"></div><div> dcv </div><div> deceive </div></li>
+<li><div><img src="braille/con_deceiving.svg" alt="contraction for word deceiving: dot 145 dot 14 dot 1236 dot 1245"></div><div>  dcvg  </div><div> deceiving </div></li>
+<li><div><img src="braille/con_declare.svg" alt="contraction for word declare: dot 145 dot 14 dot 1234"></div><div> dcl </div><div> declare </div></li>
+<li><div><img src="braille/con_declaring.svg" alt="contraction for word declaring: dot 145 dot 14 dot 1234 dot 1245"></div><div>  dclg  </div><div> declaring </div></li>
+<li><div><img src="braille/con_dis.svg" alt="contraction for prefix dis: dot 256"></div><div> dot*256 </div><div> dis⌂  </div></li>
+<li><div><img src="braille/con_do.svg" alt="contraction for word do: dot 145"></div><div> d </div><div> do  </div></li>
+</ul>
+
+<h3 id="toc_23">E contractions</h3>
+
+<ul class="contractions salmon intro">
+<li><div><img src="braille/con_ea.svg" alt="contraction for inner string ea: dot 2"></div><div> dot*2 </div><div> ⌂ea⌂  </div></li>
+<li><div><img src="braille/con_ed.svg" alt="contraction for string ed: dot 1246"></div><div>  dot*1246  </div><div> ed  </div></li>
+<li><div><img src="braille/con_either.svg" alt="contraction for word either: dot 15 dot 24"></div><div> ei  </div><div> either  </div></li>
+<li><div><img src="braille/con_en.svg" alt="contraction for string en: dot 26"></div><div>  dot*56  </div><div> en  </div></li>
+<li><div><img src="braille/con_ence.svg" alt="contraction for suffix ence: dot 56 dot 15"></div><div> dot*56e </div><div> ⌂ence </div></li>
+<li><div><img src="braille/con_enough.svg" alt="contraction for word enough: dot 26"></div><div>  dot*26  </div><div> enough  </div></li>
+<li><div><img src="braille/con_er.svg" alt="contraction for string er: dot 12456"></div><div> dot*12456 </div><div> er  </div></li>
+<li><div><img src="braille/con_ever.svg" alt="contraction for word ever: dot 5 dot 15"></div><div>  dot*5e  </div><div> ever  </div></li>
+<li><div><img src="braille/con_every.svg" alt="contraction for word every: dot 15"></div><div>  e </div><div> every </div></li>
+</ul>
+
+<h3 id="toc_24">F contractions</h3>
+
+<ul class="contractions salmon intro">
+<li><div><img src="braille/con_father.svg" alt="contraction for word father: dot 5 dot 124"></div><div> dot*5f  </div><div> father  </div></li>
+<li><div><img src="braille/con_ff.svg" alt="contraction for inner string ff: dot 235"></div><div> f </div><div> ⌂ff⌂  </div></li>
+<li><div><img src="braille/con_first.svg" alt="contraction for word first: dot 124 dot 34"></div><div>  fdot*34 </div><div> first </div></li>
+<li><div><img src="braille/con_for.svg" alt="contraction for word for: dot 123456"></div><div>  dot*123456  </div><div> for </div></li>
+<li><div><img src="braille/con_friend.svg" alt="contraction for word friend: dot 124 dot 1235"></div><div>  fr  </div><div> friend  </div></li>
+<li><div><img src="braille/con_from.svg" alt="contraction for word from: dot 124"></div><div> f </div><div> from  </div></li>
+<li><div><img src="braille/con_ful.svg" alt="contraction for suffix ful: dot 56 dot 123456"></div><div> dot*56dot*123456  </div><div> ⌂ful  </div></li>
+</ul>
+
+<h3 id="toc_25">G contractions</h3>
+
+<ul class="contractions salmon intro">
+<li><div><img src="braille/con_gg.svg" alt="contraction for inter string gg: dot 2356"></div><div>  dot*2356  </div><div> ⌂gg⌂  </div></li>
+<li><div><img src="braille/con_gh.svg" alt="contraction for string gh: dot 126"></div><div> dot*126 </div><div> gh  </div></li>
+<li><div><img src="braille/con_go.svg" alt="contraction for word go: dot 1245"></div><div>  g </div><div> go  </div></li>
+<li><div><img src="braille/con_good.svg" alt="contraction for word good: dot 1245 dot 145"></div><div>  gd  </div><div> good  </div></li>
+<li><div><img src="braille/con_great.svg" alt="contraction for word great: dot 1245 dot 1235 dot 2345"></div><div>  grt </div><div> great </div></li>
+</ul>
+
+<h3 id="toc_26">H contractions</h3>
+
+<ul class="contractions salmon intro">
+<li><div><img src="braille/con_had.svg" alt="contraction for word had: dot 456 dot 125"></div><div> dot*456h  </div><div> had </div></li>
+<li><div><img src="braille/con_have.svg" alt="contraction for word have: dot 125"></div><div> h </div><div> have  </div></li>
+<li><div><img src="braille/con_here.svg" alt="contraction for word here: dot 5 dot 125"></div><div> dot*5h  </div><div> here  </div></li>
+<li><div><img src="braille/con_herself.svg" alt="contraction for word herself: dot 125 dot 12456 dot 125"></div><div> hdot*12456f </div><div> herself </div></li>
+<li><div><img src="braille/con_him.svg" alt="contraction for word him: dot 1245 dot 134"></div><div>  hm  </div><div> him </div></li>
+<li><div><img src="braille/con_himself.svg" alt="contraction for word himself: dot 1245 dot 134 dot 125"></div><div>  hmf </div><div> himself </div></li>
+<li><div><img src="braille/con_his.svg" alt="contraction for word his: dot 236"></div><div> dot*236 </div><div> his </div></li>
+</ul>
+
+<h3 id="toc_27">I contractions</h3>
+
+<ul class="contractions salmon intro">
+<li><div><img src="braille/con_immediate.svg" alt="contraction for word immediate: dot 24 dot 134 dot 134"></div><div>  imm </div><div> immediate </div></li>
+<li><div><img src="braille/con_in.svg" alt="contraction for word in: dot 35"></div><div>  dot*35  </div><div> in  </div></li>
+<li><div><img src="braille/con_ing.svg " alt=" contraction for word ing: dot 346 "></div><div> dot*346 </div><div> ing </div></li>
+<li><div><img src="braille/con_it.svg" alt="contraction for word it: dot 1346"></div><div>  x </div><div> it  </div></li>
+<li><div><img src="braille/con_its.svg" alt="contraction for word its: dot 1346 dot 124"></div><div>  xs  </div><div> its </div></li>
+<li><div><img src="braille/con_itself.svg" alt="contraction for word itself: dot 1346 dot 234"></div><div>  xf  </div><div> itself  </div></li>
+<li><div><img src="braille/con_ity.svg" alt="contraction for suffix ity: dot 56 dot 13456"></div><div>  dot*56y </div><div> ⌂ity  </div></li>
+</ul>
+
+<h3 id="toc_28">J contractions</h3>
+
+<ul class="contractions salmon intro">
+<li><div><img src="braille/con_just.svg" alt="contraction for word just: dot 145"></div><div> j </div><div> just  </div></li>
+</ul>
+
+<h3 id="toc_29">K contractions</h3>
+
+<ul class="contractions salmon intro">
+<li><div><img src="braille/con_know.svg" alt="contraction for word know: dot 5 dot 13"></div><div>  dot*5k  </div><div> know  </div></li>
+<li><div><img src="braille/con_knowledge.svg" alt="contraction for word knowledge: dot 13"></div><div>  k </div><div> knowledge </div></li>
+</ul>
+
+<h3 id="toc_30">L contractions</h3>
+
+<ul class="contractions salmon intro">
+<li><div><img src="braille/con_less.svg" alt="contraction for suffix less: dot 46"></div><div>  dot*46s </div><div> ⌂less </div></li>
+<li><div><img src="braille/con_letter.svg" alt="contraction for word letter: dot 123 dot 1235"></div><div>  lr  </div><div> letter  </div></li>
+<li><div><img src="braille/con_like.svg" alt="contraction for word like: dot 123"></div><div> l </div><div> like  </div></li>
+<li><div><img src="braille/con_little.svg" alt="contraction for word little: dot 123 dot 123"></div><div> ll  </div><div> little  </div></li>
+<li><div><img src="braille/con_lord.svg" alt="contraction for word lord: dot 5 dot 123"></div><div> dot*5l  </div><div> lord  </div></li>
+</ul>
+
+<h3 id="toc_31">M contractions</h3>
+
+<ul class="contractions salmon intro">
+<li><div><img src="braille/con_many.svg" alt="contraction for word many: dot 456 dot 134"></div><div> dot*456m  </div><div> many  </div></li>
+<li><div><img src="braille/con_ment.svg" alt="contraction for suffix ment: dot 56 dot 2345"></div><div> dot*56t </div><div> ⌂ment </div></li>
+<li><div><img src="braille/con_more.svg" alt="contraction for word more: dot 134"></div><div> m </div><div> more  </div></li>
+<li><div><img src="braille/con_mother.svg" alt="contraction for word mother: dot 5 dot 134"></div><div> dot*5m  </div><div> mother  </div></li>
+<li><div><img src="braille/con_much.svg" alt="contraction for word much: dot 134 dot 16"></div><div>  mdot*16 </div><div> much  </div></li>
+<li><div><img src="braille/con_must.svg" alt="contraction for word must: dot 134 dot 34"></div><div>  mdot*34 </div><div> must  </div></li>
+<li><div><img src="braille/con_myself.svg" alt="contraction for word myself: dot 134 dot 234 dot 124"></div><div> myf </div><div> myself  </div></li>
+</ul>
+
+<h3 id="toc_32">N contractions</h3>
+
+<ul class="contractions salmon intro">
+<li><div><img src="braille/con_name.svg" alt="contraction for word name: dot 5 dot 1345"></div><div>  dot*5n  </div><div> name  </div></li>
+<li><div><img src="braille/con_necessary.svg" alt="contraction for word necessary: dot 1345 dot 15 dot 14"></div><div>  nec </div><div> necessary </div></li>
+<li><div><img src="braille/con_neither.svg" alt="contraction for word neither: dot 1345 dot 15 dot 24"></div><div>  nei </div><div> neither </div></li>
+<li><div><img src="braille/con_ness.svg" alt="contraction for suffix ness: dot 56 dot 234"></div><div>  dot*56s </div><div> ⌂ness </div></li>
+<li><div><img src="braille/con_not.svg" alt="contraction for word not: dot 1345"></div><div>  n </div><div> not </div></li>
+</ul>
+
+<h3 id="toc_33">O contractions</h3>
+
+<ul class="contractions salmon intro">
+<li><div><img src="braille/con_of.svg" alt="contraction for word of: dot 12356"></div><div> dot*12356 </div><div> of  </div></li>
+<li><div><img src="braille/con_one.svg" alt="contraction for word one: dot 5 dot 135"></div><div> dot*5o  </div><div> one </div></li>
+<li><div><img src="braille/con_oneself.svg" alt="contraction for word oneself: dot 5 dot 135 dot 124"></div><div> dot*5of </div><div> oneself </div></li>
+<li><div><img src="braille/con_ong.svg" alt="contraction for suffix ong: dot 56 dot 1245"></div><div> dot*56g </div><div> ⌂ong  </div></li>
+<li><div><img src="braille/con_ou.svg" alt="contraction for string ou: dot 1256"></div><div>  dot*1256  </div><div> ou  </div></li>
+<li><div><img src="braille/con_ought.svg" alt="contraction for word ought: dot 5 dot 1256"></div><div>  dot*5dot*1256 </div><div> ought </div></li>
+<li><div><img src="braille/con_ound.svg" alt="contraction for suffix ound: dot 46 dot 145"></div><div>  dot*46d </div><div> ⌂ound </div></li>
+<li><div><img src="braille/con_ount.svg" alt="contraction for suffix ount: dot 46 dot 2345"></div><div> dot*46t </div><div> ⌂ount </div></li>
+<li><div><img src="braille/con_ourselves.svg" alt="contraction for word ourselves: dot 1256 dot 1235 dot 1236 dot 234"></div><div>  dot*1256rvs </div><div> ourselves </div></li>
+<li><div><img src="braille/con_out.svg" alt="contraction for word out: dot 1256"></div><div>  dot*1256  </div><div> out </div></li>
+<li><div><img src="braille/con_ow.svg" alt="contraction for string ow: dot 146"></div><div> dot*246 </div><div> ow  </div></li>
+</ul>
+
+<h3 id="toc_34">P contractions</h3>
+
+<ul class="contractions salmon intro">
+<li><div><img src="braille/con_paid.svg" alt="contraction for word paid: dot1234 dot 145"></div><div> pd  </div><div> paid  </div></li>
+<li><div><img src="braille/con_part.svg" alt="contraction for word part: dot 5 dot 1234"></div><div>  dot*5p  </div><div> part  </div></li>
+<li><div><img src="braille/con_people.svg" alt="contraction for word people: dot 1234"></div><div>  p </div><div> people  </div></li>
+<li><div><img src="braille/con_perceive.svg" alt="contraction for word perceive: dot1234 dot 12456"></div><div> pdot*12456cv  </div><div> perceive  </div></li>
+<li><div><img src="braille/con_perceiving.svg" alt="contraction for word perceiving: dot1234 dot 12456 dot 14 dot 1236 dot 1245"></div><div>  pdot*12456cvg </div><div> perceiving  </div></li>
+<li><div><img src="braille/con_perhaps.svg" alt="contraction for word perhaps: dot 1234 dot 12456 dot 12456 dot 125"></div><div>  pdot*12456h </div><div> perhaps </div></li>
+
+</ul>
+
+<h3 id="toc_35">Q contractions</h3>
+
+<ul class="contractions salmon intro">
+<li><div><img src="braille/con_question.svg" alt="contraction for word question: dot 5 dot 12345"></div><div> dot*5q  </div><div> question  </div></li>
+<li><div><img src="braille/con_quick.svg" alt="contraction for word quick: dot 123 dot 13"></div><div>  qk  </div><div> quick </div></li>
+<li><div><img src="braille/con_quite.svg" alt="contraction for word quite: dot 12345"></div><div> q </div><div> quite </div></li>
+</ul>
+
+<h3 id="toc_36">R contractions</h3>
+
+<ul class="contractions salmon intro">
+<li><div><img src="braille/con_rather.svg" alt="contraction for word rather: dot 1235"></div><div>  r </div><div> rather  </div></li>
+<li><div><img src="braille/con_receive.svg" alt="contraction for word receive: dot 1235 dot 1245 dot 1236"></div><div>  rcv </div><div> receive </div></li>
+<li><div><img src="braille/con_receiving.svg" alt="contraction for word receiving: dot 1235 dot 1245 dot 1236 dot 1245"></div><div> rcvg  </div><div> receiving </div></li>
+<li><div><img src="braille/con_rejoice.svg" alt="contraction for word rejoice: dot 1235 dot 245 dot 14"></div><div> rjc </div><div> rejoice </div></li>
+<li><div><img src="braille/con_rejoicing.svg" alt="contraction for word rejoicing: dot 1235 dot 245 dot 14 dot 1245"></div><div>  rjcg  </div><div> rejoicing </div></li>
+<li><div><img src="braille/con_right.svg" alt="contraction for word right: dot5 dot 1235"></div><div> dot*5r  </div><div> right </div></li>
+
+</ul>
+
+<h3 id="toc_37">S contractions</h3>
+
+<ul class="contractions salmon intro">
+<li><div><img src="braille/con_said.svg" alt="contraction for word said: dot 124 dot 145"></div><div> sd  </div><div> said  </div></li>
+<li><div><img src="braille/con_sh.svg" alt="contraction for prefix sh: dot 146"></div><div> dot*146 </div><div> sh  </div></li>
+<li><div><img src="braille/con_shall.svg" alt="contraction for word shall: dot 146"></div><div> dot*146 </div><div> shall </div></li>
+<li><div><img src="braille/con_should.svg" alt="contraction for word should: dot 146 dot 145"></div><div> dot*146d  </div><div> should  </div></li>
+<li><div><img src="braille/con_sion.svg" alt="contraction for suffix sion: dot 46 dot 1345"></div><div> dot*46n </div><div> ⌂sion </div></li>
+<li><div><img src="braille/con_so.svg" alt="contraction for word so: dot 234"></div><div> s </div><div> so  </div></li>
+<li><div><img src="braille/con_some.svg" alt="contraction for word some: dot 5 dot 234"></div><div> dot*5s  </div><div> some  </div></li>
+<li><div><img src="braille/con_spirit.svg" alt="contraction for word spirit: dot 456 dot 234"></div><div> dot*456s  </div><div> spirit  </div></li>
+<li><div><img src="braille/con_st.svg" alt="contraction for prefix st: dot 34"></div><div>  dot*34  </div><div> st  </div></li>
+<li><div><img src="braille/con_still.svg" alt="contraction for word still: dot 34"></div><div>  dot*34  </div><div> still </div></li>
+<li><div><img src="braille/con_such.svg" alt="contraction for word such: dot 234 dot 16"></div><div>  sdot*16 </div><div> such  </div></li>
+
+</ul>
+
+<h3 id="toc_38">T contractions</h3>
+
+<ul class="contractions salmon intro">
+<li><div><img src="braille/con_th.svg" alt="contraction for prefix th: dot 1456"></div><div>  dot*1456  </div><div> th  </div></li>
+<li><div><img src="braille/con_that.svg" alt="contraction for word that: dot 2345"></div><div>  t </div><div> that  </div></li>
+<li><div><img src="braille/con_the.svg" alt="contraction for word the: dot 2346"></div><div>  dot*2346  </div><div> the </div></li>
+<li><div><img src="braille/con_their.svg" alt="contraction for word their: dot 456 dot 2346"></div><div>  dot*456dot*2346 </div><div> their </div></li>
+<li><div><img src="braille/con_themselves.svg" alt="contraction for word themselves: dot 2346 dot134 dot 1236 dot 234"></div><div>  dot*2346mvs </div><div> themselves  </div></li>
+<li><div><img src="braille/con_there.svg" alt="contraction for word there: dot5 dot 2346"></div><div> dot*5dot*2346 </div><div> there </div></li>
+<li><div><img src="braille/con_these.svg" alt="contraction for word these: dot 56 dot 2346"></div><div> dot*45dot*2346  </div><div> these </div></li>
+<li><div><img src="braille/con_this.svg" alt="contraction for word this: dot 1456 dot 45 1456"></div><div>  dot*1456  </div><div> this  </div></li>
+<li><div><img src="braille/con_those.svg" alt="contraction for word those: dot 45 dot 1456"></div><div> dot*45dot*1456  </div><div> those </div></li>
+<li><div><img src="braille/con_through.svg" alt="contraction for word through: dot 5 dot 1456"></div><div>  dot*5dot*1456 </div><div> through </div></li>
+<li><div><img src="braille/con_thyself.svg " alt=" contraction for word thyself: dot 1456 dot13456 dot 124 "></div><div> dot*1456yf  </div><div> thyself </div></li>                                   
+<li><div><img src="braille/con_time.svg" alt="contraction for word time: dot 5 dot 2345"></div><div>  dot*5t  </div><div> time  </div></li>
+<li><div><img src="braille/con_tion.svg" alt="contraction for prefix tion: dot 56 dot 1345"></div><div> dot*56n </div><div> ⌂tion </div></li>
+<li><div><img src="braille/con_today.svg" alt="contraction for word today: dot 2345 dot 145"></div><div>  td  </div><div> today </div></li>
+<li><div><img src="braille/con_together.svg" alt="contraction for word together: dot 2345 dot 1245 dot 1235"></div><div>  tgr </div><div> together  </div></li>
+<li><div><img src="braille/con_tomorrow.svg" alt="contraction for word tomorrow: dot 2345 dot 134"></div><div>  tm  </div><div> tomorrow  </div></li>
+<li><div><img src="braille/con_tonight.svg" alt="contraction for word tonight: dot 2345 dot 1345"></div><div> tn  </div><div> tonight </div></li>
+
+</ul>
+
+<h3 id="toc_39">U contractions</h3>
+
+<ul class="contractions salmon intro">
+<li><div><img src="braille/con_under.svg" alt="contraction for word under: dot5 dot13"></div><div>  dot*5u  </div><div> under </div></li>
+<li><div><img src="braille/con_upon.svg" alt="contraction for word upon: dot 45 dot 136"></div><div>  dot*45u </div><div> upon  </div></li>
+<li><div><img src="braille/con_us.svg" alt="contraction for word us: dot 136"></div><div> u </div><div> us  </div></li>
+</ul>
+
+<h3 id="toc_40">V contractions</h3>
+
+<ul class="contractions salmon intro">
+<li><div><img src="braille/con_very.svg" alt="contraction for word very: dot 1236"></div><div>  v </div><div> very  </div></li>
+</ul>
+
+<h3 id="toc_41">W contractions</h3>
+
+<ul class="contractions salmon intro">
+<li><div><img src="braille/con_was.svg" alt="contraction for word was: dot 356"></div><div> dot*356 </div><div> was </div></li>
+<li><div><img src="braille/con_were.svg" alt="contraction for word were: dot 2356"></div><div>  dot*2356  </div><div> were  </div></li>
+<li><div><img src="braille/con_wh.svg" alt="contraction for prefix wh: dot 156"></div><div> dot*156 </div><div> wh  </div></li>
+<li><div><img src="braille/con_where.svg" alt="contraction for word where: dot5 dot 156"></div><div>  dot*5dot*156  </div><div> where </div></li>
+<li><div><img src="braille/con_which.svg" alt="contraction for word which: dot 156"></div><div> dot*156 </div><div> which </div></li>
+<li><div><img src="braille/con_whose.svg" alt="contraction for word whose: dot 45 dot 156"></div><div>  dot*45dot*156 </div><div> whose </div></li>
+<li><div><img src="braille/con_will.svg" alt="contraction for word will: dot 2456"></div><div>  w </div><div> will  </div></li>
+<li><div><img src="braille/con_with.svg" alt="contraction for word with: dot 23456"></div><div> dot*23456 </div><div> with  </div></li>
+<li><div><img src="braille/con_word.svg" alt="contraction for word word: dot 45 dot 1235"></div><div> dot*45w </div><div> word  </div></li>
+<li><div><img src="braille/con_work.svg" alt="contraction for word work: dot 45 dot 1235"></div><div> dot*45w </div><div> work  </div></li>
+<li><div><img src="braille/con_world.svg" alt="contraction for word world: dot 456 dot1235"></div><div> dot*456w  </div><div> world </div></li>
+<li><div><img src="braille/con_would.svg" alt="contraction for word would: dot 1235 dot145"></div><div> wd  </div><div> would </div></li>
+</ul>
+
+<h3 id="toc_42">Y contractions</h3>
+
+<ul class="contractions salmon intro">
+<li><div><img src="braille/con_you.svg" alt="contraction for word you: dot 13456"></div><div> y </div><div> you </div></li>
+<li><div><img src="braille/con_young.svg" alt="contraction for word young: dot5 dot13456"></div><div> dot*5y  </div><div> young </div></li>
+<li><div><img src="braille/con_your.svg" alt="contraction for word your: dot13456 dot135"></div><div> yr  </div><div> your  </div></li>
+<li><div><img src="braille/con_yourself.svg" alt="contraction for word yourself: dot 13456 dot 1235 dot 124"></div><div>  yrf </div><div> yourself  </div></li>
+<li><div><img src="braille/con_yourselves.svg" alt="contraction for word yourself: dot 13456 dot 1235 dot 124 dot 234"></div><div>  yrvs  </div><div> yourselves  </div></li>
+</ul>
+</div> 
+
+
+<button onclick="topFunction()" id="scrolltop" title="Scroll to top">Return to Top</button>
+
+
+<p class="legal">©2021 Will Capellaro & Braille Toolbox</p>
+
+<script> //1
+function myFunction() {
+  var dots = document.getElementById("dots");
+  var moreText = document.getElementById("more");
+  var btnText = document.getElementById("myBtn1");
+
+  if (dots.style.display === "none") {
+    dots.style.display = "inline";
+    btnText.innerHTML = "Read more"; 
+    moreText.style.display = "none";
+  } else {
+    dots.style.display = "none";
+    btnText.innerHTML = "Read less"; 
+    moreText.style.display = "inline";
+  }
+}
+</script>
+
+<script> //2
+function myFunction2() {
+  var dots2 = document.getElementById("dots2");
+  var moreText2 = document.getElementById("more2");
+  var btnText2 = document.getElementById("myBtn2");
+
+  if (dots2.style.display === "none") {
+    dots2.style.display = "inline";
+    btnText2.innerHTML = "Read more"; 
+    moreText2.style.display = "none";
+  } else {
+    dots2.style.display = "none";
+    btnText2.innerHTML = "Read less"; 
+    moreText2.style.display = "inline";
+  }
+}
+</script>
+
+<script> //3
+
+    //Get the button:
+mybutton = document.getElementById("scrolltop");
+
+// When the user scrolls down 20px from the top of the document, show the button
+window.onscroll = function() {scrollFunction()};
+
+function scrollFunction() {
+  if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+    mybutton.style.display = "block";
+    mybutton.style.opacity = 1;
+  } else {
+    mybutton.style.display = "block";
+    mybutton.style.opacity = 0;
+  }
+}
+
+// When the user clicks on the button, scroll to the top of the document
+function topFunction() {
+  document.body.scrollTop = 0; // For Safari
+  document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+}
+</script>
+
+</body>
+
+
+
+</html>
+
+
+
+<!-- <div class="otherpage">-->
+
+
