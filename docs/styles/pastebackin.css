@@ -20,21 +20,6 @@ p {
 
 
 
-h1, h2, h3, h4, h5, h6 { 
-	text-align: center; 
-	text-transform: capitalize; 
-	margin-top: 2rem;
-	margin-bottom: 1rem;
-	max-width: 900;
- 	font-family: 'Francois One', sans-serif;
-}
-
-h1 { font-size: 2.5rem;  }
-h2 { font-size: 2rem;  }
-h3 { font-size: 1.75rem;  }
-h4 { font-size: 1.5rem;  }
-h5 { font-size: 1rem;  }
-h6 { font-size: .8rem;  }
 
 
 a {
@@ -47,18 +32,7 @@ a:hover {
 }
 
 
-ul {
-	border-radius: 5px;
-/*	background-color: white;*/
-	list-style-type: none;
-	text-align: center;
-	font-weight: 500;
-	padding: 20px 10px 20px 10px;
-	box-shadow: 0 10px 20px rgba(0,0,0,0.09), 0 3px 3px rgba(0,0,0,0.15);
-	color: #222;
-	margin-bottom: 20px;
-	width: auto;
-}
+
 
 .active {
 	border: none;
@@ -102,17 +76,7 @@ which show more items side by side*/
 
 }
 
-.refgrid {
-/*	justify-content: center;
-*/	font-size: .65rem;
-	border-top: 7px solid #b1b;
-	border-radius: 5px;
-	/*max-width: 1200px;*/
-	margin-left: auto;
-	margin-right: auto;
-	width: auto;
-	grid-gap: 0.5rem;
-}
+
 
 /*within the info strip, this is the cluster of each braille image, 
 its letter translation (when available), and the word translation*/
@@ -127,18 +91,7 @@ its letter translation (when available), and the word translation*/
 	font-size: 1.25rem; 
 }
 
-.refgrid li {
-	margin: 1rem;
-	display: grid;
-	grid-template-rows: 40px auto auto; /*image, letter translation, word translation*/
-	/*1.25 on lg*/
-	text-align: center;
-	font-size: 3rem;
-/*	background-color: red;
-*/	width: 4rem;
-	grid-row-gap: 0rem;
-	font-size: 1.25rem; 
-}
+
 
 /*braille images*/
 /*this are the braille characters as svgs files*/
@@ -150,13 +103,7 @@ its letter translation (when available), and the word translation*/
 	height: 2em;
 }
 
-.refgrid li img {
-	margin-left: auto;
-	margin-right: auto;
-	border: 1px #E5E5E5 solid;
-	border-radius: 2px;
-	height: 2em;
-}
+
 
 /*letter translation*/
 /*used on one some infostrips (contractions at the bottom), 
@@ -221,119 +168,14 @@ so they line up nicely with similar strips above and below.*/
 	justify-content: center;
 }
 
-.refgrid {
-	display: block;
-	background-color: white;
-	box-shadow: 0 10px 20px rgba(0,0,0,0.09), 0 3px 3px rgba(0,0,0,0.15);
-}
 
 
 
-.refgrid ul {
-	box-shadow: none;
-	width: auto;
-	display: grid;
-	margin-left: auto;
-	margin-right: auto;
-	grid-template-columns: repeat(10, 60px) 40px repeat(2, 80px) 40px repeat(2, 80px);
-	grid-template-rows: auto auto auto auto;
-	background-color: white;
-}
-
-.letters { 
-	grid-column-start: 0;
-	grid-column-end: 1;
-	grid-row-start: 0;
-	grid-row-end: 1;
-	display: grid;
-	grid-template-columns: repeat(10, 60px);
-	grid-template-rows: repeat(5, 200px);
-}
-
-.ltr2 {
-	grid-row: 2 / 3;
-}
-
-.ltr3 {
-	grid-row: 3 / 4;
-}
-
-.case1, .case2 {
-	grid-row: 4 / 5;
-}
-
-.case1 {
-	grid-column: 1 / 2;
-}
-
-.case2 {
-	grid-column: 2 / 3;
-}
-
-.uwSpacer {
-	grid-row: 3 / 4;
-	grid-column: 7 / 11;
-}
 
 
-.centralSpacer {
-	grid-column: 11 / 12;
-	grid-row: 1 / 4; 
-}
-
-.lastSpacer {
-	grid-row: 4 / 5;
-	grid-column: 11 / 12;
-}
-
-/*.caseSpacer {
-	grid-row: 3 / 4;
-	grid-column: 3 / 4;
-}
-*/
-/*.caseSpacer2 {
-	grid-row: 4 / 5;
-	grid-column: 6 / 10;
-}*/
-
-.pun1 {
-	grid-row: 4 / 5;
-}
-
-.pun2 {
-}
-
-.centralSpacer2 {
-	grid-column: 14 / 15;
-	grid-row: 1 / -1; 
-}
 
 
-.cases { 
-	grid-column-start: 0;
-	grid-column-end: 1;
-	grid-row-start: 1;
-	grid-row-end: 2;
-	display: grid;
-	grid-template-columns: repeat(10, 60px);
-}
 
-.punctuation { 
-	grid-column-start: 1;
-	grid-column-end: 2;
-	grid-row-start: 0;
-	grid-row-end: 1;
-	display: grid;
-	grid-template-columns: repeat(5, 60px);
-	grid-template-rows: repeat(5, 200px);
-}
-
-
-.smalltxt {
-font-size: .8rem;
-margin-top: .6em;
-
-}
 
 
 
@@ -385,19 +227,7 @@ margin-top: .6em;
 	border: none;
 }
 
-/*skip content link for accessibility
-*/
-.skiplink {
-	color: whitesmoke;
-}
 
-.skiplink:focus {
-	padding: 6px 6px 2px 6px;
-	border-radius: 4px;
-	background-color: #b1b;
-	color: white;
-	outline: none;
-}
 
 /*scroll to top button that appears when the user scrolls down*/
 #scrolltop {

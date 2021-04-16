@@ -46,6 +46,10 @@ ul {
 	grid-template-rows: auto auto auto auto;
 }
 
+.sectionHead {
+	display: none !important;
+}
+
 .refgrid li {
 	margin: 1rem;
 	display: grid;
@@ -162,9 +166,15 @@ ul {
 	grid-template-rows: repeat(20,auto);
 }
 
+.sectionHead {
+	display: none;
+}
+
 .ltr2 {
 	grid-row: 2 / 3;
 }
+
+
 
 .ltr3 {
 	grid-row: 3 / 4;
@@ -225,6 +235,9 @@ ul {
 
 @media only screen and (max-width: 860px)  {  
 
+.sectionHead {
+	display: none;
+}
 
 body {
 	background-color: white;
@@ -307,19 +320,49 @@ ul {
 	/*width: 400px;*/
 	margin-left: auto;
 	margin-right: auto;
-	padding-left: 2rem;
-	padding-right: 2rem;
-}
-
-.refgrid li {
-	width: 2.8rem;
-	font-size: 1.4em;
-	grid-gap: .5em;
+	padding-left: 0rem;
+	padding-right: 0rem;
+	justify-content: center;
 }
 
 .skiplink {
 	color: #b1d;
 	opacity: .0;
+}
+
+.refgrid li {
+	width: auto;
+	font-size: 1.4em;
+	grid-gap: .5em;
+}
+
+.sectionHead {
+	display: inline !important;
+	width: 100% !important;
+	height: 1.6rem;
+	line-height: 1.6rem;
+	background-color: #b1d;
+	color: white;
+	border-radius: 3rem;
+	text-align: center;
+	font-size: 1rem !important;
+}
+
+.hiddenHead {
+	display: inline !important;
+	width: 100% !important;
+	height:.1rem;
+	line-height: 1.6rem;
+	background-color: #fff;
+	color: white;
+	padding: 0;
+	margin: 0;
+	grid-gap: 0;
+
+}
+
+.hiddenHead {
+
 }
 
 .skipdiv {
