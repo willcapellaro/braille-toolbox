@@ -341,8 +341,8 @@ ul {
 
 .refgrid li {
 	width: auto;
-	font-size: 1.2em;
-	grid-gap: .5em;
+	font-size: 1.1em;
+	grid-gap: .25em;
 }
 
 .sectionHead {
