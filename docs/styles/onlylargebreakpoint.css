@@ -301,13 +301,13 @@ h1 {
 	margin-top: 0;
   	margin-bottom: 0;
   	padding-bottom: 0;
-  	height: 4rem;
+  	height: 3rem;
   	position: -webkit-sticky; /* Required for Safari */
   	position: sticky;
   	top: 0;
+  	font-size: 1.75rem;
   	height: auto;
 }
-
 
 html {
 	padding: 0;
@@ -317,6 +317,11 @@ html {
 body {
 	padding: 0;
 	margin: 0;
+}
+
+.refgrid {
+	margin: 0;
+	padding: 0;
 }
 
 ul {
@@ -332,6 +337,15 @@ ul {
 	padding-right: 0rem;
 	margin-top: 0;
 	justify-content: center;
+}
+
+.skipdiv {
+	background-color: #b1d;
+	position: absolute;
+	height: 10px;
+	margin: 0;
+	padding: 0;
+	text-align: center;
 }
 
 .skiplink {
@@ -355,9 +369,10 @@ ul {
 	border-radius: 3rem;
 	text-align: center;
 	font-size: 1rem !important;
+	margin-top: 0;
 	position: -webkit-sticky; /* Required for Safari */
   	position: sticky;
-  	top: 4em;
+  	top: 3.5em;
 }
 
 .hiddenHead {
@@ -373,13 +388,7 @@ ul {
 
 }
 
-.skipdiv {
-	background-color: #b1d;
-	height: 10px;
-	margin: 0;
-	padding: 0;
-	text-align: center;
-}
+
 
 .uwSpacer, .centralSpacer, .centralSpacer2, .lastSpacer {
 
