@@ -55,7 +55,6 @@ ul {
 	display: grid;
 	grid-template-rows: 40px auto auto; /*image, letter translation, word translation*/
 	text-align: center;
-	font-size: 3rem;
 	width: 4rem;
 	grid-gap: .5rem;
 	font-size: 1.25rem; 
@@ -70,8 +69,8 @@ ul {
 .refgrid li img {
 	margin-left: auto;
 	margin-right: auto;
-	border: 1px #E5E5E5 solid;
-	border-radius: 2px;
+	border: 2px #E5E5E5 solid;
+	border-radius: 4px;
 	height: 2em;
 }
 
