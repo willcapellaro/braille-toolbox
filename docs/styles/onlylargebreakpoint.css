@@ -299,11 +299,15 @@ h1 {
 	color: whitesmoke;
 	padding-top: 0;
 	margin-top: 0;
-	position: -webkit-sticky; /* Required for Safari */
-  	position: sticky;
   	margin-bottom: 0;
   	padding-bottom: 0;
+  	height: 4rem;
+  	position: -webkit-sticky; /* Required for Safari */
+  	position: sticky;
+  	top: 0;
+  	height: auto;
 }
+
 
 html {
 	padding: 0;
@@ -337,7 +341,7 @@ ul {
 
 .refgrid li {
 	width: auto;
-	font-size: 1.4em;
+	font-size: 1.2em;
 	grid-gap: .5em;
 }
 
@@ -351,8 +355,9 @@ ul {
 	border-radius: 3rem;
 	text-align: center;
 	font-size: 1rem !important;
-	  position: -webkit-sticky; /* Required for Safari */
-  position: sticky;
+	position: -webkit-sticky; /* Required for Safari */
+  	position: sticky;
+  	top: 4em;
 }
 
 .hiddenHead {
