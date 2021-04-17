@@ -64,6 +64,7 @@ ul {
 .refgrid li .subs {
 	margin-top: 0px;
 	opacity: .8;
+	z-index: 0;
 }
 
 .refgrid li img {
