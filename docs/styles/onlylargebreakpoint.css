@@ -373,4 +373,9 @@ ul {
 	text-align: center;
 }
 
+.uwSpacer, .centralSpacer, .centralSpacer2, .lastSpacer {
+
+display: none;
+
+}
 }
