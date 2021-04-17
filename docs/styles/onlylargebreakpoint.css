@@ -301,6 +301,8 @@ h1 {
 	margin-top: 0;
 	position: -webkit-sticky; /* Required for Safari */
   	position: sticky;
+  	margin-bottom: 0;
+  	padding-bottom: 0;
 }
 
 html {
@@ -324,6 +326,7 @@ ul {
 	margin-right: auto;
 	padding-left: 0rem;
 	padding-right: 0rem;
+	margin-top: 0;
 	justify-content: center;
 }
 
