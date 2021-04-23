@@ -168,7 +168,8 @@ a:hover {
 .decoderinput {
 	width: 4em;
 	display: grid;
-	grid-template-rows: auto auto auto;
+	grid-template-rows: 4rem 4rem 4rem;
+	grid-template-columns: 4rem 4rem;
 /*	grid-template-columns: 2em 2em;
 */	grid-auto-flow: column;
 }
@@ -190,6 +191,26 @@ a:hover {
 	display: none;
 }
 
+.myCheckbox input {
+  position: relative;
+  z-index: -9999;
+}
+
+.myCheckbox span {
+  width: 3rem;
+  height: 3rem;
+  display: block;
+  border-radius: 5em;
+  background-color: whitesmoke;
+  border: 2px #ddd solid;
+  transition: .25s;
+/*  box-shadow: 2px 2px 2px black
+*/}
+
+.myCheckbox input:checked + span {
+  background-color: black;
+  transition: .25s;
+}
 
 .betatag {
 	text-align: center;
