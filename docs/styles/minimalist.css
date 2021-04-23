@@ -322,11 +322,11 @@ a:hover {
 	margin-top: 0;
 	margin-bottom: 2rem;
 	text-align: center;
-	width: 22rem;
+	width: 31rem;
 	border: 1px solid purple;
 	color: purple;
 	background-color: lavenderblush;
-	padding: .5em;
+	padding: .5em 0;
 	border-radius: 4px;
 	font-family: sans-serif;
 	opacity: .7;
@@ -411,9 +411,12 @@ h1, h2, h3, h4, h5, h6, .site_slogan {
 }
 
 .decoderlayout div:nth-child(3) p {
-	margin-top: 1em;
+	margin-top: 1rem;
 }
 
+#titvarDecoded {
+	margin-bottom: 1rem;
+}
 
 .decoderlayout div:nth-child(3) h3 strong {
 font-size: 1.5em;
@@ -426,6 +429,7 @@ font-weight: 100;
  	border-radius: 2px;
  	height: 2rem;
  	margin-right: .25rem;
+
 }
 
 
