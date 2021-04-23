@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   <link rel="stylesheet" type="text/css" href="styles/minimalist.css">
   <link rel="stylesheet" type="text/css" href="styles/range-override.css">
-  <link rel="stylesheet" type="text/css" href="styles/speci2al-checks-decoder.css">
+  <link rel="stylesheet" type="text/css" href="styles/special-checks-decoder.css">
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous" async=""></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous" async=""></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous" async=""></script>
@@ -61,7 +61,7 @@
 
 
 <h1 id="maincontent">Dot Decoder</h1>
-<p class="betatag">Beta This page is in beta and has not passed accessibility testing.</p>
+<p class="betatag">This page is in beta and is not yet accessible.</p>
 
 <!-- <h2>Single Character</h2>
  --><p class="center">Turn dots on and off to see what a braille cell stands for.</p>
@@ -71,49 +71,30 @@
 <div>
   <form class="decoderinput" action="#" onchange="verify();">
     <p>
-      <label for="dot1"><span class="hidelabel">Dot 1</span></label>
-      <label class="myCheckbox">
-      <input type="checkbox" name="dot1" id="dot1" />
-      <span></span>
-      </label>
-     </p>
-    <p>
-      <label for="dot2"><span class="hidelabel">Dot 2</span></label>
-      <label class="myCheckbox">
-      <input type="checkbox" name="dot2" id="dot2" />
-      <span></span>
-      </label>
+      <input type="checkbox" id="dot1"/>  
+      <label for="dot1"><span class="hidelabel">Dot 1 (100000)</span></label>
     </p>
     <p>
-      <label for="dot3"><span class="hidelabel">Dot 3</span></label>
-      <label class="myCheckbox">
-      <input type="checkbox" name="dot3" id="dot3" />
-      <span></span>
-      </label>
+      <input type="checkbox" id="dot2"/>
+      <label for="dot2"><span class="hidelabel">Dot 2 (010000)</span></label>
     </p>
-    <p>
-      <label for="dot4"><span class="hidelabel">Dot 4</span></label>
-      <label class="myCheckbox">
-      <input type="checkbox" name="dot4" id="dot4"/>
-      <span></span>
-      </label>
+      <p>
+      <input type="checkbox" id="dot3"  />
+      <label for="dot3"><span class="hidelabel">Dot 3 (001000)</span></label>
     </p>
-    <p>
-      <label for="dot5"><span class="hidelabel">Dot 5</span></label>
-      <label class="myCheckbox">
-      <input type="checkbox" name="dot5" id="dot5" />
-      <span></span>
-      </label>
+        <p>
+      <input type="checkbox" id="dot4"  />
+      <label for="dot4"><span class="hidelabel">Dot 4 (000100)</span></label>
     </p>
-    <p>
-      <label for="dot6"><span class="hidelabel">Dot 6</span></label>
-      <label class="myCheckbox">
-      <input type="checkbox" name="dot6" id="dot6" />
-      <span></span>
-      </label>
+        <p>
+      <input type="checkbox" id="dot5"  />
+      <label for="dot5"><span class="hidelabel">Dot 5 (000010)</span></label>
+    </p>
+        <p>
+      <input type="checkbox" id="dot6"  />
+      <label for="dot6"><span class="hidelabel">Dot 6 (000001)</span></label>
     </p>
   </form>
-
 </div>
 <div>
 <div class="decoderoutput">
@@ -123,7 +104,6 @@
   </div>
 </div>
 </div> 
-</div>
 <p class="legal">©2021 Will Capellaro & Braille Toolbox</p>
 </body>
 
