@@ -136,6 +136,25 @@ box-shadow: 0 10px 20px rgb(0 0 0 / 9%), 0 3px 3px rgb(0 0 0 / 15%);
 transition: .2s;
 }
 
+.centerDiv {
+  text-align: center;
+  margin-top: 3rem;
+}
+
+.linkButton {
+  margin-left: auto;
+  border: none; /* Remove borders */
+  outline: none; /* Remove outline */
+  background-color: #D1B; /* Set a background color */
+  color: white; /* Text color */
+  cursor: pointer; /* Add a mouse pointer on hover */
+  padding: 15px; /* Some padding */
+  border-radius: 10px; /* Rounded corners */
+  font-size: 1.125em; /* Increase font size */
+  box-shadow: 0 10px 20px rgb(0 0 0 / 9%), 0 3px 3px rgb(0 0 0 / 15%);
+  transition: .2s;
+}
+
 #scrolltop:hover {
   background-color: purple; 
   transition: .2s;
@@ -532,6 +551,8 @@ textarea:focus {
 .speedcontrol {
 	display: inline-block;
 }
+
+
 
 .spaceafter {
 	/*margin-bottom: 10em;*/
