@@ -48,7 +48,6 @@ caption {
 	display: grid;
   	grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
 	justify-content: center;
-
 }
 
 .flip {
@@ -322,7 +321,7 @@ a:hover {
 	margin-top: 0;
 	margin-bottom: 2rem;
 	text-align: center;
-	width: 31rem;
+	width: 100%;
 	border: 1px solid purple;
 	color: purple;
 	background-color: lavenderblush;
@@ -372,7 +371,7 @@ h1, h2, h3, h4, h5, h6, .site_slogan {
 
 .decoderlayout {
 	display: grid;
-	grid-template-columns: auto 1fr;
+	grid-template-columns: auto auto;
 	margin-top: 1em;
 	grid-column-gap: 3em;
 	max-width: 900px;
@@ -705,15 +704,16 @@ body {
 
 .refgrid {
 	display: flex;
-	grid-template-columns: 1.5fr 1fr;
+	grid-template-columns: 1.25fr 1fr;
 	grid-column-gap: 2em;
 }
 
 .refgrid ul {
 	display: flex;
-line-height: 20em;
-grid-gap: .5em;
-justify-content: end;
+  line-height: 20em;
+  grid-gap: .5em;
+  justify-content: end;
+  margin-right: 1rem;
 }
 
 .lastly {
@@ -761,6 +761,11 @@ margin: 0;
 	grid-template-columns: auto auto auto;
 }
 
+.decoderlayout {
+  display: grid;
+  grid-template-columns: auto 1fr;
+}
+
 /*img {
 	border-radius: 4px;
 }
@@ -793,6 +798,8 @@ font-size: 38px;
 |_______/       |______/       \______/       \______/ 
                                                                                 
 */
+
+
 
 
 .betatag {
