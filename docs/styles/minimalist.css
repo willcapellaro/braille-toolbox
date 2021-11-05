@@ -492,6 +492,7 @@ font-family: 'MyWebFont', Fallback, sans-serif;
 resize: vertical;
 text-align: left;
 padding: 11px 11px 1px 21px;
+font-variant-ligatures: normal;
 overflow-y: scroll;
 line-height: .7;
 letter-spacing: 0px;
