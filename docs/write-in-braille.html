@@ -11,6 +11,10 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous" async=""></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous" async=""></script>
   <style> @font-face {font-family: 'MyWebFont'; src: url(fonts/OverpassMono-Braille.otf);}</style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css">
+
 
 <link rel="preconnect" href="https://fonts.gstatic.com">
 <link href="https://fonts.googleapis.com/css2?family=Francois+One&display=swap" rel="stylesheet">
@@ -56,15 +60,42 @@
 <div class="afternav">
 
 <h1 id="maincontent">Write in Braille</h1>
-<p class="betatag">Beta Feature</p>
+<p class="betatag">Beta Feature <button type="button" class="btn btn-link" style="font-size: 16px; color: #b1d" data-toggle="modal" data-target="#exampleModalLong">
+  <i class="fas fa-bug"></i> Report a Bug
+</button></p>
 
-<p>Enter some text below to see how it translates to braille. To learn about the mechanics of braille, refer to the <a href="intro-to-braille.html">Braille Explainer</a> section.</p>
+<!-- Button trigger modal -->
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Feedback</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" style="margin-left: auto; margin-right: auto;">
+        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSewt_2Qd3Y87NSmYO5ZORzJaz2QbzS_fvakA31beBd-rEfOQg/viewform?embedded=true" width="640" height="1292" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<p>Enter some text below to see translate it to braille. To learn about the mechanics of braille, refer to the <a href="intro-to-braille.html">Braille Explainer</a> section.</p>
 
 
 <form> 
-  <label for="encoderField">Type or paste text to see it written in braille</label><br>
+  <label for="encoderField">Your text</label><br>
+                  <div style="display: inline;">
+                <input class="" type="checkbox" name="myCheck" id="myCheck" onclick="myFunction()" value="Lockinput" >
+                <label for="myCheck" class="alignright">Flip horizontally (slate and stylus)</label>
+                </div>
   <textarea class="spaceafter" id="encoderField" placeholder="your braille here"></textarea>
- 
 </form>
 
 </div> 
@@ -78,6 +109,22 @@
 
   }
 </script>
+
+<script>
+function myFunction() {
+  // Get the checkbox
+  var checkBox = document.getElementById("myCheck");
+  var textarea = document.getElementById("encoderField")
+
+  // If the checkbox is checked, display the output text
+  if (checkBox.checked == true){
+    textarea.classList.add("flip");
+  } else {
+    textarea.classList.remove("flip");
+  }
+}
+</script>
+</body>
 
 
 </body>
