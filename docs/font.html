@@ -40,7 +40,7 @@
       <li class="nav-item">
         <a class="nav-link" href="quick-reference.html">Quick Reference</a>
       </li>
-      <li class="nav-item active">
+      <li class="nav-item">
         <a class="nav-link" href="write-in-braille.html">Write in Braille</a>
       </li>
       <li class="nav-item dropdown">
@@ -52,15 +52,17 @@
           <a class="dropdown-item" href="dot-decoder.html">Dot Decoder</a>
           <a class="dropdown-item" href="braillewriter-help.html">Braillewriter Help</a>
           <a class="dropdown-item" href="about.html">About Braille Toolbox</a>
-          <a class="dropdown-item" href="font.html">Braille Toolbox Font</a></div>      </li>
+          <a class="dropdown-item" href="font.html">Braille Toolbox Font</a></div>
+
+      </li>
     </ul>
   </div>
 </nav>
 
 <div class="afternav">
 
-<h1 id="maincontent">Write in Braille</h1>
-<p class="betatag">Beta Feature <button type="button" class="btn btn-link" style="font-size: 16px; color: #b1d" data-toggle="modal" data-target="#exampleModalLong">
+<h1 id="maincontent">Braille Toolbox Font</h1>
+<p class="betatag">Beta Product <button type="button" class="btn btn-link" style="font-size: 16px; color: #b1d" data-toggle="modal" data-target="#exampleModalLong">
   <i class="fas fa-bug"></i> Report a Bug
 </button></p>
 
@@ -86,44 +88,36 @@
 </div>
 
 
-<p>Enter some text below to see translate it to braille. To learn about the mechanics of braille, refer to the <a href="intro-to-braille.html">Braille Explainer</a> section. Please report any problems, noting your OS and browser.</p>
+<p>Use the Braille Toolbox Font on your device or website to display contracted braille. It works using ligatures, a font feature that replaces character combinations with new ones. As you type, contractions will automatically appear, and can be edited. Try it for yourself on the <a href="write-in-braille.html">Write in Braille</a> page.</p>
 
+<p class="fontTest">brai<span style="font-size: 16px; opacity: .5;">⟶</span>braille</p>
+<p class="fontTest">kno<span style="font-size: 16px; opacity: .5;">⟶</span>know<span style="font-size: 16px; opacity: .5;">⟶</span>knowledge</p>
 
-<form> 
+<p>Work is still in progress for this font, so be sure to log a bug report if you encounter any issues.</p>
+
+<p>The font is free to use or modify. Please get in touch if you'd like to get involved in the project.</p>
+
+ 
+
+<a href="fonts/OverpassMono-Braille.otf" download>
+  <h2><i class="fas fa-file-download"></i> Download font</h2>
+</a>
+
+<!-- <form> 
   <label for="encoderField"><strong>Input Your Text Here</strong></label><br>
                   <div style="display: inline;">
                 <input class="" type="checkbox" name="myCheck" id="myCheck" onclick="myFunction()" value="Lockinput" >
                 <label for="myCheck" class="alignright">Flip horizontally (slate and stylus)</label>
                 </div>
   <textarea class="spaceafter" id="encoderField" placeholder="your braille here"></textarea>
-</form>
+</form> -->
 
 </div> 
 <p class="legal">©2022 Will Capellaro & Braille Toolbox</p>
 
-<script>
-  function flashText() {
-    var element = document.getElementById("encoderField");
-    element.classList.remove('flashStyle2')
-    element.classList.add("flashStyle");
 
-  }
-</script>
 
-<script>
-function myFunction() {
-  // Get the checkbox
-  var checkBox = document.getElementById("myCheck");
-  var textarea = document.getElementById("encoderField")
 
-  // If the checkbox is checked, display the output text
-  if (checkBox.checked == true){
-    textarea.classList.add("flip");
-  } else {
-    textarea.classList.remove("flip");
-  }
-}
-</script>
 </body>
 
 

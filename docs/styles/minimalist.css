@@ -12,6 +12,12 @@ body {
 	margin-right: auto;
 }
 
+.fontTest {
+  font-family: 'MyWebFont', Fallback, sans-serif;
+  font-size: 250px;
+  line-height: 140px;
+}
+
 ul {
 	border-radius: 5px;
 	background-color: white;
