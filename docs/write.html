@@ -53,10 +53,13 @@
 
 <nav class="navbar navbar-expand-lg navbar-light">
   <a class="navbar-brand" href="index.html">Braille Toolbox</a>
+
+
   <button class="navbar-toggler" style="height: 2em; border: none;" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span>    <img class="ham_icon" src="braille/con_for.svg" alt="braille cell icon">
 </span>
   </button>
+
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
@@ -85,19 +88,20 @@
 
 <div class="afternav">
 
+
 <h1 id="maincontent">Write in Braille</h1>
-<p class="betatag">Beta Feature <button type="button" class="btn btn-link" style="font-size: 16px; color: #b1d" data-toggle="modal" data-target="#exampleModalLong">
+<p class="betatag">Beta Feature | Currently Supported Browsers: Mac Safari<button type="button" class="btn btn-link" style="font-size: 16px; color: #b1d" data-toggle="modal" data-target="#exampleModalLong">
   <i class="fas fa-bug"></i> Report a Bug
 </button></p>
 
 
 
-<p>Enter some text below to see translate it to braille. To learn about the mechanics of braille, refer to the <a href="intro.html">Braille Explainer</a> section. Please report any problems, noting your OS and browser.</p>
+<p> Enter some text below to see translate it to braille. To learn about the mechanics of braille, refer to the <a href="intro.html">Braille Explainer</a> section. Please report any problems, noting your OS and browser.</p>
 
 
 <form> 
   <label for="encoderField"><strong>Input Your Text Here</strong></label><br>
-                  <div style="display: inline;">
+                  <!-- <div style="display: inline;"> -->
                 <input class="" type="checkbox" name="myCheck" id="myCheck" onclick="myFunction()" value="Lockinput" >
                 <label for="myCheck" class="alignright">Flip horizontally (slate and stylus)</label>
                 </div>
@@ -107,14 +111,15 @@
 </div> 
 <p class="legal">©2022 Will Capellaro & Braille Toolbox</p>
 
-<script>
+<!-- <script>
   function flashText() {
     var element = document.getElementById("encoderField");
     element.classList.remove('flashStyle2')
     element.classList.add("flashStyle");
 
   }
-</script>
+</script> -->
+
 
 <script>
 function myFunction() {
