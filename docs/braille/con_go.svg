@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="46px" height="70px" viewBox="0 0 46 70" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 52.6 (67491) - http://www.bohemiancoding.com/sketch -->
     <title>con_go</title>
-    <desc>Created with Sketch.</desc>
     <g id="con_go" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <circle id="Oval" fill="#222" cx="12.5" cy="34.5" r="7.5"></circle>
-        <circle id="Oval" fill="#222" cx="33.5" cy="34.5" r="7.5"></circle>
-        <circle id="Oval" fill="#222" cx="12.5" cy="11.5" r="7.5"></circle>
-        <circle id="Oval" fill="#222" cx="33.5" cy="11.5" r="7.5"></circle>
+        <circle id="O" fill="#222" cx="12" cy="34" r="7"></circle>
+        <circle id="O" fill="#222" cx="33" cy="34" r="7"></circle>
+        <circle id="O" fill="#222" cx="12" cy="11" r="7"></circle>
+        <circle id="O" fill="#222" cx="33" cy="11" r="7"></circle>
     </g>
 </svg>

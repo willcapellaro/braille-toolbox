@@ -609,8 +609,9 @@ textarea:focus {
 
 .contractions li div:nth-child(2) {
 /*	font-size: 1.875em;
-*/	font-family: 'Brailleblocks', Fallback, monospace;
+*/	font-family: 'Brailleblocks', monospace;
 	opacity: 0;
+  font-size: .5em;
 	transition: .5s;
 	padding-bottom: 0px;
 	opacity: .8;
