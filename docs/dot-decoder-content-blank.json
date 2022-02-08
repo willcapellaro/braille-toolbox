@@ -123,14 +123,21 @@
 		"binary" : "100010", 
 		"dataDecoded" : {
 			"titvar" : "The string en", 
-			"descvar" : "Also used for subscript formatting."
+			"descvar" : "Also used for subscript formatting.",
+			"descvar2" : "2.",
+			"descvar3" : "3.",	
+			"descvar4" : "3."
+
 		}
 	}, 
 	{
 		"binary" : "010010",  
 		"dataDecoded" : {
-			"titvar" : "A colon.", 
-			"descvar" : " "
+			"titvar" : "A colon. ", 
+			"descvar" : "In a word, it can signify a double c. ",
+			"descvar2" : "2a.",
+			"descvar3" : "3a.",	
+			"descvar4" : "3a."
 		}
 	}, 
 	{
@@ -257,7 +264,7 @@
 		"binary" : "001001", 
 		"dataDecoded" : {
 			"titvar" : "The letter c", 
-			"descvar" : "In a word, it can signify a double c. When preceded by a number sign, it’s the number c. It’s also a contraction for the word can."
+			"descvar" : "When preceded by a number sign, it’s the number c. It’s also a contraction for the word can."
 		}
 	}, 
 	{
