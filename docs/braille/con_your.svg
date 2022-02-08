@@ -3,6 +3,7 @@
     <title>con_your</title>
     <g id="con_your" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <circle id="O-C-2" fill="#222" cx="88" cy="34" r="7"></circle>
+        <circle id="O-C-2" fill="#222" cx="67" cy="34" r="7"></circle>
         <circle id="O-C-3" fill="#222" cx="67" cy="57" r="7"></circle>
         <circle id="O-C-5" fill="#222" cx="67" cy="11" r="7"></circle>
         <circle id="O" fill="#222" cx="33" cy="35" r="7"></circle>

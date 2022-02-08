@@ -85,7 +85,7 @@
 <h2 id="toc_2">Super Basics</h2>
 
 
-<p>Firstly, think of braille as the same ABC alphabet that we use in English, but made for touch reading. Each braille character, or <strong>cell</strong> is made of up to six dots. With braille characters representing letters, you can write anything in English (and many languages). Braille works by creating tactile shapes the blind can learn to read by touch. <span id="dots"> </span><span id="more"> <br><br>Dots are simple; they are either raised or not, and they should always be the same size and depth. The dot arrangement is also very regimented; characters are arrangements of a 2x3 grid of <strong>cells</strong>, an arrangement of two dots wide by three dots high. The writing of each character is done by describing which dots are raised. They're referred to by numbers; the three left dots are numbered 1, 2, and 3, and the right ones are 4, 5, and 6. So to describe the letter r, shown below, you'd say it has dots 1, 2, 3, and 5 raised, or simply describe it as "dot 1235."</span><button onclick="myFunction()" id="myBtn1" class="inline">More</button></p>
+<p>Firstly, think of braille as the same ABC alphabet that we use in English, but made for touch reading. Each braille character, or <strong>cell</strong> is made of up to six dots. With braille characters representing letters, you can write anything in English (and many languages). Braille works by creating tactile shapes the blind can learn to read by touch. Dots are simple; they are either raised or not, and they should always be the same size and depth. The dot arrangement is also very regimented; characters are arrangements of a 2x3 grid of <strong>cells</strong>, an arrangement of two dots wide by three dots high. The writing of each character is done by describing which dots are raised. They're referred to by numbers; the three left dots are numbered 1, 2, and 3, and the right ones are 4, 5, and 6. So to describe the letter r, shown below, you'd say it has dots 1, 2, 3, and 5 raised, or simply describe it as "dot 1235."</p>
 
 <br>
 
@@ -568,7 +568,7 @@
 <ul class="contractions salmon intro">
 <li><div><img src="braille/con_you.svg" alt="contraction for word you: dot 13456"></div><div> y </div><div> you </div></li>
 <li><div><img src="braille/con_young.svg" alt="contraction for word young: dot5 dot13456"></div><div> dot*5y  </div><div> young </div></li>
-<li><div><img src="braille/con_your.svg" alt="contraction for word your: dot13456 dot135"></div><div> yr  </div><div> your  </div></li>
+<li><div><img src="braille/con_your.svg" alt="contraction for word your: dot13456 dot1235"></div><div> yr  </div><div> your  </div></li>
 <li><div><img src="braille/con_yourself.svg" alt="contraction for word yourself: dot 13456 dot 1235 dot 124"></div><div>  yrf </div><div> yourself  </div></li>
 <li><div><img src="braille/con_yourselves.svg" alt="contraction for word yourself: dot 13456 dot 1235 dot 124 dot 234"></div><div>  yrvs  </div><div> yourselves  </div></li>
 </ul>
@@ -580,41 +580,7 @@
 
 <p class="legal">©2022 Will Capellaro & Braille Toolbox</p>
 
-<script> //1
-function myFunction() {
-  var dots = document.getElementById("dots");
-  var moreText = document.getElementById("more");
-  var btnText = document.getElementById("myBtn1");
 
-  if (dots.style.display === "none") {
-    dots.style.display = "inline";
-    btnText.innerHTML = "Read more"; 
-    moreText.style.display = "none";
-  } else {
-    dots.style.display = "none";
-    btnText.innerHTML = "Read less"; 
-    moreText.style.display = "inline";
-  }
-}
-</script>
-
-<script> //2
-function myFunction2() {
-  var dots2 = document.getElementById("dots2");
-  var moreText2 = document.getElementById("more2");
-  var btnText2 = document.getElementById("myBtn2");
-
-  if (dots2.style.display === "none") {
-    dots2.style.display = "inline";
-    btnText2.innerHTML = "Read more"; 
-    moreText2.style.display = "none";
-  } else {
-    dots2.style.display = "none";
-    btnText2.innerHTML = "Read less"; 
-    moreText2.style.display = "inline";
-  }
-}
-</script>
 
 <script> //3
 
