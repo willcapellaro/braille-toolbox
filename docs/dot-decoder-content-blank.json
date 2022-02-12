@@ -31,7 +31,7 @@
 		"binary" : "001000", 
 		"dataDecoded" : {
 			"titvar" : "The currency symbol", 
-			"descvar" : " " //also add script formatting 
+			"descvar" : "And other symbols." 
 		}
 	}, 
 	{
@@ -370,7 +370,7 @@
 		"binary" : "001011", 
 		"dataDecoded" : {
 			"titvar" : "The letter f", 
-			"descvar" : "In a word, it can signify a double f. When preceded by a number sign, it’s the number 6. It’s also a contraction for from. Used at the end of several contractions like oneself, myself, and thyself. You know, because thyself is a commonly used word."
+			"descvar" : "In a word, it can signify a double f. When preceded by a number sign, it’s the number 6. It’s also a contraction for from. Used at the end of several contractions like oneself, myself, and thyself."
 		}
 	}, 
 	{
