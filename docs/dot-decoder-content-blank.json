@@ -31,7 +31,7 @@
 		"binary" : "001000", 
 		"dataDecoded" : {
 			"titvar" : "The currency symbol", 
-			"descvar" : "<p> This symbol is used as a prefix to signify a type of currency. </p><p> <div><img src=\"braille/comp_dollar.svg \"alt=\" dollar sign: dot 4 dot 234  \">  Followed by a letter s, this is a dollar sign ($).  </p><p><div><img src=\"braille/comp_euro.svg \" alt=\" euro currency sign: dot 4 dot 15  \">  Followed by an e, it’s a euro sign (€). </p><p><div><img src=\"braille/comp_pound.svg  \" alt=\" pound sterling sign: dot 4 dot 123  \">  Same with y and yen (¥).  </p><p><div><img src=\"braille/comp_yen.svg  \" alt=\" yen currency sign: dot 4 dot 13456  \">  Followed by an l, it's pound sterling (£).  </p><p>Hint: it helps to think of the shape of the print letter to discern the different currencies.</p><h3>Punctuation</h3>   <p> <div><img src=\"braille/pun_opening_angle_bracket.svg \"alt=\" opening bracket: dot 4, dot 126  \">  Followed by a letter dot 126, this is an opening angle bracket (<).  </p> <p> <div><img src=\"braille/pun_closing_angle_bracket.svg \"alt=\" closing bracket: dot 4, dot 234  \">  Followed by a letter dot 234, this is an closing angle bracket (>).  </p> " //also add script formatting 
+			"descvar" : " " //also add script formatting 
 		}
 	}, 
 	{
