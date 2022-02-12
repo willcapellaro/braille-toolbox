@@ -136,9 +136,6 @@
   <div>
     <h3 id="titvarDecoded">Letter a</h3>
     <p id="descvarDecoded">This configuration, dot 1, is an example of a letter A, or number 1 (if preceded by a number sign).</p> 
-        <p id="descvar2Decoded"></p> 
-        <p id="descvar3Decoded"></p> 
-        <p id="descvar4Decoded"></p> 
 
   </div>
 </div>
@@ -233,10 +230,8 @@
       if (characters[i]['binary'] == binaryString)
       {
         document.getElementById('titvarDecoded').innerHTML = characters[i]['dataDecoded']['titvar'];
-        document.getElementById('descvarDecoded').innerHTML = characters[i]['dataDecoded2']['descvar'];
-        document.getElementById('descvar2Decoded').innerHTML = characters[i]['dataDecoded2']['descvar2'];
-        document.getElementById('descvar3Decoded').innerHTML = characters[i]['dataDecoded3']['descvar3'];
-        document.getElementById('descvar4Decoded').innerHTML = characters[i]['dataDecoded4']['descvar4'];
+        document.getElementById('descvarDecoded').innerHTML = characters[i]['dataDecoded']['descvar'];
+
 
 
 

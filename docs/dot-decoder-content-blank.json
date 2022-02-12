@@ -123,21 +123,14 @@
 		"binary" : "100010", 
 		"dataDecoded" : {
 			"titvar" : "The string en", 
-			"descvar" : "Also used for subscript formatting.",
-			"descvar2" : "",
-			"descvar3" : "",	
-			"descvar4" : ""
-
+			"descvar" : "Also used for subscript formatting."
 		}
 	}, 
 	{
 		"binary" : "010010",  
 		"dataDecoded" : {
 			"titvar" : "A colon. ", 
-			"descvar" : "In a word, it can signify a double c. ",
-			"descvar2" : "",
-			"descvar3" : "",	
-			"descvar4" : ""
+			"descvar" : "In a word, it can signify a double c. "
 		}
 	}, 
 	{
@@ -236,9 +229,7 @@
 		"dataDecoded" : {
 			"titvar" : "Letter A", 
 			"descvar" : "Letter A is also number 1 if preceded by a number sign.",
-			"descvar2" : "",
-			"descvar3" : "",
-			"descvar3" : "",
+			"wholeWord" : ""
 		}
 	}, 
 	{
