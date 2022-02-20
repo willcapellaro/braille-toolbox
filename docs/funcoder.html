@@ -146,7 +146,6 @@
       document.getElementById('dot5').checked = false;
       document.getElementById('dot6').checked = false;
       verify();
-      changeBg();
     }
   };
   
@@ -208,6 +207,7 @@ function changeBg()
       {
         document.getElementById('titvarDecoded').innerHTML = characters[i]['dataDecoded']['titvar'];
         document.getElementById('descvarDecoded').innerHTML = characters[i]['dataDecoded']['descvar'];
+        changeBg();
       }
     }
   }
