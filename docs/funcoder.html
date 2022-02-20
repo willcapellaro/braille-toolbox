@@ -33,8 +33,19 @@
 <script type="text/javascript" src="https://platform-api.sharethis.com/js/sharethis.js#property=61f6a10d30d3010019e430f6&product=sticky-share-buttons" async="async"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css">
 <script defer data-domain="brailletoolbox.com" src="https://plausible.io/js/plausible.js"></script>
+
+<style>
+.firstDecade {background: yellow;}
+.secondDecade {background: orange;}
+.thirdDecade {background: red;}
+.fourthDecade {background: purple;}
+
+</style>
+
 </head>
-<body style="height: 100%; overflow: hidden; overscroll-behavior: contain;">
+
+
+<body id="bgId" class="firstDecade" style="height: 100%; overflow: hidden; overscroll-behavior: contain;">
 
 
 
@@ -156,9 +167,36 @@
       document.getElementById('dot5').checked = false;
       document.getElementById('dot6').checked = false;
       verify();
+      changeBg();
     }
   };
   
+function changeBg()
+{
+    if (document.getElementById('dot1').checked = false && document.getElementById('dot2').checked = false;)
+      {
+      var element = document.getElementById("bgId");
+      element.classList.add("firstDecade");
+      }
+    else if (document.getElementById('dot1').checked = true && document.getElementById('dot2').checked = false;)
+      {
+      var element = document.getElementById("bgId");
+      element.classList.add("secondDecade");
+      }
+    else if (document.getElementById('dot1').checked = true && document.getElementById('dot2').checked = true;) 
+      { 
+      var element = document.getElementById("bgId");
+      element.classList.add("thirdDecade");
+      }
+    else if (document.getElementById('dot1').checked = false && document.getElementById('dot2').checked = true;) 
+      {
+      var element = document.getElementById("bgId");
+      element.classList.add("fourthDecade");
+      }
+
+}
+
+
   function verify()
   {
     var binaryString = '';
@@ -191,10 +229,6 @@
       {
         document.getElementById('titvarDecoded').innerHTML = characters[i]['dataDecoded']['titvar'];
         document.getElementById('descvarDecoded').innerHTML = characters[i]['dataDecoded']['descvar'];
-
-
-
-
       }
     }
   }
