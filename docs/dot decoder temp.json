@@ -17,7 +17,7 @@
 		"binary" : "010000", 
 		"dataDecoded" : {
 			"titvar" : "Special contraction character", 
-			"descvar" : "This is used in a lot of contraction as a prefix to another symbol. Decode in that second symbol to find out what it is."
+			"descvar" : "This is used in a lot of contraction as a prefix to another symbol. Decode the second symbol to find out what it is."
 		}
 	}, 
 	{
@@ -31,7 +31,7 @@
 		"binary" : "001000", 
 		"dataDecoded" : {
 			"titvar" : "The currency symbol", 
-			"descvar" : "<p> This symbol is used as a prefix to signify a type of currency. </p><p> <div><img src=\"braille/comp_dollar.svg \"alt=\" dollar sign: dot 4 dot 234  \">  Followed by a letter s, this is a dollar sign.  </p><p><div><img src=\"braille/comp_euro.svg \" alt=\" euro currency sign: dot 4 dot 15  \">  Followed by an e, it’s a euro sign. </p><p><div><img src=\"braille/comp_pound.svg  \" alt=\" pound sterling sign: dot 4 dot 123  \">  Same with y and yen.  </p><p><div><img src=\"braille/comp_yen.svg  \" alt=\" yen currency sign: dot 4 dot 13456  \">  Followed by an l, it's pound sterling.  </p><p>Hint: it helps to think of the shape of the print letter to discern the different currencies. "
+			"descvar" : "And other symbols." 
 		}
 	}, 
 	{
@@ -129,8 +129,8 @@
 	{
 		"binary" : "010010",  
 		"dataDecoded" : {
-			"titvar" : "A colon.", 
-			"descvar" : " "
+			"titvar" : "A colon. ", 
+			"descvar" : "In a word, it can signify a double c. "
 		}
 	}, 
 	{
@@ -228,7 +228,8 @@
 		"binary" : "000001",  
 		"dataDecoded" : {
 			"titvar" : "Letter A", 
-				"descvar" : "<p> This symbol is used as a prefix to signify a type of currency. </p><p> <div><img src=\"braille/comp_dollar.svg \"alt=\" dollar sign: dot 4 dot 234  \">  Followed by a letter s, this is a dollar sign.  </p><p><div><img src=\"braille/comp_euro.svg \" alt=\" euro currency sign: dot 4 dot 15  \">  Followed by an e, it’s a euro sign. </p><p><div><img src=\"braille/comp_pound.svg  \" alt=\" pound sterling sign: dot 4 dot 123  \">  Same with y and yen.  </p><p><div><img src=\"braille/comp_yen.svg  \" alt=\" yen currency sign: dot 4 dot 13456  \">  Followed by an l, it's pound sterling.  </p><p>Hint: it helps to think of the shape of the print letter to discern the different currencies. "
+			"descvar" : "Letter A is also number 1 if preceded by a number sign.<br><img src=\"braille/comp_dollar.svg \"alt=\"contraction for word still: dot 34\">",
+			"wholeWord" : ""
 		}
 	}, 
 	{
@@ -256,7 +257,7 @@
 		"binary" : "001001", 
 		"dataDecoded" : {
 			"titvar" : "The letter c", 
-			"descvar" : "In a word, it can signify a double c. When preceded by a number sign, it’s the number c. It’s also a contraction for the word can."
+			"descvar" : "When preceded by a number sign, it’s the number c. It’s also a contraction for the word can."
 		}
 	}, 
 	{
@@ -369,7 +370,7 @@
 		"binary" : "001011", 
 		"dataDecoded" : {
 			"titvar" : "The letter f", 
-			"descvar" : "In a word, it can signify a double f. When preceded by a number sign, it’s the number 6. It’s also a contraction for from. Used at the end of several contractions like oneself, myself, and thyself. You know, because thyself is a commonly used word."
+			"descvar" : "In a word, it can signify a double f. When preceded by a number sign, it’s the number 6. It’s also a contraction for from. Used at the end of several contractions like oneself, myself, and thyself."
 		}
 	}, 
 	{
