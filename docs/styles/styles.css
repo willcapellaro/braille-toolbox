@@ -571,13 +571,24 @@ font-weight: 100;
   background-blend-mode: multiply;
   padding: 2rem 2rem 0 0;
   grid-column: 1 / -1;
-  display: inline-block;
   z-index: -1;
+/*  background-color: blue;
+*/
+}
 
-  background-color: blue;
-
+#descvarDecoded {
+  display: inline-block;
+  white-space: nowrap; 
+  overflow: hidden;
+  animation: 
+  typing 1.5s steps(30, end) forwards;
 
 }
+
+  @keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+  }
 
 
 .decoderlayout2 div:nth-child(2) h3 {
@@ -599,6 +610,8 @@ font-weight: 100;
 font-size: 1.5em;
 font-weight: 100;
 }
+
+
 
 /**/
 
