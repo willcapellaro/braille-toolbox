@@ -572,23 +572,23 @@ font-weight: 100;
   padding: 2rem 2rem 0 0;
   grid-column: 1 / -1;
   z-index: -1;
-  background-color: red;
+  /*background-color: red;*/
 
 }
 
+/*
 #descvarDecoded {
   display: inline-block;
   white-space: nowrap; 
   overflow: hidden;
   animation: 
   typing 1.5s steps(30, end) forwards;
-
 }
 
   @keyframes typing {
     from { width: 0 }
     to { width: 100% }
-  }
+  }*/
 
 
 .decoderlayout2 div:nth-child(2) h3 {
