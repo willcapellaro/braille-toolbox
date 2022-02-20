@@ -572,8 +572,8 @@ font-weight: 100;
   padding: 2rem 2rem 0 0;
   grid-column: 1 / -1;
   z-index: -1;
-/*  background-color: blue;
-*/
+  background-color: red;
+
 }
 
 #descvarDecoded {
