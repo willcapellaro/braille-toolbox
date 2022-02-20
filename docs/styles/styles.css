@@ -562,7 +562,8 @@ font-weight: 100;
   mix-blend-mode: multiply;
   grid-column: 4 / -1;
   grid-row: 2 / 3;
-  background-color: yellow;
+
+  /*background-color: yellow;*/
 }
 
 /* funcoder decoded text */
@@ -570,7 +571,12 @@ font-weight: 100;
   background-blend-mode: multiply;
   padding: 2rem 2rem 0 0;
   grid-column: 1 / -1;
-  background-color: orange;
+  display: inline-block;
+  z-index: -1;
+
+  background-color: blue;
+
+
 }
 
 
