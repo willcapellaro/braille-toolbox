@@ -666,9 +666,11 @@ font-family: 'MyWebFont', Fallback, sans-serif;
 resize: vertical;
 text-align: left;
 padding: 11px 11px 1px 21px;
-font-variant-ligatures: normal;
-font-variant-ligatures: discretionary-ligatures;    /* <discretionary-lig-values> */
+/*font-variant-ligatures: normal;
+font-variant-ligatures: discretionary-ligatures;     <discretionary-lig-values> 
 font-variant-ligatures: contextual;                 /* <contextual-alt-values> */
+
+font-variant-ligatures: inherit;
 overflow-y: scroll;
 line-height: .7;
 letter-spacing: 0px;
