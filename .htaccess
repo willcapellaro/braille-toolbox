@@ -1,6 +1,7 @@
-#remove html file extension https://example.com/page.html
-# to https://example.com/page
-RewriteEngine On
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^([^\.]+)$ $1.html [NC, L]
+RewriteEngine on
+#1) redirect file.html to file
+RewriteCond %{THE_REQUEST} /([^.]+).html [NC]
+RewriteRule .+ /%1 [L,R=301]
+#2) rewrite /file to file.html
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule (.*)/?$ /$1.html [L]
