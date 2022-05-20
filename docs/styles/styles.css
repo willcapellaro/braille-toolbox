@@ -109,6 +109,11 @@ body {
 	margin-right: auto;
 }
 
+.int_subtext {
+  font-size: 50%;
+  opacity: .7;
+}
+
 .fontTest {
   font-family: 'MyWebFont', Fallback, sans-serif;
   font-size: 250px;
