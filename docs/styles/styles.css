@@ -658,6 +658,13 @@ margin-top: 100px;
 margin-bottom: 50px;
 }
 
+.regularText {
+  font-size: 10em;
+
+  font-family: 'MyWebFont', Fallback, sans-serif;
+text-transform: none;
+}
+
 textarea {
 width: 100%;
 border-radius: 5px;
@@ -679,6 +686,22 @@ font-variant-ligatures: inherit;
 overflow-y: scroll;
 line-height: .7;
 letter-spacing: 0px;
+text-transform: none;
+  font-variant-ligatures: common-ligatures;
+  -moz-font-feature-settings: "liga", "clig";
+  -webkit-font-feature-settings: "liga", "clig";
+  font-feature-settings: "liga", "clig";
+}
+
+.shortarea {
+min-height:  none;
+color: red;
+}
+
+.regulararea {
+  font-size: 10em;
+  font-family: 'MyWebFont', Fallback, sans-serif;
+  font-variant-ligatures: inherit;
 }
 
 textarea:focus {
