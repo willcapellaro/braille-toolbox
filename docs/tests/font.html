@@ -5,139 +5,317 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Write in Braille</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-  <link rel="stylesheet" type="text/css" href="../styles/styles.css">
-  <link rel="stylesheet" type="text/css" href="../styles/range-override.css">
+<!--   <link rel="stylesheet" type="text/css" href="../styles/styles.css">
+ -->  <!-- <link rel="stylesheet" type="text/css" href="../styles/range-override.css"> -->
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous" async=""></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous" async=""></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous" async=""></script>
   <style> @font-face {font-family: 'MyWebFont'; src: url(../fonts/OverpassMono-Braille.otf);}</style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 
+  <style>
+
+body {margin:  2em;}
+
+    .regularText {
+
+      font-size: 10em;
+font-family: 'MyWebFont', Fallback, sans-serif;
+    }
+input {
+
+font-size: 10em;
+font-family: 'MyWebFont', Fallback, sans-serif;
+font-variant-ligatures: normal;
+font-variant-ligatures: none;
+font-variant-ligatures: common-ligatures;   
+font-variant-ligatures: no-common-ligatures;        
+font-variant-ligatures: discretionary-ligatures;    
+font-variant-ligatures: no-discretionary-ligatures; 
+font-variant-ligatures: historical-ligatures;       
+font-variant-ligatures: no-historical-ligatures;  
+font-variant-ligatures: contextual;               
+font-variant-ligatures: no-contextual;            
+font-variant-ligatures: inherit;
+font-variant-ligatures: initial;
+font-variant-ligatures: revert;
+font-variant-ligatures: revert-layer;
+font-variant-ligatures: unset;
+
+    -webkit-user-modify: read-write;
+    overflow-wrap: break-word;
+    -webkit-line-break: after-white-space;
+    unicode-bidi: isolate;
+        box-sizing: inherit;
+    display: inline-block;
+    text-align: start;
+        width: 100%;
+    overflow: hidden;
+    display: block;
+        opacity: 1;
+    -webkit-transform: none;
+    transform: none;
+        font-optical-sizing: auto;
+    /*font-family: "Roboto script=latin rev=1";*/
+    font-weight: 100;
+    font-style: normal;
+    line-height: initial;
+    font-variation-settings: "opsz" 64;
+    list-style: none;
+
+    letter-spacing: normal;
+    content: "";
+    display: block;
+
+    white-space : pre;
+   display: inline-block;
+
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Enable Ligatures ================ */
+    letter-spacing: 0;
+    -webkit-font-feature-settings: "liga";
+    -moz-font-feature-settings: "liga=1";
+    -moz-font-feature-settings: "liga";
+    -ms-font-feature-settings: "liga" 1;
+    -o-font-feature-settings: "liga";
+    font-feature-settings: "liga";
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+      text-rendering: optimizeLegibility;
+
+
+    /*letter-spacing: .001em;*/
+
+
+/*
+    font-variant-ligatures: contextual;
+    -moz-font-feature-settings: "calt";
+    -webkit-font-feature-settings: "calt";
+    font-feature-settings: "calt";*/  
+
+/*
+  font-variant-ligatures: common-ligatures;
+  -moz-font-feature-settings: "liga", "clig";
+  -webkit-font-feature-settings: "liga", "clig";
+  font-feature-settings: "liga", "clig";*/
+
+
+/*width: 100%;
+border-radius: 5px;
+background-color: white;
+padding: 10px 10px 10px 10px;
+box-shadow: 0 10px 20px rgb(0 0 0 / 9%), 0 3px 3px rgb(0 0 0 / 15%);
+border: none;
+min-height: 3em;
+font-size: 10em;
+font-family: 'MyWebFont', Fallback, sans-serif;
+resize: vertical;
+text-align: left;
+padding: 11px 11px 1px 21px;*/
+/*font-variant-ligatures: normal;
+font-variant-ligatures: discretionary-ligatures;     <discretionary-lig-values> 
+font-variant-ligatures: contextual;                 /* <contextual-alt-values> */
+
+/*font-variant-ligatures: inherit;
+overflow-y: scroll;
+line-height: .7;
+letter-spacing: 0px;
+text-transform: none;*/
+}
+
+
+body {
+  font-size: 14px;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+</style>
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css">
 
 
-<link rel="preconnect" href="https://fonts.gstatic.com">
+<!-- <link rel="preconnect" href="https://fonts.gstatic.com"> -->
+<!-- <link href="https://fonts.googleapis.com/css2?family=Francois+One&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Francois+One&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Francois+One&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Merriweather&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&display=swap" rel="stylesheet"> -->
 
 
-<meta property="og:title" content="Braille Toolbox">
-<meta property="og:site_name" content="">
-<meta property="og:url" content="http://brailletoolbox.com/">
-<meta property="og:description" content="Braille Toolbox's Write In Braille feature allows you to write or paste in text, and see it transformed into English braille signs.">
-<meta property="og:type" content="website">
-<meta property="og:image" content="http://brailletoolbox.com/mktimg/BTX-Unfurl-v1.jpg">
 
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:domain" value="brailletoolbox.com" />
-<meta name="twitter:title" value="Write In Braille" />
-<meta name="twitter:description" value="Braille Toolbox is the world's most user-friendly braille reference. Read simple guides, use the innovative dot decoder, or preview text in braille code. Free to use forever!" />
-<meta name="twitter:image" content="http://brailletoolbox.com/mktimg/BTX-Unfurl-v1.jpg" />
-<meta name="twitter:url" value="http://brailletoolbox.com" />
-<meta name="twitter:label1" value="Total Characters Written" />
-<meta name="twitter:data1" value="12,023" />
-<meta name="twitter:label1" value="Weekly Trend" />
-<meta name="twitter:data1" value="+4%" />
-
+<!-- 
 <script type="text/javascript" src="https://platform-api.sharethis.com/js/sharethis.js#property=61f6a10d30d3010019e430f6&product=sticky-share-buttons" async="async"></script>
-<script type="text/javascript" src="https://platform-api.sharethis.com/js/sharethis.js#property=61f6a10d30d3010019e430f6&product=sticky-share-buttons" async="async"></script>
+<script type="text/javascript" src="https://platform-api.sharethis.com/js/sharethis.js#property=61f6a10d30d3010019e430f6&product=sticky-share-buttons" async="async"></script> -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css">
-<script defer data-domain="brailletoolbox.com" src="https://plausible.io/js/plausible.js"></script>
-<script defer data-domain="brailletoolbox.com" src="https://plausible.io/js/plausible.js"></script>
+<!-- <script defer data-domain="brailletoolbox.com" src="https://plausible.io/js/plausible.js"></script>
+<script defer data-domain="brailletoolbox.com" src="https://plausible.io/js/plausible.js"></script> -->
 </head>
 
 <body>
 
   <a href="#maincontent" class="skiplink">Skip to content</a>
 
-<nav class="navbar navbar-expand-lg navbar-light">
-  <a class="navbar-brand" href="index.html">Braille Toolbox</a>
 
 
-  <button class="navbar-toggler" style="height: 2em; border: none;" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span>    <img class="ham_icon" src="braille/con_for.svg" alt="braille cell icon">
+
+<h1 id="maincontent">Font Testing in Chromium Browsers</h1>
+
+
+
+
+<p> If you're seeing this page, you've been asked to help out testing some font display issues, specifically in Chromium browsers such as Google Chrome.</p>
+
+
+<span id="readMore">
+
+<p><strong>Why this is important:</strong> The Braille Toolbox font uses a common font feature, ligatures, to render text strings as properly formatted braille signs.</p>
+
 </span>
-  </button>
 
+<p><strong>Test protocol: </strong>All tests have a simple verification target, that the word "braille" should appear as the three-cell contraction "brl", not seven individual characters. No testing is needed for screen readers at this point.</p>
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="intro.html">Intro to Braille</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="quickref.html">Quick Reference</a>
-      </li>
-      <li class="nav-item active">
-        <a class="nav-link" href="write.html">Write in Braille</a>
-      </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          More Tools
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="slate.html">Slate & Stylus Quick Reference</a>
-          <a class="dropdown-item" href="decode.html">Dot Decoder</a>
-          <a class="dropdown-item" href="braillewriter.html">Braillewriter Help</a>
-          <a class="dropdown-item" href="about.html">About Braille Toolbox</a>
-          <a class="dropdown-item" href="font.html">Braille Toolbox Font</a></div>      </li>
-    </ul>
-  </div>
-</nav>
-
-<div class="afternav">
-
-
-<h1 id="maincontent">Font Testing</h1>
-<p class="betatag">Testing Page Only<button type="button" class="btn btn-link" style="font-size: 16px; color: #b1d" data-toggle="modal" data-target="#exampleModalLong">
-  <i class="fas fa-bug"></i> Report a Bug
-</button></p>
-
-
-
-<p> If you're seeing this page, you've been asked to help out testing some font display issues. All tests have a simple verification target: the word "braille" should appear as a three-cell contraction, not seven individual braille characters.</p>
 <p style="display: inline;">It should look like this:</p>
-<img style="height: 80px;" src="contraction-word-braille.png">
-<p style="display: inline;">Not like this:</p>
-<img style="height:  80px;" src="uncontracted-word-braille.png">
+<img style="height: 80px;" src="contraction-word-braille.png" alt="A screenshot of the word braille written out correctly as a three-letter braille sign. A visual of the braille cells appears above the print word, separated by a horizontal line separator. The whole glyph is dark grey to contrast with the red error example that follows." title="a screenshot of the word braille written out correctly as a three-letter braille sign. A visual of the braille cells appears above the print word, separated by a horizontal line separator. The whole glyph is dark grey to contrast with the red error example that follows.">
+<p style="display: inline;">and not like this:</p>
+<img style="height:  80px;" src="uncontracted-word-braille.png" alt="A screenshot of the word braille written out incorrectly as seven uncontracted letters. For each letter, a visual braille cell appears above the print letter, separated by a horizontal line separator. The whole glyph is red, indicating an error." title="a screenshot of the word braille written out incorrectly as seven uncontracted letters. For each letter, a visual braille cell appears above the print letter, separated by a horizontal line separator. The whole glyph is red, indicating an error." >
 
-<br><br>
+<br>
+<br>
 
-<div>
+<!-- <div>
    <h3>Test 1: Regular Text</h2>
-    <p>Test text:</p>
   <h3 class="regularText">braille</h3>
+  <p>In Chromium browsers, regular text appears to render ligatures correctly. However, please report if this fails for you. You may not be seeing the font at all, or you may not be seeing the contraction ligatures.</p> 
 </div>
+<br>
+<br>
+<br> -->
 
-<form> 
+<!-- <form> 
   <h3>Test 2: Placeholder Text in Fields</h2>
   <label for="encoderField">Test field:</label>         
   <textarea class="spaceafter shortarea" style="color: red; min-height: 1em;" id="encoderField" placeholder="braille"></textarea>
 </form>
+<p>In Chromium browsers, placeholder text appears to render ligatures correctly. But it is inconsistent with active text--type the word braille over the placeholder and you'll see the problem. More details in the next test.</p> 
 <br>
-<br>
+<br> -->
 
 <form> 
-  <h3>Test 3: Active Text in Fields</h2>
+<!--   <h3>Font testing</h3>
+ -->
 
-
-  <label for="encoderField">Test field:</label>         
-  <textarea class="spaceafter shortarea" style="color: red; min-height: 1em;" id="encoderField" placeholder="braille">braille</textarea>
-  <p>Please try deleting the current text and typing "braille" to verify this works.</p>
+<div style="display: grid; grid-template-columns: 1fr 2fr; grid-column-gap: 5em;">
+<div>
+  <label for="encoderField"><h4>Test Area</h4></label>         
+  <input class="spaceafter shortarea" style="color: black; min-height: 1em;" id="encoderField2" placeholder="braille"></textarea>
 </form>
-<br>
-<br>
+<br><br>
+</div>
 
+<div>
+<h4>Testing Steps</h4>
 
+  <p>Test these in sequence without refreshing the page (start again if you refresh). Do not use uppercase letters.</p>
+<div style="display: grid; grid-template-columns: auto auto auto auto; grid-column-gap: 3rem; grid-row-gap: 1rem;">
+<div>Test 1</div>
+<div>Without modifying the field contents, look at the placeholder text. Does it appear contracted? Generally, this appears to contract properly.</div>
+<div><label class="switch"><input type="checkbox" ><span class="slider round"></span></label></div>
+<div>Pass</div>
+
+<div>Test 2</div>
+<div>Type the word "braille" in the field. It will replace the placeholder text. Does it contract properly? Generally, this appears to fail. </div>
+<div><label class="switch"><input type="checkbox" ><span class="slider round"></span></label></div>
+<div>Pass</div>
+
+<div>Test 3</div>
+<div>Next, clear the field. Then copy the text <span style="padding: 3px; border: solid 1px grey; ">braille</span> and then paste back into the field. Does it contract properly?</div>
+<div><label class="switch"><input type="checkbox" ><span class="slider round"></span></label></div>
+<div>Pass</div>
+
+<div>Test 4</div>
+<div>Lastly, type the word "braille" again after your pasted version. For some reason, after pasting, contraction works properly, so this should be successful. But please report a failure if contraction is not working.</div>
+<div><label class="switch"><input type="checkbox" ><span class="slider round"></span></label></div>
+<div>Pass</div>
+</div>
+<br>
+Please report your results as a general bug, entering your test results in the issue details field.<button type="button" class="btn btn-link" style="font-size: 16px; color: #b1d" data-toggle="modal" data-target="#exampleModalLong">
+ <i class="fas fa-bug"></i> Report a Bug
+</button>
+<p>Please use the format "Pass, Fail, Pass, Pass" along with any other context. <strong>Thank you!</strong></p>
 
 
 </div> 
+</div>
 
 
-<div class="sharethis-sticky-share-buttons"></div>
+
+
 
 <!-- Button trigger modal -->
 
