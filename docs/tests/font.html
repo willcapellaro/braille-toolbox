@@ -284,22 +284,22 @@ input:checked + .slider:before {
   <p>Test these in sequence without refreshing the page (start again if you refresh). Do not use uppercase letters.</p>
 <div style="display: grid; grid-template-columns: auto auto auto auto; grid-column-gap: 3rem; grid-row-gap: 1rem;">
 <div>Test 1</div>
-<div>Without modifying the field contents, look at the placeholder text. Does it appear contracted? Generally, this appears to contract properly.</div>
+<div>Without modifying the field contents, look at the placeholder text. It should appear properly contracted.</div>
 <div><label class="switch"><input type="checkbox" ><span class="slider round"></span></label></div>
 <div>Pass</div>
 
 <div>Test 2</div>
-<div>Type the word "braille" in the field. It will replace the placeholder text. Does it contract properly? Generally, this appears to fail. </div>
+<div>Type the word "braille" in the field. The new text should replace the placeholder field and contract properly. However this step appears to fail for Chromium browsers.</div>
 <div><label class="switch"><input type="checkbox" ><span class="slider round"></span></label></div>
 <div>Pass</div>
 
 <div>Test 3</div>
-<div>Next, clear the field. Then copy the text <span style="padding: 3px; border: solid 1px grey; ">braille</span> and then paste back into the field. Does it contract properly?</div>
+<div>Next, clear the field. Then copy the text <span style="padding: 3px; border: solid 1px grey; ">braille</span> and then paste back into the field. Even for Chromium browsers, this should contract properly.</div>
 <div><label class="switch"><input type="checkbox" ><span class="slider round"></span></label></div>
 <div>Pass</div>
 
 <div>Test 4</div>
-<div>Lastly, type the word "braille" again after your pasted version. For some reason, after pasting, contraction works properly, so this should be successful. But please report a failure if contraction is not working.</div>
+<div>Lastly, type the word "braille" again after your pasted version, it should contract properly. For some reason, after pasting, contraction works properly even when typing new content. But please report a failure if contraction is not working.</div>
 <div><label class="switch"><input type="checkbox" ><span class="slider round"></span></label></div>
 <div>Pass</div>
 </div>
