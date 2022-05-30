@@ -277,6 +277,10 @@ a {
 	text-decoration: underline;
 }
 
+.indexlogo {
+  width: 80%;
+}
+
 a:hover {
 	color: #b1b;
 	text-decoration: underline;
@@ -926,6 +930,11 @@ line-height: 1em;
 body {
 	margin: 0 auto;
 }
+
+.indexlogo {
+  width: 10em;
+}
+
 
 .introgrid {
 		width: 900px;
