@@ -52,6 +52,7 @@
 <link rel="icon" type="image/png" sizes="16x16" href="imgs/favicon-16x16.png">
 <link rel="manifest" href="imgs/site.webmanifest"></head>
 
+
 <body>
 
   <a href="#maincontent" class="skiplink">Skip to content</a>
@@ -100,7 +101,6 @@
 </button></p>
 
 
-
 <p> Enter some text below to see translate it to braille. To learn about the mechanics of braille, refer to the <a href="intro.html">Braille Explainer</a> section. Please report any problems, noting your OS and browser.</p>
 
 
@@ -111,12 +111,10 @@
                 <label for="myCheck" class="alignright">Flip horizontally (slate and stylus)</label>
                 </div>
   <textarea class="spaceafter" id="encoderField" placeholder="your braille here"></textarea>
-</form>
-
-</div> 
+</form>  
 
 Favorite car:
-<input type="button" id="myBtn323" value="Volvo">
+<input type="button" id="myBtn" value="Volvo">
 
 <p>Click the button below to change the text displayed on the input button above.</p>
 
@@ -124,70 +122,15 @@ Favorite car:
 
 <script>
 function myFunction() {
-  document.getElementById("myBtn323").value = "BMW";
+  document.getElementById("encoderField").value = "b";
+  document.getElementById("encoderField").value = "br";
+  document.getElementById("encoderField").value = "bra";
+  document.getElementById("encoderField").value = "brai";
+  document.getElementById("encoderField").value = "brail";
+  document.getElementById("encoderField").value = "braill";
+  document.getElementById("encoderField").value = "braille";
 }
 </script>
-
-
-<p class="legal">©2022 Will Capellaro & Braille Toolbox</p>
-
-<!-- <script>
-  function flashText() {
-    var element = document.getElementById("encoderField");
-    element.classList.remove('flashStyle2')
-    element.classList.add("flashStyle");
-
-  }
-</script> -->
-
-
-<script>
-function myFunction() {
-  // Get the checkbox
-  var checkBox = document.getElementById("myCheck");
-  var textarea = document.getElementById("encoderField")
-
-  // If the checkbox is checked, display the output text
-  if (checkBox.checked == true){
-    textarea.classList.add("flip");
-  } else {
-    textarea.classList.remove("flip");
-  }
-}
-</script>
-
-<div class="sharethis-sticky-share-buttons"></div>
-
-<!-- Button trigger modal -->
-
-
-<!-- Modal -->
-<div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Feedback</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body" style="margin-left: auto; margin-right: auto;">
-        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSewt_2Qd3Y87NSmYO5ZORzJaz2QbzS_fvakA31beBd-rEfOQg/viewform?embedded=true" width="640" height="1292" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
-
-      </div>
-    </div>
-  </div>
-</div>
-
 
 </body>
-
-
-
 </html>
-
-
-
-<!-- <div class="otherpage">-->
-
-

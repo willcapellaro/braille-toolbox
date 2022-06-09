@@ -17,6 +17,8 @@
   /* checkbox aspect */
 
 
+
+
   [type="checkbox"]:not(:checked) + label:before,
   [type="checkbox"]:checked + label:before {
     font-family: 'Brailleblocks', Fallback, monospace;
@@ -99,14 +101,40 @@
  font-family: 'Merriweather', sans-serif;
 }
 
+strong {
+  font-weight: 600;
+}
+
 html {
   scroll-behavior: smooth;
+}
+
+/*buttons*/
+
+.hamburger-button {
+  height: 2em; border: none;
 }
 
 .minibutton:focus {
   background-color: #b1d;
   color:  white;
 }
+
+.linkButton {
+  margin-left: auto;
+  border: none; /* Remove borders */
+  outline: none; /* Remove outline */
+  background-color: #D1B; /* Set a background color */
+  color: white; /* Text color */
+  cursor: pointer; /* Add a mouse pointer on hover */
+  padding: 15px; /* Some padding */
+  border-radius: 10px; /* Rounded corners */
+  font-size: 1.125em; /* Increase font size */
+  box-shadow: 0 10px 20px rgb(0 0 0 / 9%), 0 3px 3px rgb(0 0 0 / 15%);
+  transition: .2s;
+}
+
+/**/
 
 body {
 	width: 90%;
@@ -203,56 +231,7 @@ caption {
 	justify-content: center;
 }
 */
-.span2 {
-      display: grid;
 
-    grid-template-columns: 1fr 1fr ;
-     justify-content: center;
-}
-
-.spanABC {
-  display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-  justify-content: center;
-}
-
-.spanABC10 {
-  display: grid;
-    grid-template-columns: repeat(10, minmax(80px, 1fr));
-  justify-content: center;
-}
-
-.spanABC5 {
-  display: grid;
-    grid-template-columns: repeat(5, minmax(80px, 1fr));
-  justify-content: center;
-}
-
-.spanWide1 { display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  justify-content: center;
-}
-
-.spanWide2 { display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  justify-content: center;
-  font-size: .6em;
-}
-
-.spanCon { display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  justify-content: center;
-  font-size: .6em;
-}
-
-.spanABC5 li div:nth-child(2) {
-  font-family: 'Brailleblocks', monospace;
-font-size: .6em !important;
-padding-left: 0;
-padding-right: 0;
-margin-left: 0;
-margin-right: 0;
-}
 
 
 .flip {
@@ -346,19 +325,7 @@ transition: .2s;
   margin-top: 3rem;
 }
 
-.linkButton {
-  margin-left: auto;
-  border: none; /* Remove borders */
-  outline: none; /* Remove outline */
-  background-color: #D1B; /* Set a background color */
-  color: white; /* Text color */
-  cursor: pointer; /* Add a mouse pointer on hover */
-  padding: 15px; /* Some padding */
-  border-radius: 10px; /* Rounded corners */
-  font-size: 1.125em; /* Increase font size */
-  box-shadow: 0 10px 20px rgb(0 0 0 / 9%), 0 3px 3px rgb(0 0 0 / 15%);
-  transition: .2s;
-}
+
 
 #scrolltop:hover {
   background-color: purple; 
@@ -768,10 +735,19 @@ font-weight: 100;
 { 	border: 1px #E5E5E5 solid;
  }
 
-img {
+h3 img {
+  border-radius: 6px solid black;
+  height: 1.1em;
+  padding-right: .6rem;
+  padding-bottom: .225rem;
+}
+
+
+
+/*img {
 	border-radius: 2px;
 	height: 100%;
-}
+}*/
 
 .legal {
 
@@ -1009,12 +985,14 @@ body {
 }
 
 
-
-p, .intro {
+/*probably can remove now*/
+p {
 	max-width: 900px;
 	margin-left: auto;
 	margin-right: auto;
 }
+
+
 
 .microcopycenter {
 	text-align: center;
