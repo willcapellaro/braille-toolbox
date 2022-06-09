@@ -137,7 +137,7 @@
 <button type="button " class="btn btn-light minibutton info-button" data-toggle="modal" data-target="#info-dot">
   More
 </button></li>
-  <li><div><img src="braille/dot123456_for.svg" alt=" a full braille cell: dot 123456 "></div><div>   </div><div>a braille cell</div><!-- Button trigger modal -->
+  <li><div><img style="border-color:  white;" src="braille/dot123456_for.svg" alt=" a full braille cell: dot 123456 "></div><div>   </div><div>a braille cell</div><!-- Button trigger modal -->
 <button type="button " class="btn btn-light minibutton info-button" data-toggle="modal" data-target="#info-cell">
   More
 </button></li>
@@ -626,7 +626,76 @@ function topFunction() {
 }
 </script>
 
+<!-- Info Modal re Dots -->
+<div class="modal fade" id="info-dot" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">More about the braille dot</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <ul class= "intro contractions salmon nohover">
+          <li>
+            <div>
+              <img style="border:  none;" src="braille/dot.svg" alt=" a single braille dot">
+            </div>
+            <div>   
+            </div>
+            <div class="info-modal-label"> 
+              dot 
+            </div>
+          </li>
 
+        <p>Braille is all about dots, arranged to form tactile patterns discernible by feel. Braille dots are uniform: Each dot is the same&#8212same size, same depth, and either fully raised or not at all.<!-- The writing of each character is done by describing which dots are raised. They're referred to by numbers; the three left dots are numbered 1, 2, and 3, and the right ones are 4, 5, and 6. So to describe the letter r, shown below, you'd say it has dots 1, 2, 3, and 5 raised, or simply describe it as "dot 1235." --></p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Info Modal re Braille Cell -->
+<div class="modal fade" id="info-cell" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">More about the braille cell</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+     
+
+
+
+
+        <ul class= "intro contractions salmon nohover">
+          <li>
+            <div>
+              <img style="border:  none;" src="braille/dot123456_for.svg" src="braille/con_for.svg" alt=" a single braille dot">
+            </div>
+            <div>   
+            </div>
+            <div class="info-modal-label"> 
+              a braille cell 
+            </div>
+          </li>
+
+        <p><!-- The writing of each character is done by describing which dots are raised. They're referred to by numbers; the three left dots are numbered 1, 2, and 3, and the right ones are 4, 5, and 6. So to describe the letter r, shown below, you'd say it has dots 1, 2, 3, and 5 raised, or simply describe it as "dot 1235." -->
+          
+Dots are arranged into cells to write letters or other characters. A cell has a consistent an arrangement of two dots wide by three dots high. Dots are either raised or not raised. No exceptions!
+
+
+
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
 
 <div class="sharethis-sticky-share-buttons"></div>
 
