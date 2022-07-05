@@ -109,24 +109,19 @@
                   <!-- <div style="display: inline;"> -->
                 <input class="" type="checkbox" name="myCheck" id="myCheck" onclick="myFunction()" value="Lockinput" >
                 <label for="myCheck" class="alignright">Flip horizontally (slate and stylus)</label>
+                <!-- buttons for fullscreen -->
+                <span style="float: right;">
+<button onclick="openFullscreen();">Open Fullscreen</button>
+<button onclick="closeFullscreen();">Close Fullscreen</button>
+</span>
                 </div>
   <textarea class="spaceafter" id="encoderField" placeholder="your braille here"></textarea>
 </form>
 
 </div> 
 
-Favorite car:
-<input type="button" id="myBtn323" value="Volvo">
 
-<p>Click the button below to change the text displayed on the input button above.</p>
 
-<button onclick="myFunction()">Try it</button>
-
-<script>
-function myFunction() {
-  document.getElementById("myBtn323").value = "BMW";
-}
-</script>
 
 
 <p class="legal">©2022 Will Capellaro & Braille Toolbox</p>
@@ -140,6 +135,34 @@ function myFunction() {
   }
 </script> -->
 
+
+<!-- fullscreen behavior  -->
+<button onclick="openFullscreen();">Open Fullscreen</button>
+<button onclick="closeFullscreen();">Close Fullscreen</button>
+
+<script>
+// Using JavaScript to open the page in fullscreen mode
+var elem = document.documentElement;
+function openFullscreen() {
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  } else if (elem.webkitRequestFullscreen) { /* Safari */
+    elem.webkitRequestFullscreen();
+  } else if (elem.msRequestFullscreen) { /* IE11 */
+    elem.msRequestFullscreen();
+  }
+}
+
+function closeFullscreen() {
+  if (document.exitFullscreen) {
+    document.exitFullscreen();
+  } else if (document.webkitExitFullscreen) { /* Safari */
+    document.webkitExitFullscreen();
+  } else if (document.msExitFullscreen) { /* IE11 */
+    document.msExitFullscreen();
+  }
+}
+</script>
 
 <script>
 function myFunction() {
