@@ -10,7 +10,7 @@
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous" async=""></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous" async=""></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous" async=""></script>
-  <style> @font-face {font-family: 'MyWebFont'; src: url(fonts/OverpassMono-Braille.otf);}</style>
+  <style> @font-face {font-family: 'MyWebFont'; src: url('fonts/OverpassMono-Braille.otf');}</style>
   <style>
     /* Safari syntax */
 :-webkit-full-screen {
@@ -129,7 +129,7 @@
                 <span style="float: right;">
 </span>
                 </div>
-  <textarea class="spaceafter" id="encoderField" placeholder="your braille here"></textarea>
+  <textarea class="spaceafter" id="encoderField" placeholder="your braille here" onkeyup="reFillText();"></textarea>
 </form>
 
 </div> 
@@ -157,13 +157,18 @@ function myFunction() {
   // Get the checkbox
   var checkBox = document.getElementById("myCheck");
   var textarea = document.getElementById("encoderField")
-
   // If the checkbox is checked, display the output text
   if (checkBox.checked == true){
     textarea.classList.add("flip");
   } else {
     textarea.classList.remove("flip");
   }
+}
+function reFillText ()
+{
+  var aux = document.getElementById("encoderField").value;
+  document.getElementById("encoderField").value = ''
+  document.getElementById("encoderField").value = aux;
 }
 </script>
 
