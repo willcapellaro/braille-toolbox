@@ -164,11 +164,16 @@ function myFunction() {
     textarea.classList.remove("flip");
   }
 }
+var encoderFieldText = '';
 function reFillText ()
 {
-  var aux = document.getElementById("encoderField").value;
-  document.getElementById("encoderField").value = ''
-  document.getElementById("encoderField").value = aux;
+  if (document.getElementById("encoderField").value != encoderFieldText)
+  {
+    encoderFieldText = document.getElementById("encoderField").value;
+    document.getElementById("encoderField").value = ''
+    document.getElementById("encoderField").value = encoderFieldText;
+
+  }
 }
 </script>
 
