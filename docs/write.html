@@ -71,16 +71,17 @@
 <script>
   let timeout;
 
-  // Function to read the first available parameter value after the `?`
+  // Function to read the first available parameter value after the `?`, decoding `+` to spaces
   function getUrlParameter() {
     const queryString = window.location.search;
     if (queryString.startsWith('?')) {
-      return queryString.substring(1); // Return the string after the `?`
+      // Extract the parameter and replace `+` with spaces
+      return queryString.substring(1).replace(/\+/g, ' ');
     }
     return ''; // Return an empty string if no parameter is present
   }
 
-  // Function to update the URL parameter with a debounce
+  // Function to update the URL parameter with a debounce, encoding spaces as `+`
   function updateTextInUrl() {
     const textarea = document.getElementById('encoderField');
     const textValue = textarea.value;
@@ -91,20 +92,27 @@
     // Set a timeout to update the URL after a brief pause (300 ms)
     timeout = setTimeout(() => {
       const url = new URL(window.location.href);
-      url.search = '?' + encodeURIComponent(textValue); // Update the search string with the new value
+      // Replace spaces with `+` for encoding
+      const encodedValue = encodeURIComponent(textValue).replace(/%20/g, '+');
+      url.search = '?' + encodedValue; // Update the search string with the new value
       window.history.replaceState({}, '', url); // Replace the URL without reloading the page
     }, 300); // 300ms delay after the user stops typing
   }
 
-  // Initialize the textarea with the parameter value on page load
+  // Initialize the textarea with the parameter value on page load, decoding `+` to spaces
   window.onload = function() {
     const paramValue = getUrlParameter(); // Get the parameter value after the `?`
-    document.getElementById('encoderField').value = decodeURIComponent(paramValue); // Populate the textarea
+    document.getElementById('encoderField').value = paramValue; // Populate the textarea
   };
 </script>
 
 
+
   <style>
+    #encoderField {
+      text-transform: lowercase;
+    }
+
     details {
       text-align: left;
       margin-top: 20px;
@@ -206,7 +214,7 @@
 
 
 
-<p class="legal">©2024 Will Capellaro & Braille Toolbox |||||</p>
+<p class="legal">©2024 Will Capellaro & Braille Toolbox ||||||</p>
 
 <!-- <script>
   function flashText() {
