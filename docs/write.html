@@ -159,7 +159,7 @@
   <input class="" type="checkbox" name="myCheck" id="myCheck" onclick="myFunction()" value="Lockinput" >
   <label for="myCheck" class="alignright">Flip horizontally (slate and stylus)</label>
   
-  <textarea class="spaceafter" id="encoderField" placeholder="your braille here"></textarea>
+  <textarea class="spaceafter" id="encoderField" placeholder="your braille here" onkeyup="updateTextInUrl();"></textarea>
 
   <!-- Add an Update URL button -->
   <button type="button" onclick="updateTextInUrl()">Update URL</button>
@@ -171,7 +171,7 @@
 
 
 
-<p class="legal">©2024 Will Capellaro & Braille Toolbox |</p>
+<p class="legal">©2024 Will Capellaro & Braille Toolbox ||</p>
 
 <!-- <script>
   function flashText() {
