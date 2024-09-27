@@ -207,6 +207,9 @@
       font-size: 12px;
       color: #999;
     }
+    .newCheck:checked { color:red;
+
+    }
   </style>
 
 <body>
@@ -267,7 +270,7 @@
   
   <!-- Checkbox to control the flipping option -->
   <input type="checkbox" name="myCheck" id="myCheck" onclick="handleCheckboxClick()" value="Lockinput">
-  <label for="myCheck" class="alignright">Flip horizontally (slate and stylus)</label>
+  <label for="myCheck" class="newCheck alignright">Flip horizontally (slate and stylus)</label>
   
   <!-- Textarea to input the text -->
   <textarea class="spaceafter" id="encoderField" placeholder="your braille here" onkeyup="updateTextInUrl();"></textarea>
