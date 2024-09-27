@@ -68,6 +68,33 @@
 <link rel="icon" type="image/png" sizes="16x16" href="imgs/favicon-16x16.png">
 <link rel="manifest" href="imgs/site.webmanifest"></head>
 
+<script>
+  // Function to read the 'text' parameter from the URL
+  function getUrlParameter(name) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(name) || ''; // Returns the value of the 'text' parameter or an empty string
+  }
+
+  // Function to update the URL parameter when the user edits the text
+  function updateUrlParameter(paramName, paramValue) {
+    const url = new URL(window.location.href);
+    url.searchParams.set(paramName, paramValue);
+    window.history.replaceState({}, '', url); // Updates the URL without refreshing the page
+  }
+
+  // Function to fill the textarea with the 'text' parameter if it exists
+  function reFillText() {
+    const textarea = document.getElementById('encoderField');
+    updateUrlParameter('text', textarea.value);
+  }
+
+  // Initialize the textarea with the 'text' parameter on page load
+  window.onload = function() {
+    const initialText = getUrlParameter('text');
+    document.getElementById('encoderField').value = initialText;
+  };
+</script>
+
 <body>
 
   <a href="#maincontent" class="skiplink">Skip to content</a>
@@ -123,13 +150,9 @@
 
 <form> 
   <label for="encoderField"><strong>Input Your Text Here</strong></label><br>
-                  <!-- <div style="display: inline;"> -->
-                <input class="" type="checkbox" name="myCheck" id="myCheck" onclick="myFunction()" value="Lockinput" >
-                <label for="myCheck" class="alignright">Flip horizontally (slate and stylus)</label>
-                <!-- buttons for fullscreen -->
-                <span style="float: right;">
-</span>
-                </div>
+  <input class="" type="checkbox" name="myCheck" id="myCheck" onclick="myFunction()" value="Lockinput" >
+  <label for="myCheck" class="alignright">Flip horizontally (slate and stylus)</label>
+  
   <textarea class="spaceafter" id="encoderField" placeholder="your braille here" onkeyup="reFillText();"></textarea>
 </form>
 
