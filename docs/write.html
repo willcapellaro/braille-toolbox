@@ -71,13 +71,12 @@
 <script>
   let timeout;
 
-  // Function to read any URL parameter (not just 'text')
+  // Function to read any URL parameter or the first available one
   function getUrlParameter() {
     const urlParams = new URLSearchParams(window.location.search);
-    // Get the first parameter and return its value, or an empty string if none exists
-    const firstKey = urlParams.keys().next().value;
-    const value = firstKey ? urlParams.get(firstKey) : ''; // Return value or empty string
-    return value || ''; // Return the value or empty string if no value
+    const paramKey = urlParams.keys().next().value || 'text'; // Always fallback to 'text'
+    const paramValue = urlParams.get(paramKey) || ''; // Get the value, or empty string if none
+    return { paramKey, paramValue }; // Return both key and value
   }
 
   // Function to update the URL parameter with a debounce
@@ -90,21 +89,20 @@
 
     // Set a timeout to update the URL after a brief pause (300 ms)
     timeout = setTimeout(() => {
+      const { paramKey } = getUrlParameter(); // Get the current or fallback key
       const url = new URL(window.location.href);
-      // If there is already a parameter, update it; otherwise, just add a generic one
-      const urlParams = new URLSearchParams(window.location.search);
-      const firstKey = urlParams.keys().next().value || 'text'; // Use 'text' as a fallback key
-      url.searchParams.set(firstKey, textValue); // Update the first parameter
-      window.history.replaceState({}, '', url); // Replace the current URL without reloading the page
+      url.searchParams.set(paramKey, textValue); // Update the existing key with new value
+      window.history.replaceState({}, '', url); // Replace the current URL without reloading
     }, 300); // 300ms delay after the user stops typing
   }
 
   // Initialize the textarea with the first URL parameter's value on page load
   window.onload = function() {
-    const initialText = getUrlParameter();
-    document.getElementById('encoderField').value = initialText;
+    const { paramValue } = getUrlParameter(); // Get the value
+    document.getElementById('encoderField').value = paramValue;
   };
 </script>
+
 
   <style>
     details {
@@ -207,7 +205,7 @@
 
 
 
-<p class="legal">©2024 Will Capellaro & Braille Toolbox |||</p>
+<p class="legal">©2024 Will Capellaro & Braille Toolbox ||||</p>
 
 <!-- <script>
   function flashText() {
@@ -274,20 +272,8 @@ function reFillText ()
     <summary>View Changelog</summary>
     <div id="changelog">
       <div class="changelog-entry">
-        <h3>v1.3 - Implemented URL parameter updates from textarea input</h3>
-        <p class="changelog-date">Date: September 27, 2024</p>
-      </div>
-      <div class="changelog-entry">
-        <h3>v1.2 - Added flip horizontally feature for slate and stylus</h3>
-        <p class="changelog-date">Date: September 25, 2024</p>
-      </div>
-      <div class="changelog-entry">
-        <h3>v1.1 - Added support for ?text= parameters in URL</h3>
-        <p class="changelog-date">Date: September 20, 2024</p>
-      </div>
-      <div class="changelog-entry">
-        <h3>v1.0 - Initial release of Braille Toolbox</h3>
-        <p class="changelog-date">Date: September 15, 2024</p>
+        <h3>v1.3 - Added two-way url parameter to field function for Write in Braille</h3>
+        <p class="changelog-date">Date: September 27, 2024, Will Capellaro</p>
       </div>
     </div>
   </details>
