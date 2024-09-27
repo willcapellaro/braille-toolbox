@@ -71,10 +71,13 @@
 <script>
   let timeout;
 
-  // Function to read the 'text' parameter from the URL
-  function getUrlParameter(name) {
+  // Function to read any URL parameter (not just 'text')
+  function getUrlParameter() {
     const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get(name) || ''; // Returns the value of the 'text' parameter or an empty string
+    // Get the first parameter and return its value, or an empty string if none exists
+    const firstKey = urlParams.keys().next().value;
+    const value = firstKey ? urlParams.get(firstKey) : ''; // Return value or empty string
+    return value || ''; // Return the value or empty string if no value
   }
 
   // Function to update the URL parameter with a debounce
@@ -88,18 +91,51 @@
     // Set a timeout to update the URL after a brief pause (300 ms)
     timeout = setTimeout(() => {
       const url = new URL(window.location.href);
-      url.searchParams.set('text', textValue); // Update the 'text' parameter in the URL
+      // If there is already a parameter, update it; otherwise, just add a generic one
+      const urlParams = new URLSearchParams(window.location.search);
+      const firstKey = urlParams.keys().next().value || 'text'; // Use 'text' as a fallback key
+      url.searchParams.set(firstKey, textValue); // Update the first parameter
       window.history.replaceState({}, '', url); // Replace the current URL without reloading the page
     }, 300); // 300ms delay after the user stops typing
   }
 
-  // Initialize the textarea with the 'text' parameter on page load
+  // Initialize the textarea with the first URL parameter's value on page load
   window.onload = function() {
-    const initialText = getUrlParameter('text');
+    const initialText = getUrlParameter();
     document.getElementById('encoderField').value = initialText;
   };
 </script>
 
+  <style>
+    details {
+      text-align: left;
+      margin-top: 20px;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    summary {
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 18px;
+    }
+    .changelog-entry {
+      margin-bottom: 15px;
+    }
+    .changelog-entry h3 {
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+    .changelog-entry p {
+      margin: 0;
+      padding: 0;
+      font-size: 14px;
+      color: #666;
+    }
+    .changelog-date {
+      font-size: 12px;
+      color: #999;
+    }
+  </style>
 
 <body>
 
@@ -171,7 +207,7 @@
 
 
 
-<p class="legal">©2024 Will Capellaro & Braille Toolbox ||</p>
+<p class="legal">©2024 Will Capellaro & Braille Toolbox |||</p>
 
 <!-- <script>
   function flashText() {
@@ -233,6 +269,28 @@ function reFillText ()
   </div>
 </div>
 
+  <!-- Add your changelog section -->
+  <details>
+    <summary>View Changelog</summary>
+    <div id="changelog">
+      <div class="changelog-entry">
+        <h3>v1.3 - Implemented URL parameter updates from textarea input</h3>
+        <p class="changelog-date">Date: September 27, 2024</p>
+      </div>
+      <div class="changelog-entry">
+        <h3>v1.2 - Added flip horizontally feature for slate and stylus</h3>
+        <p class="changelog-date">Date: September 25, 2024</p>
+      </div>
+      <div class="changelog-entry">
+        <h3>v1.1 - Added support for ?text= parameters in URL</h3>
+        <p class="changelog-date">Date: September 20, 2024</p>
+      </div>
+      <div class="changelog-entry">
+        <h3>v1.0 - Initial release of Braille Toolbox</h3>
+        <p class="changelog-date">Date: September 15, 2024</p>
+      </div>
+    </div>
+  </details>
 
 </body>
 
