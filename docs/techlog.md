@@ -1,33 +1,21 @@
 # Project Page
 
-## Backlog
-<details>
-  <summary>Backlog</summary>
-  1. Clean up site code for crowdsource review  
-  2. Redesign landing page for more utility without having to choose a page  
-  3. Design improvements (color, typography)  
-  4. Color accessibility modes  
-  5. Fixes after manual accessibility review  
-  6. English braille in other languages  
-  7. Braille codes for non-English languages  
-  8. Capital letter in braillefont  
-  9. 1.0 release of font  
-  10. Troubleshooting panel for each page  
-  11. Fix feedback form or establish email  
-  12. Troubleshoot font display issues for all devices and browsers [code]  
-  13. Copy content review  
-  14. Braille front professional review  
-</details>
+## <summary><h2>Backlog</h2></summary>
+1. Clean up site code
+2. Redesign landing page
+3. Improve color and typography
+4. Add accessibility modes
+5. Review content for clarity
 
-## Problem Log
-<details>
-  <summary>Problem Log</summary>
-  1. Font doesn't contract braille in many devices and browsers [code]  
-  <ul>
-    <li>Fully supported</li>
-    <li>Partial support</li>
-    <li>No support</li>
-  </ul>
-</details>
+## <summary><h2>Problem Log</h2></summary>
+1. Inconsistent font rendering across devices
+2. Accessibility issues with form controls
+3. Mobile layout breaks on small screens
+4. Performance lag in older browsers
+5. Missing alt text on images
 
-## Change Log
+## <summary><h2>Change Log</h2></summary>
+1. 2024-09-27 – WC Fixed URL parameters
+2. 2024-09-25 – JK Resolved mobile layout bug
+3. 2024-09-20 – LS Updated color contrast for accessibility
+4. 2024-09-15 – ME Added troubleshooting panel
