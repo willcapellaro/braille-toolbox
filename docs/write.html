@@ -155,7 +155,25 @@
     updateTextInUrl(); // Update the URL with the checkbox state
     applyFlip(document.getElementById('myCheck').checked); // Apply the visual flip
   }
+
+  // Function to copy the current URL to the clipboard
+  function copyUrlToClipboard() {
+    const currentUrl = window.location.href;
+    
+    // Copy the URL to the clipboard
+    navigator.clipboard.writeText(currentUrl).then(() => {
+      // Show the confirmation alert
+      const alert = document.getElementById('copyAlert');
+      alert.style.display = 'block'; // Show the alert
+      setTimeout(() => {
+        alert.style.display = 'none'; // Hide it after 3 seconds
+      }, 3000); // Auto-hide after 3 seconds
+    }).catch((err) => {
+      console.error('Failed to copy: ', err);
+    });
+  }
 </script>
+
 
 
 
@@ -265,6 +283,14 @@
 
   <!-- Add a Clear button to clear the field and reset the URL -->
   <button type="button" onclick="clearFieldAndResetUrl()">Clear Field & Reset URL</button>
+
+  <!-- Add a Share button to copy URL to clipboard -->
+  <button type="button" class="btn btn-primary" onclick="copyUrlToClipboard()">Share URL</button>
+
+  <!-- Confirmation alert -->
+  <div id="copyAlert" class="alert alert-success" role="alert" style="display:none;">
+    Copied to clipboard!
+  </div>
 </form>
 
 
@@ -275,7 +301,7 @@
 
 
 
-<p class="legal">©2024 Will Capellaro & Braille Toolbox XiI|</p>
+<p class="legal">©2024 Will Capellaro & Braille Toolbox XiI2|</p>
 
 <!-- <script>
   function flashText() {
