@@ -78,14 +78,14 @@
   // Function to update the URL parameter when the user edits the text
   function updateUrlParameter(paramName, paramValue) {
     const url = new URL(window.location.href);
-    url.searchParams.set(paramName, paramValue);
-    window.history.replaceState({}, '', url); // Updates the URL without refreshing the page
+    url.searchParams.set(paramName, paramValue); // Update the parameter in the URL
+    window.history.replaceState({}, '', url); // Update the URL without refreshing the page
   }
 
   // Function to fill the textarea with the 'text' parameter if it exists
   function reFillText() {
     const textarea = document.getElementById('encoderField');
-    updateUrlParameter('text', textarea.value);
+    updateUrlParameter('text', textarea.value); // Update URL as user types
   }
 
   // Initialize the textarea with the 'text' parameter on page load
