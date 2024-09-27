@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Markdown to HTML</title>
+</head>
+<body>
+
+  <div id="content"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    async function loadMarkdown() {
+      try {
+        const response = await fetch('/techlog.md');
+        const markdownText = await response.text();
+        const htmlContent = marked(markdownText);
+        document.getElementById('content').innerHTML = htmlContent;
+      } catch (error) {
+        console.error("Error loading markdown file:", error);
+        document.getElementById('content').innerHTML = "Failed to load content.";
+      }
+    }
+
+    // Automatically load the markdown on page load
+    window.onload = loadMarkdown;
+  </script>
+
+</body>
+</html>
