@@ -71,21 +71,28 @@
 <script>
   let timeout;
 
-  // Function to read the first available parameter value after the `?`, decoding `+` to spaces
-  function getUrlParameter() {
-    const queryString = window.location.search;
-    if (queryString.startsWith('?')) {
-      // Extract the parameter and replace `+` with spaces
-      return queryString.substring(1).replace(/\+/g, ' ');
-    }
-    return ''; // Return an empty string if no parameter is present
+  // Function to get the text parameter and check if the flip option is present
+  function getUrlParameters() {
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    // Extract the first parameter (the text)
+    const paramKey = urlParams.keys().next().value || 'text'; // Fallback to 'text'
+    const paramValue = urlParams.get(paramKey) || ''; // Get the text value, or empty string if none
+    
+    // Check if the flip option is present
+    const isFlipped = urlParams.has('flip') || urlParams.get('options') === 'flip' || urlParams.get('direction') === 'flip';
+    
+    return { paramKey, paramValue, isFlipped }; // Return text and flip state
   }
 
-  // Function to update the URL parameter with a debounce, encoding spaces as `+`
-  function updateTextInUrl() {
+  // Function to update the URL with the text and flip option
+  function updateTextAndFlipInUrl() {
     const textarea = document.getElementById('encoderField');
     const textValue = textarea.value;
-    
+
+    const checkbox = document.getElementById('myCheck');
+    const isFlipped = checkbox.checked;
+
     // Clear any previously set timeout
     clearTimeout(timeout);
 
@@ -94,17 +101,43 @@
       const url = new URL(window.location.href);
       // Replace spaces with `+` for encoding
       const encodedValue = encodeURIComponent(textValue).replace(/%20/g, '+');
-      url.search = '?' + encodedValue; // Update the search string with the new value
+      url.search = '?' + encodedValue; // Update the search string with the text value
+
+      // Add flip option if the checkbox is checked
+      if (isFlipped) {
+        url.searchParams.append('flip', ''); // Append 'flip' if the box is checked
+      }
       window.history.replaceState({}, '', url); // Replace the URL without reloading the page
     }, 300); // 300ms delay after the user stops typing
   }
 
-  // Initialize the textarea with the parameter value on page load, decoding `+` to spaces
+  // Initialize the textarea with the text value and checkbox with the flip option on page load
   window.onload = function() {
-    const paramValue = getUrlParameter(); // Get the parameter value after the `?`
+    const { paramValue, isFlipped } = getUrlParameters(); // Get the text and flip state
     document.getElementById('encoderField').value = paramValue; // Populate the textarea
+    document.getElementById('myCheck').checked = isFlipped; // Set the checkbox state
+    
+    // Optionally apply any visual flip to the field, e.g., via CSS or JavaScript
+    applyFlip(isFlipped); // Function to visually flip the textarea if necessary
   };
+
+  // Optional function to apply visual flip to the textarea (for demonstration)
+  function applyFlip(isFlipped) {
+    const textarea = document.getElementById('encoderField');
+    if (isFlipped) {
+      textarea.style.transform = 'scaleX(-1)'; // Flip the textarea horizontally
+    } else {
+      textarea.style.transform = 'scaleX(1)'; // Default orientation
+    }
+  }
+
+  // Event handler when the checkbox is clicked
+  function handleCheckboxClick() {
+    updateTextAndFlipInUrl(); // Update the URL with the checkbox state
+    applyFlip(document.getElementById('myCheck').checked); // Apply the visual flip
+  }
 </script>
+
 
 
 
@@ -198,14 +231,18 @@
 
 <form> 
   <label for="encoderField"><strong>Input Your Text Here</strong></label><br>
-  <input class="" type="checkbox" name="myCheck" id="myCheck" onclick="myFunction()" value="Lockinput">
+  
+  <!-- Checkbox to control the flipping option -->
+  <input type="checkbox" name="myCheck" id="myCheck" onclick="handleCheckboxClick()" value="Lockinput">
   <label for="myCheck" class="alignright">Flip horizontally (slate and stylus)</label>
+  
+  <!-- Textarea to input the text -->
+  <textarea class="spaceafter" id="encoderField" placeholder="your braille here" onkeyup="updateTextAndFlipInUrl();"></textarea>
 
-  <textarea class="spaceafter" id="encoderField" placeholder="your braille here" onkeyup="updateTextInUrl();"></textarea>
-
-  <!-- Add an Update URL button -->
-  <button type="button" onclick="updateTextInUrl()">Update URL</button>
+  <!-- Add an Update URL button for manual update -->
+  <button type="button" onclick="updateTextAndFlipInUrl()">Update URL</button>
 </form>
+
 
 
 </div> 
