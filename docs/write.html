@@ -111,6 +111,23 @@
     }, 300); // 300ms delay after the user stops typing
   }
 
+  // Function to clear the textarea, uncheck the checkbox, and reset the URL
+  function clearFieldAndResetUrl() {
+    // Clear the textarea
+    document.getElementById('encoderField').value = '';
+
+    // Uncheck the flip checkbox
+    document.getElementById('myCheck').checked = false;
+
+    // Reset the URL to its base form without parameters
+    const url = new URL(window.location.href);
+    url.search = ''; // Remove all parameters
+    window.history.replaceState({}, '', url); // Replace the URL without reloading the page
+
+    // Optionally, reset the visual flip if applied
+    applyFlip(false);
+  }
+
   // Initialize the textarea with the text value and checkbox with the flip option on page load
   window.onload = function() {
     const { paramValue, isFlipped } = getUrlParameters(); // Get the text and flip state
@@ -137,6 +154,7 @@
     applyFlip(document.getElementById('myCheck').checked); // Apply the visual flip
   }
 </script>
+
 
 
 
@@ -241,6 +259,9 @@
 
   <!-- Add an Update URL button for manual update -->
   <button type="button" onclick="updateTextAndFlipInUrl()">Update URL</button>
+
+  <!-- Add a Clear button to clear the field and reset the URL -->
+  <button type="button" onclick="clearFieldAndResetUrl()">Clear Field & Reset URL</button>
 </form>
 
 
@@ -251,7 +272,7 @@
 
 
 
-<p class="legal">©2024 Will Capellaro & Braille Toolbox ||||||</p>
+<p class="legal">©2024 Will Capellaro & Braille Toolbox XI|</p>
 
 <!-- <script>
   function flashText() {
