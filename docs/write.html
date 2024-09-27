@@ -71,12 +71,13 @@
 <script>
   let timeout;
 
-  // Function to read any URL parameter or the first available one
+  // Function to read the first available parameter value after the `?`
   function getUrlParameter() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const paramKey = urlParams.keys().next().value || 'text'; // Always fallback to 'text'
-    const paramValue = urlParams.get(paramKey) || ''; // Get the value, or empty string if none
-    return { paramKey, paramValue }; // Return both key and value
+    const queryString = window.location.search;
+    if (queryString.startsWith('?')) {
+      return queryString.substring(1); // Return the string after the `?`
+    }
+    return ''; // Return an empty string if no parameter is present
   }
 
   // Function to update the URL parameter with a debounce
@@ -89,17 +90,16 @@
 
     // Set a timeout to update the URL after a brief pause (300 ms)
     timeout = setTimeout(() => {
-      const { paramKey } = getUrlParameter(); // Get the current or fallback key
       const url = new URL(window.location.href);
-      url.searchParams.set(paramKey, textValue); // Update the existing key with new value
-      window.history.replaceState({}, '', url); // Replace the current URL without reloading
+      url.search = '?' + encodeURIComponent(textValue); // Update the search string with the new value
+      window.history.replaceState({}, '', url); // Replace the URL without reloading the page
     }, 300); // 300ms delay after the user stops typing
   }
 
-  // Initialize the textarea with the first URL parameter's value on page load
+  // Initialize the textarea with the parameter value on page load
   window.onload = function() {
-    const { paramValue } = getUrlParameter(); // Get the value
-    document.getElementById('encoderField').value = paramValue;
+    const paramValue = getUrlParameter(); // Get the parameter value after the `?`
+    document.getElementById('encoderField').value = decodeURIComponent(paramValue); // Populate the textarea
   };
 </script>
 
@@ -190,14 +190,15 @@
 
 <form> 
   <label for="encoderField"><strong>Input Your Text Here</strong></label><br>
-  <input class="" type="checkbox" name="myCheck" id="myCheck" onclick="myFunction()" value="Lockinput" >
+  <input class="" type="checkbox" name="myCheck" id="myCheck" onclick="myFunction()" value="Lockinput">
   <label for="myCheck" class="alignright">Flip horizontally (slate and stylus)</label>
-  
+
   <textarea class="spaceafter" id="encoderField" placeholder="your braille here" onkeyup="updateTextInUrl();"></textarea>
 
   <!-- Add an Update URL button -->
   <button type="button" onclick="updateTextInUrl()">Update URL</button>
 </form>
+
 
 </div> 
 
