@@ -3,19 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simple Markdown to HTML</title>
+  <title>XXX</title>
 </head>
 <body>
 
   <div id="content"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <!-- Load marked.js from jsDelivr CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@4.0.10/marked.min.js"></script>
+
   <script>
     async function loadMarkdown() {
       try {
+        // Fetch the markdown file from the server
         const response = await fetch('/techlog.md');
+
+        // Check if the response is OK (status code 200)
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        // Read the markdown content from the file
         const markdownText = await response.text();
-        const htmlContent = marked(markdownText);
+
+        // Convert the markdown to HTML using marked.js
+        const htmlContent = marked.parse(markdownText);
+
+        // Inject the generated HTML into the content div
         document.getElementById('content').innerHTML = htmlContent;
       } catch (error) {
         console.error("Error loading markdown file:", error);
@@ -23,7 +37,7 @@
       }
     }
 
-    // Automatically load the markdown on page load
+    // Automatically load the markdown file on page load
     window.onload = loadMarkdown;
   </script>
 
