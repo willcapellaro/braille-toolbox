@@ -79,10 +79,10 @@
     const isFlipped = urlParams.has('fliptext');
     
     // Get the text from either `foo` or `fliptext`
-    const paramKey = isFlipped ? 'fliptext' : urlParams.keys().next().value || 'foo';
-    const paramValue = urlParams.get(paramKey) || ''; // Get the text value, or empty string if none
+    const paramValue = isFlipped ? urlParams.get('fliptext') : urlParams.keys().next().value;
+    const textValue = paramValue || ''; // Get the text value, or empty string if none
     
-    return { paramKey, paramValue, isFlipped }; // Return text and flip state
+    return { textValue, isFlipped }; // Return text and flip state
   }
 
   // Function to update the URL with the text and flip option
@@ -132,8 +132,8 @@
 
   // Initialize the textarea with the text value and checkbox with the flip option on page load
   window.onload = function() {
-    const { paramValue, isFlipped } = getUrlParameters(); // Get the text and flip state
-    document.getElementById('encoderField').value = paramValue; // Populate the textarea
+    const { textValue, isFlipped } = getUrlParameters(); // Get the text and flip state
+    document.getElementById('encoderField').value = decodeURIComponent(textValue); // Populate the textarea
     document.getElementById('myCheck').checked = isFlipped; // Set the checkbox state
     
     // Optionally apply any visual flip to the field, e.g., via CSS or JavaScript
@@ -173,12 +173,6 @@
     });
   }
 </script>
-
-
-
-
-
-
 
   <style>
     #encoderField {
@@ -295,13 +289,14 @@
 
 
 
+
 </div> 
 
 
 
 
 
-<p class="legal">©2024 Will Capellaro & Braille Toolbox XiI22|</p>
+<p class="legal">©2024 Will Capellaro & Braille Toolbox XiI232|</p>
 
 <!-- <script>
   function flashText() {
