@@ -59,8 +59,7 @@
 <script type="text/javascript" src="https://platform-api.sharethis.com/js/sharethis.js#property=61f6a10d30d3010019e430f6&product=sticky-share-buttons" async="async"></script>
 <script type="text/javascript" src="https://platform-api.sharethis.com/js/sharethis.js#property=61f6a10d30d3010019e430f6&product=sticky-share-buttons" async="async"></script>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 <script defer data-domain="brailletoolbox.com" src="https://plausible.io/js/plausible.js"></script>
 <script defer data-domain="brailletoolbox.com" src="https://plausible.io/js/plausible.js"></script>
 <link rel="apple-touch-icon" sizes="180x180" href="imgs/apple-touch-icon.png">
@@ -111,6 +110,21 @@
 
       window.history.replaceState({}, '', url); // Replace the URL without reloading the page
     }, 300); // 300ms delay after the user stops typing
+
+    // Check for capital letters
+    checkForCapitals(textValue);
+  }
+
+  // Function to check for capital letters in the text
+  function checkForCapitals(text) {
+    const capitalAlert = document.getElementById('capitalAlert');
+    const hasCapitals = /[A-Z]/.test(text); // Regular expression to detect capital letters
+
+    if (hasCapitals) {
+      capitalAlert.style.display = 'block'; // Show the warning alert if capitals are present
+    } else {
+      capitalAlert.style.display = 'none'; // Hide the alert if no capitals
+    }
   }
 
   // Function to clear the textarea, uncheck the checkbox, and reset the URL
@@ -128,6 +142,9 @@
 
     // Optionally, reset the visual flip if applied
     applyFlip(false);
+
+    // Hide the capital letters alert
+    document.getElementById('capitalAlert').style.display = 'none';
   }
 
   // Initialize the textarea with the text value and checkbox with the flip option on page load
@@ -138,6 +155,9 @@
     
     // Optionally apply any visual flip to the field, e.g., via CSS or JavaScript
     applyFlip(isFlipped); // Function to visually flip the textarea if necessary
+
+    // Check for capital letters on page load
+    checkForCapitals(textValue);
   };
 
   // Optional function to apply visual flip to the textarea (for demonstration)
@@ -173,6 +193,7 @@
     });
   }
 </script>
+
 
   <style>
     #encoderField {
@@ -256,7 +277,7 @@
 
 
 <h1 id="maincontent">Write in Braille!</h1>
-<p class="betatag">Beta Feature | Currently Supported Browsers: Mac Safari<button type="button" class="btn btn-link" style="font-size: 16px; color: #b1d" data-toggle="modal" data-target="#exampleModalLong">
+<p class="betatag">Beta Feature | Currently Supported Browsers: Mac Safari, iOS Chrome<button type="button" class="btn btn-link" style="font-size: 16px; color: #b1d" data-toggle="modal" data-target="#exampleModalLong">
   <i class="fas fa-bug"></i> Report a Bug
 </button></p>
 
@@ -266,11 +287,17 @@
 
 
 <form> 
+  <!-- Warning alert for capital letters -->
+  <div id="capitalAlert" class="alert alert-info" role="alert" style="display:none;">
+    <i class="fas fa-info-circle"></i> Capital letters coming soon!
+  </div>
+
+
   <label for="encoderField"><strong>Input Your Text Here</strong></label><br>
   
   <!-- Checkbox to control the flipping option -->
   <input type="checkbox" name="myCheck" id="myCheck" onclick="handleCheckboxClick()" value="Lockinput">
-  <label for="myCheck" class="newCheck alignright">Flip horizontally (slate and stylus)</label>
+  <label for="myCheck" class="alignright">Flip horizontally (slate and stylus)</label>
   
   <!-- Textarea to input the text -->
   <textarea class="spaceafter" id="encoderField" placeholder="your braille here" onkeyup="updateTextInUrl();"></textarea>
@@ -289,6 +316,7 @@
     Copied to clipboard!
   </div>
 </form>
+
 
 
 
