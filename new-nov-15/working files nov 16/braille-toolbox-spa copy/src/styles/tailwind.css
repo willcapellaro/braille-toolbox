@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles can be added below this line */
+
+body {
+    @apply bg-gray-100 text-gray-900;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    @apply font-bold;
+}
+
+a {
+    @apply text-blue-600 hover:text-blue-800;
+}
+
+.navbar {
+    @apply bg-white shadow-md;
+}
+
+.braille-cell {
+    @apply w-16 h-16 border border-gray-300 rounded-lg flex items-center justify-center;
+}
+
+.braille-cell.active {
+    @apply bg-blue-200;
+}
+
+.search-module {
+    @apply p-4 bg-white rounded-lg shadow-md;
+}
+
+.mobile-menu {
+    @apply block md:hidden;
+}
+
+.quick-reference {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4;
+}

@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Braille Constrictor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-sky: #A0E0F7;
+            --bg-ground: #A8D397;
+            --snake-body: #1F7A8C;
+            --snake-accent: #196473;
+            --tile-top: #5ED4E8;
+            --tile-bottom: #1FB5BA;
+            --text-white: #FFFFFF;
+            --snake-red: #D64045;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(to bottom, var(--bg-sky) 55%, var(--bg-ground) 55%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+        }
+
+        /* --- Header / Dialogue --- */
+        #header {
+            height: 15vh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+            z-index: 10;
+        }
+
+        #dialogue {
+            font-size: 1.4rem;
+            font-weight: 800;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 20px;
+            min-height: 3.5rem; /* prevent jump */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* --- Stage / Snake Frame --- */
+        #stage {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .snake-container {
+            position: relative;
+            width: 85%;
+            height: 240px;
+            transition: width 1s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        /* The Snake Body (Frame) */
+        .snake-frame {
+            width: 100%;
+            height: 100%;
+            border: 40px solid var(--snake-body);
+            border-radius: 45px;
+            background: var(--bg-sky);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.1), 5px 10px 0px rgba(0,0,0,0.15);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: breathe 4s infinite ease-in-out;
+            z-index: 1;
+        }
+
+        /* Snake Patterns */
+        .snake-frame::after {
+            content: '';
+            position: absolute;
+            top: -40px; left: -40px; right: -40px; bottom: -40px;
+            border: 40px dashed var(--snake-accent);
+            border-radius: 45px;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        /* Snake Head & Tail Wrapper */
+        .travel-wrapper {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        /* Snake Head */
+        .snake-head {
+            position: absolute;
+            top: 20px; 
+            left: -55px;
+            width: 80px;
+            height: 80px;
+            background: var(--snake-body);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 2px 4px 0px rgba(0,0,0,0.15);
+            transition: transform 0.3s;
+        }
+
+        /* Snake Tail */
+        .snake-tail {
+            position: absolute;
+            bottom: -60px;
+            right: 40px;
+            width: 0; 
+            height: 0; 
+            border-left: 25px solid transparent;
+            border-right: 25px solid transparent;
+            border-top: 60px solid var(--snake-body);
+            transform: rotate(-30deg);
+            z-index: -1;
+        }
+        
+        .eye {
+            width: 12px;
+            height: 12px;
+            background: var(--snake-red);
+            border-radius: 50%;
+            margin: 0 6px;
+            margin-top: -15px;
+            box-shadow: inset 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .tongue {
+            position: absolute;
+            left: -20px;
+            top: 50%;
+            width: 25px;
+            height: 10px;
+            background: var(--snake-red);
+            clip-path: polygon(0 0, 100% 40%, 100% 60%, 0 100%);
+            animation: flick 2s infinite;
+            transform-origin: right center;
+        }
+
+        /* Target Content */
+        .target-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            z-index: 0;
+            /* Ensure content stays centered even during constriction */
+            width: 100%; 
+        }
+
+        .target-word {
+            font-family: 'Nunito', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 2px 2px 0 var(--snake-accent);
+        }
+
+        .target-braille {
+            display: flex;
+            gap: 6px;
+        }
+
+        .mini-card {
+            background: white;
+            color: var(--snake-body);
+            border-radius: 6px;
+            width: 30px;
+            height: 45px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1.5rem;
+            box-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+        }
+
+        /* --- Play Area / Controls --- */
+        #play-area {
+            height: 45vh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding-bottom: 20px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        /* Domino Tile */
+        .domino-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            transition: transform 0.1s;
+            touch-action: none;
+            width: 75px; /* Fixed width for layout stability */
+        }
+
+        .domino-wrapper.dragging {
+            opacity: 0.5;
+            transform: scale(1.1);
+            z-index: 100;
+        }
+
+        .domino {
+            width: 70px;
+            height: 125px;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 6px 0 rgba(0,0,0,0.2);
+            cursor: grab;
+            background: white; /* fallback */
+        }
+
+        .domino-top {
+            flex: 1;
+            background-color: var(--tile-top);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.8rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            color: #fff;
+            text-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+        }
+
+        .domino-bottom {
+            flex: 1;
+            background-color: var(--tile-bottom);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Braille Dots */
+        .braille-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr 1fr;
+            gap: 5px;
+            width: 35px;
+            height: 50px;
+        }
+        
+        .dot {
+            width: 11px;
+            height: 11px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 50%;
+        }
+        
+        .dot.active {
+            background: white;
+            box-shadow: 0 1px 1px rgba(0,0,0,0.2);
+        }
+
+        .delete-btn {
+            margin-top: 8px;
+            background: rgba(255,255,255,0.3);
+            border: 2px solid rgba(255,255,255,0.5);
+            width: 100%;
+            height: 30px;
+            border-radius: 15px;
+            color: white;
+            font-weight: 900;
+            font-size: 1.5rem;
+            line-height: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .delete-btn:active {
+            background: var(--snake-red);
+            border-color: var(--snake-red);
+        }
+
+        .add-placeholder {
+            width: 70px;
+            height: 125px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.2);
+            border: 4px dashed rgba(255,255,255,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            color: rgba(255,255,255,0.8);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        /* --- Fullscreen Picker --- */
+        #picker-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(31, 122, 140, 0.98);
+            z-index: 200;
+            display: none; 
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .picker-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding-bottom: 80px;
+        }
+
+        .picker-item {
+            transform: scale(0.9);
+        }
+        
+        .picker-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .close-picker {
+            font-size: 2.5rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* --- Animations --- */
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); border-width: 40px; }
+            50% { transform: scale(1.02); border-width: 37px; }
+        }
+
+        @keyframes flick {
+            0%, 100% { transform: scaleX(1); }
+            10% { transform: scaleX(0.7); }
+            20% { transform: scaleX(1); }
+        }
+        
+        /* Travel Animation Classes */
+        /* We use JS to trigger this, moving head/tail around the box */
+        .travel-wrapper.looping {
+            animation: loopAround 2s linear;
+        }
+
+        @keyframes loopAround {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Since box is rectangle, rotation is rough approximation, 
+           instead we will strictly animate Top/Left in JS for box-hugging */
+
+        .squeezed .target-word, .squeezed .target-braille {
+            display: none;
+        }
+
+        .squeezed .solved-text {
+            font-size: 4.5rem;
+            font-weight: 900;
+            animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        /* Level Indicator */
+        .level-badge {
+            position: absolute;
+            top: 10px; left: 10px;
+            background: rgba(0,0,0,0.2);
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: rgba(255,255,255,0.8);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="level-badge" id="levelBadge">Level 1</div>
+
+    <!-- Header -->
+    <div id="header">
+        <div id="dialogue">Welcome to Braille Conssstrictor!</div>
+    </div>
+
+    <!-- Game Stage -->
+    <div id="stage">
+        <div class="snake-container" id="snakeContainer">
+            <div class="travel-wrapper" id="travelWrapper">
+                <div class="snake-head" id="snakeHead">
+                    <div class="tongue"></div>
+                    <div class="eye"></div>
+                    <div class="eye"></div>
+                </div>
+                <!-- Tail is purely decorative, positioned absolutely on bottom right usually -->
+                <div class="snake-tail" id="snakeTail"></div>
+            </div>
+            
+            <div class="snake-frame">
+                <div class="target-content" id="targetContent">
+                    <!-- Injected via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div id="play-area">
+        <!-- Draggable items injected here -->
+    </div>
+
+    <!-- Picker Overlay -->
+    <div id="picker-overlay">
+        <div class="picker-header">
+            <div style="font-size: 1.5rem; font-weight:bold;">Choose a Tile</div>
+            <div class="close-picker" onclick="closePicker()">✕</div>
+        </div>
+        <div class="picker-grid" id="pickerGrid"></div>
+    </div>
+
+<script>
+    // --- Configuration & Data ---
+    
+    // Braille Map (standard alphabet)
+    // 1=TopLeft, 2=MidLeft, 3=BotLeft, 4=TopRight, 5=MidRight, 6=BotRight
+    const brailleMap = {
+        'a': [1], 'b': [1,2], 'c': [1,4], 'd': [1,4,5], 'e': [1,5],
+        'f': [1,2,4], 'g': [1,2,4,5], 'h': [1,2,5], 'i': [2,4], 'j': [2,4,5],
+        'k': [1,3], 'l': [1,2,3], 'm': [1,3,4], 'n': [1,3,4,5], 'o': [1,3,5],
+        'p': [1,2,3,4], 'q': [1,2,3,4,5], 'r': [1,2,3,5], 's': [2,3,4], 't': [2,3,4,5],
+        'u': [1,3,6], 'v': [1,2,3,6], 'w': [2,4,5,6], 'x': [1,3,4,6], 'y': [1,3,4,5,6], 'z': [1,3,5,6]
+    };
+
+    // Level Data
+    const levels = [
+        // Level 1: Single Letter Contractions (6 words)
+        { 
+            id: 1,
+            intro: "Did you know long wordsss can be just one letter? Contract 'People'...",
+            word: "PEOPLE", solution: "p", 
+            mistakes: { "pe": "Too many lettersss! Jusssst one will do.", "pl": "Think sssshorter." }
+        },
+        { word: "BUT", solution: "b", mistakes: { "bu": "Ssssmaller!" } },
+        { word: "CAN", solution: "c", mistakes: { "cn": "Can you make it onnnnne letter?" } },
+        { word: "DO", solution: "d", mistakes: {} },
+        { word: "LIKE", solution: "l", mistakes: { "li": "I like single lettersss better." } },
+        { word: "WILL", solution: "w", mistakes: { "wi": "Will you try one letter?" } },
+
+        // Level 2: Two Letter Shortforms (6 words)
+        { 
+            id: 2,
+            intro: "Excellent! Now try contracting to two lettersss. Try 'About'...",
+            word: "ABOUT", solution: "ab", 
+            mistakes: { "a": "About needsss two letters.", "at": "Not quite." }
+        },
+        { word: "AFTER", solution: "af", mistakes: { "a": "After needsss 'f' too." } },
+        { word: "AGAIN", solution: "ag", mistakes: { "ai": "Use the G for AGain." } },
+        { word: "ALSO", solution: "al", mistakes: { "as": "Alssso starts with A L." } },
+        { word: "FRIEND", solution: "fr", mistakes: { "fd": "Friendssss start with F R." } },
+        { word: "YOUR", solution: "yr", mistakes: { "yo": "Y and R for Your..." } },
+
+        // Level 3: Mix (3 Single, 3 Double)
+        { 
+            id: 3,
+            intro: "Let'ssss mix them up! Watch closely...",
+            word: "KNOWLEDGE", solution: "k", 
+            mistakes: { "kn": "Knowledge is power, but 'K' is shorter!", "kl": "Jussst 'K'." }
+        },
+        { word: "RATHER", solution: "r", mistakes: { "ra": "Rather jussst 'R'." } },
+        { word: "VERY", solution: "v", mistakes: {} },
+        { word: "SAID", solution: "sd", mistakes: { "sa": "Ssssaid uses S and D." } },
+        { word: "GOOD", solution: "gd", mistakes: { "go": "G and D for Good." } },
+        { word: "QUICK", solution: "qk", mistakes: { "qu": "Quickly! Q and K!" } },
+
+        // Level 4: Unused Extras
+        { 
+            id: 4,
+            intro: "Expert ssssnake charmer! Try thessse last ones.",
+            word: "TOMORROW", solution: "tm", mistakes: { "to": "T and M for Tomorrow." }
+        },
+        { word: "LITTLE", solution: "ll", mistakes: { "li": "Double L for Little." } },
+        { word: "EVERY", solution: "e", mistakes: { "ev": "Every is jussst 'E'." } },
+        { word: "JUST", solution: "j", mistakes: {} },
+        { word: "US", solution: "u", mistakes: {} },
+        { word: "HAVE", solution: "h", mistakes: {} }
+    ];
+
+    let currentLevelIdx = 0;
+    let userTiles = []; // Array of chars
+    let editingIndex = -1;
+    let isConstricting = false;
+
+    // --- DOM Elements ---
+    const dialogueEl = document.getElementById('dialogue');
+    const targetContent = document.getElementById('targetContent');
+    const playArea = document.getElementById('play-area');
+    const pickerOverlay = document.getElementById('picker-overlay');
+    const pickerGrid = document.getElementById('pickerGrid');
+    const snakeContainer = document.getElementById('snakeContainer');
+    const levelBadge = document.getElementById('levelBadge');
+    const snakeHead = document.getElementById('snakeHead');
+    const snakeTail = document.getElementById('snakeTail');
+
+    // --- Typewriter Effect ---
+    let typeTimeout;
+    function typeText(text) {
+        clearTimeout(typeTimeout);
+        dialogueEl.innerHTML = "";
+        let i = 0;
+        function step() {
+            if (i < text.length) {
+                dialogueEl.innerHTML += text.charAt(i);
+                i++;
+                typeTimeout = setTimeout(step, 40);
+            }
+        }
+        step();
+    }
+
+    // --- Helper: Braille Grid HTML ---
+    function createBrailleGrid(char) {
+        const dots = brailleMap[char.toLowerCase()] || [];
+        // Map logical dots to physical grid order: 1,4,2,5,3,6
+        // Grid fills: TopL(1), TopR(4), MidL(2), MidR(5), BotL(3), BotR(6)
+        const dotOrder = [1, 4, 2, 5, 3, 6]; 
+        
+        let html = '<div class="braille-grid">';
+        dotOrder.forEach(d => {
+            html += `<div class="dot ${dots.includes(d) ? 'active' : ''}"></div>`;
+        });
+        html += '</div>';
+        return html;
+    }
+
+    function createDominoHTML(char, index, isStatic = false) {
+        const removeBtn = isStatic ? '' : `
+            <div class="delete-btn" onpointerdown="removeTile(${index}, event)">-</div>
+        `;
+        
+        // Handlers attached dynamically via JS for the Play Area to support drag
+        // Static picker items get simple onclick
+        const attrs = isStatic ? `onclick="selectFromPicker('${char}')"` : `data-index="${index}"`;
+        const classes = `domino-wrapper ${isStatic ? 'picker-item' : 'draggable'}`;
+        const id = isStatic ? '' : `id="tile-${index}"`;
+
+        return `
+            <div class="${classes}" ${attrs} ${id}>
+                <div class="domino">
+                    <div class="domino-top">${char}</div>
+                    <div class="domino-bottom">
+                        ${createBrailleGrid(char)}
+                    </div>
+                </div>
+                ${removeBtn}
+            </div>
+        `;
+    }
+
+    // --- Core Game Functions ---
+
+    function loadLevel() {
+        isConstricting = false;
+        const level = levels[currentLevelIdx];
+        
+        // Reset Visuals
+        userTiles = [];
+        snakeContainer.style.width = "85%";
+        snakeContainer.classList.remove('squeezed');
+        snakeContainer.classList.remove('shaking');
+        levelBadge.innerText = `Level ${level.id || '?'}`;
+        
+        // Text
+        const prompt = level.intro || `Contract thisssss word...`;
+        // Clear intro after first use for that level block so it doesn't repeat every word
+        if(level.intro) delete level.intro; 
+        
+        typeText(prompt);
+
+        // Target Word & Braille
+        // Generate unicode offset for target visual (Simplified logic)
+        let targetHTML = `<div class="target-word">${level.word}</div>`;
+        targetHTML += `<div class="target-braille">`;
+        
+        // Just show simple braille blocks for visual flavor
+        for(let l of level.word.toLowerCase()) {
+             let char = l; 
+             // We use the mini-card simply to show letters in boxes like the original image
+             // For actual braille dots, we could use the grid, but text is cleaner for target
+             targetHTML += `<div class="mini-card">${char}</div>`;
+        }
+        targetHTML += `</div>`;
+        targetHTML += `<div class="solved-text" style="display:none;">${level.solution.toUpperCase()}</div>`;
+        
+        targetContent.innerHTML = targetHTML;
+        targetContent.style.opacity = "1";
+
+        renderPlayArea();
+        
+        // Occasional Snake Loop
+        if(Math.random() > 0.6) loopSnake();
+    }
+
+    function renderPlayArea() {
+        playArea.innerHTML = "";
+        
+        userTiles.forEach((char, index) => {
+            // Create element
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = createDominoHTML(char, index);
+            const el = tempDiv.firstElementChild;
+            
+            // Attach Drag Events
+            el.addEventListener('pointerdown', handleDragStart);
+            
+            playArea.appendChild(el);
+        });
+
+        // Add Button
+        const addBtn = document.createElement('div');
+        addBtn.className = "add-placeholder";
+        addBtn.innerText = "+";
+        addBtn.onclick = () => openPicker(-1);
+        playArea.appendChild(addBtn);
+        
+        // After render, check if we solved it? (Usually waiting for user input)
+        // But we check strictly on modifications.
+    }
+
+    function removeTile(index, e) {
+        if(e) e.stopPropagation();
+        userTiles.splice(index, 1);
+        renderPlayArea();
+        checkAnswer(false);
+    }
+
+    // --- Picker ---
+    function initPicker() {
+        pickerGrid.innerHTML = "";
+        Object.keys(brailleMap).forEach(char => {
+            pickerGrid.innerHTML += createDominoHTML(char, 0, true);
+        });
+    }
+
+    function openPicker(index) {
+        editingIndex = index;
+        pickerOverlay.style.display = "flex";
+    }
+
+    function closePicker() {
+        pickerOverlay.style.display = "none";
+    }
+
+    function selectFromPicker(char) {
+        if (editingIndex === -1) {
+            userTiles.push(char);
+        } else {
+            userTiles[editingIndex] = char;
+        }
+        closePicker();
+        renderPlayArea();
+        checkAnswer(true);
+    }
+
+    // --- Logic & Feedback ---
+    function checkAnswer(triggerFeedback) {
+        const level = levels[currentLevelIdx];
+        const attempt = userTiles.join('').toLowerCase();
+
+        // 1. Correct
+        if (attempt === level.solution.toLowerCase()) {
+            winLevel();
+            return;
+        }
+
+        // 2. Specific Mistakes
+        if (triggerFeedback && level.mistakes && level.mistakes[attempt]) {
+            typeText(level.mistakes[attempt]);
+            shakeSnake();
+        }
+    }
+
+    function shakeSnake() {
+        // Visual feedback for wrong answer but valid attempt
+        snakeContainer.style.transform = "rotate(2deg)";
+        setTimeout(() => snakeContainer.style.transform = "rotate(-2deg)", 100);
+        setTimeout(() => snakeContainer.style.transform = "rotate(2deg)", 200);
+        setTimeout(() => snakeContainer.style.transform = "rotate(0deg)", 300);
+    }
+
+    function winLevel() {
+        if(isConstricting) return;
+        isConstricting = true;
+        
+        snakeContainer.classList.add('squeezed');
+        snakeContainer.style.width = "140px"; // Shrink
+        
+        dialogueEl.innerText = "Ssssssplendid!";
+        
+        // Show solved text
+        const solvedDiv = document.querySelector('.solved-text');
+        if(solvedDiv) solvedDiv.style.display = "block";
+
+        setTimeout(() => {
+            currentLevelIdx++;
+            if (currentLevelIdx >= levels.length) {
+                currentLevelIdx = 0; // Loop or End Game screen
+                dialogueEl.innerText = "You are a master conssstrictor!";
+                setTimeout(loadLevel, 3000);
+            } else {
+                loadLevel();
+            }
+        }, 2500);
+    }
+
+    // --- Snake Animation ---
+    function loopSnake() {
+        const wrapper = document.getElementById('travelWrapper');
+        const head = document.getElementById('snakeHead');
+        
+        // Reset
+        head.style.transform = "rotate(0deg)";
+        
+        // Animate Head along path using simple CSS keyframes on the wrapper
+        // The wrapper is full size of container.
+        // We will just animate rotation of the wrapper to simulate orbiting
+        // BUT the box is rectangular, so simple rotation clips.
+        
+        // Better visual: CSS Motion Path is complex to inject dynamically with changing width.
+        // Simple visual: Just rotate the wrapper 360deg. Since head is at top-left, 
+        // if wrapper rotates, head spins around center.
+        // Let's adjust head position to be offset from center to create orbit.
+        
+        wrapper.classList.add('looping');
+        setTimeout(() => {
+            wrapper.classList.remove('looping');
+        }, 2000);
+    }
+
+
+    // --- Robust Drag and Drop (Reordering) ---
+    
+    let draggedEl = null;
+    let placeholder = null;
+    let dragIndex = -1;
+    let dragOffsetX = 0;
+    let dragOffsetY = 0;
+
+    function handleDragStart(e) {
+        // Ignore if clicking the delete button
+        if (e.target.closest('.delete-btn')) return;
+
+        draggedEl = e.currentTarget;
+        dragIndex = parseInt(draggedEl.getAttribute('data-index'));
+        
+        // Create Placeholder
+        placeholder = document.createElement('div');
+        placeholder.className = 'domino-wrapper'; 
+        placeholder.style.width = '75px'; // Match width
+        placeholder.style.height = '125px';
+        placeholder.style.visibility = 'hidden'; // invisible but takes space
+        
+        // Calculate Offset to keep cursor relative to item
+        const rect = draggedEl.getBoundingClientRect();
+        dragOffsetX = e.clientX - rect.left;
+        dragOffsetY = e.clientY - rect.top;
+
+        // Set styles for dragging
+        draggedEl.style.position = 'fixed';
+        draggedEl.style.width = rect.width + 'px';
+        draggedEl.style.height = rect.height + 'px';
+        draggedEl.style.left = rect.left + 'px';
+        draggedEl.style.top = rect.top + 'px';
+        draggedEl.style.zIndex = 1000;
+        draggedEl.classList.add('dragging');
+
+        // Insert placeholder where dragged element was
+        draggedEl.parentNode.insertBefore(placeholder, draggedEl.nextSibling);
+
+        // Add global listeners
+        document.addEventListener('pointermove', handleDragMove);
+        document.addEventListener('pointerup', handleDragEnd);
+    }
+
+    function handleDragMove(e) {
+        if (!draggedEl) return;
+        e.preventDefault();
+
+        // Move visual
+        const x = e.clientX - dragOffsetX;
+        const y = e.clientY - dragOffsetY;
+        draggedEl.style.left = x + 'px';
+        draggedEl.style.top = y + 'px';
+
+        // Hit Testing for Swap
+        // We look at other "draggable" items (excluding draggedEl) in playArea
+        // The placeholder is in the flow. We check if we should move the placeholder.
+        
+        const siblings = Array.from(playArea.children).filter(
+            el => el !== draggedEl && el.classList.contains('domino-wrapper') && el.style.position !== 'fixed'
+        );
+
+        // Find the element we are hovering over
+        let target = null;
+        let minDist = Infinity;
+        
+        // Center of dragged element
+        const dragRect = draggedEl.getBoundingClientRect();
+        const dragCenterX = dragRect.left + dragRect.width/2;
+
+        siblings.forEach(sibling => {
+            const rect = sibling.getBoundingClientRect();
+            const center = rect.left + rect.width/2;
+            const dist = Math.abs(dragCenterX - center);
+            
+            if (dist < 50 && dist < minDist) { // Threshold
+                 target = sibling;
+                 minDist = dist;
+            }
+        });
+
+        if (target) {
+            // Determine relative position
+            const targetRect = target.getBoundingClientRect();
+            const targetCenter = targetRect.left + targetRect.width/2;
+            
+            // If dragging right and passed center, insert after
+            // If dragging left and passed center, insert before
+            // Simple logic: Swap placeholder to target's position
+            const parent = target.parentNode;
+            if (dragCenterX > targetCenter) {
+                parent.insertBefore(placeholder, target.nextSibling);
+            } else {
+                parent.insertBefore(placeholder, target);
+            }
+        }
+    }
+
+    function handleDragEnd(e) {
+        if (!draggedEl) return;
+
+        // 1. Update Data Model based on DOM order
+        // Get all children of playArea. Filter for tiles.
+        // Identify the new order of tiles.
+        
+        // We have to reconstruct userTiles array.
+        // The draggedEl still holds the old data-index, but we know its CHAR based on userTiles[oldIndex].
+        // Actually, safer way: 
+        // 1. Identify where placeholder is.
+        // 2. Map DOM elements to array.
+        
+        // Put draggedEl back into flow at placeholder
+        placeholder.parentNode.insertBefore(draggedEl, placeholder);
+        placeholder.remove();
+        
+        draggedEl.style.position = '';
+        draggedEl.style.width = '';
+        draggedEl.style.height = '';
+        draggedEl.style.left = '';
+        draggedEl.style.top = '';
+        draggedEl.style.zIndex = '';
+        draggedEl.classList.remove('dragging');
+
+        // Now read DOM to rebuild array
+        const newTiles = [];
+        const domItems = playArea.querySelectorAll('.domino-wrapper:not(.add-placeholder)');
+        
+        domItems.forEach(item => {
+            // If it's the one we just dragged, we use the saved index to get value
+            // If it's others, we use their data-index
+            let idx = parseInt(item.getAttribute('data-index'));
+            newTiles.push(userTiles[idx]);
+        });
+        
+        userTiles = newTiles;
+        
+        // Re-render completely to reset indices
+        renderPlayArea();
+        checkAnswer(false);
+
+        // Cleanup
+        draggedEl = null;
+        placeholder = null;
+        document.removeEventListener('pointermove', handleDragMove);
+        document.removeEventListener('pointerup', handleDragEnd);
+    }
+
+
+    // --- Init ---
+    initPicker();
+    loadLevel();
+
+</script>
+</body>
+</html>

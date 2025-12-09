@@ -1,0 +1,37 @@
+@font-face {
+    font-family: 'Braille';
+    src: url('../fonts/Braille.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.braille {
+    font-family: 'Braille', sans-serif;
+    font-size: 24px; /* Adjust size as needed */
+    line-height: 1.5;
+    letter-spacing: 0.1em; /* Adjust spacing for readability */
+}
+
+.braille-cell {
+    display: inline-block;
+    width: 30px; /* Adjust size for braille cell */
+    height: 60px; /* Adjust size for braille cell */
+    border: 1px solid #000; /* Optional: border for visibility */
+    margin: 2px; /* Space between cells */
+    position: relative;
+}
+
+.braille-dot {
+    width: 10px; /* Adjust size for dots */
+    height: 10px; /* Adjust size for dots */
+    border-radius: 50%;
+    background-color: #000; /* Dot color */
+    position: absolute;
+}
+
+.braille-dot.dot1 { top: 10px; left: 10px; }
+.braille-dot.dot2 { top: 30px; left: 10px; }
+.braille-dot.dot3 { top: 10px; left: 20px; }
+.braille-dot.dot4 { top: 30px; left: 20px; }
+.braille-dot.dot5 { top: 10px; left: 30px; }
+.braille-dot.dot6 { top: 30px; left: 30px; }

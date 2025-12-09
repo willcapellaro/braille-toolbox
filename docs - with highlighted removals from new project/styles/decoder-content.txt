@@ -1,0 +1,889 @@
+
+
+-----------------------
+Blank cell
+
+A space or indent
+A space after a word also resets some formatting such as all caps. Read about formatting here.
+A space after a number will reset to letters.
+
+
+-----------------------
+Dot 1
+
+The letter A
+The number 1
+
+As a whole word, it’s “a” 
+
+Starts several “a” word contractions
+-about
+-above
+-according
+-across
+-after
+-afternoon
+-afterward
+-again
+-against
+-almost
+-already
+-also
+-although
+-altogether
+-always
+Confused with
+-dot 4
+-dot 2
+
+
+-----------------------
+Dot 2
+
+A comma
+
+Confused with 
+dot 1 (a)
+dot 4 (?)
+
+
+
+
+-----------------------
+Dot 12
+
+The letter B
+The number 2
+As a whole word, it’s “but” 
+Starts a few “b” word contractions
+-blind
+-braille
+Featured in a word contractions
+-abv above
+Ends a the contraction "about"
+Related contractions
+-dot 23 (be or bb)
+
+
+-----------------------
+Dot 3
+
+Ends some formatting symbols such as
+-Grade 1 terminator
+-Italic terminator
+-Bold terminator
+-Underline terminator
+-Script terminator
+Confused with dot 6 (capitals)
+
+
+-----------------------
+Dot 13 
+
+The letter K
+As a whole word, “knowledge”
+Following a dot 5, “know”
+Confused with dot 46 (?)
+
+
+-----------------------
+Dot 23
+
+Within a word, the letters “bb”
+Beginning a word, “be”
+As a whole word, “but”
+
+The prefix sign “be” starts several word contractions
+-because
+-before
+-behind
+-below
+-beneath
+-beside
+-between
+-beyond
+
+
+-----------------------
+Dot 123
+
+The letter L
+As a whole word, “like”
+Starts the word contractions
+-letter
+-little
+Following dot 5, “lord”
+Part of contractions
+-almost
+-already
+-although
+-altogether
+-declaring
+Ends some contractions
+-also
+-below
+-blind
+-braille
+-declare
+Confused with Dot 456
+
+
+-----------------------
+Dot 4
+
+Used for currency signs
+-cent
+-dollar
+-euro
+-british pound
+-yen
+Use in some formatting symbols
+-script symbol
+-script word
+-script passage
+-script terminator
+Used in the math symbols
+-greater than
+-less than
+Used in some punctuation symbols
+-opening bracket
+-closing bracket
+Used in the symbols
+-ampersand
+-@ sign
+Confused with dot 1 (A)
+
+
+-----------------------
+Dot 14
+
+The letter C
+The number 3
+As a whole word, “can”
+Begins the contraction could
+In the contractions
+-across
+-deceive
+-deceiving
+-declare
+-declaring
+-perceive
+-perceiving
+-receive
+-receiving
+-rejoice
+-rejoicing
+Ends the contractions
+-according
+-because
+-necessary
+Related to 
+-dot 16 (ch)
+-dot 25 (cc, con)
+
+
+-----------------------
+Dot 24
+
+The letter I
+The number 9
+As a whole word, “I”
+Starts the contraction “immediate”
+Ends some word contractions
+-either
+-neither
+Related to
+Dot 35, “in”
+
+
+-----------------------
+Dot 124
+
+The letter F
+The number 6
+As a whole word, “from”
+In a word, “ff”
+Following dot 5, “father”
+Begins some word contractions
+-first
+-friend
+Part of other word contractions
+-afternoon
+Ends some word contractions
+-after
+-before
+-herself
+-himself
+-iteself
+-myself
+-oneself
+-thyself
+Related to dot 245, “ff”
+
+
+-----------------------
+Dot 34
+
+The letters “st”
+As a word, “still”
+Part of some symbols
+- forward slash
+- math division sign
+Ends some contractions
+- against
+- first
+- must
+Related to dot 234, “s”
+
+
+-----------------------
+Dot 134
+
+The letter “m”
+As a word, “more”
+Following dot 5, “mother”
+Following dot 456, “many”
+Begins some contractions
+-much
+-must
+-myself
+Part of some contractions
+-himself
+-themselves
+Ends some contractions
+-almost
+-him
+-immediate
+-tomorrow
+Confused with dot 146, “sh”
+
+
+-----------------------
+Dot 234
+
+The letter “s”
+As a word “so”
+Following a dot 5, “some”
+Following a dot 456, “spirit”
+Begins the contraction “said”
+Ends some contractions
+-beside
+-its
+-ourselves
+-themselves
+-yourselves
+Related to
+-dot 146, “sh”
+-dot 34, “st”
+
+
+-----------------------
+Dot 1234
+
+The letter P
+As a word, “people”
+Following dot 5, “part”
+Starts some contractions
+-paid
+-perceive
+-perceive
+-perceiving
+-perhaps
+Confused with dot 1456, “this”
+
+
+-----------------------
+Dot 5
+
+Initial letter prefix symbol
+Within a word “ea”
+Followed by other character, can mean
+-day
+-ever
+-father
+-here
+-know
+-lord
+-mother
+-name
+-one
+-part
+-question
+-right
+-some
+-time
+-under
+-work
+-young
+Additional contractions with special characters
+-there
+-character
+-though
+-where
+-ought
+Confused with dot 2
+
+
+-----------------------
+Dot 15 
+
+The letter “E”
+The number 5
+As a word, “every”
+Part of the the suffix “ant”
+Following a dot 5, “ever”
+Ending a word following dot 46, “-ance”
+Ending a word following dot 56, “-ence”
+Starts the word contraction “either”
+Part of the contraction “necessary”
+Related to
+- dot 2 “ea”
+- dot ? “be”
+Confused with dot 26 “enough”
+
+
+-----------------------
+Dot 25
+
+A colon
+The letters “cc”
+
+
+-----------------------
+Dot 125
+
+The letter H
+The number 8
+As a word “have”
+Following dot 5, “here”
+Following dot 456, “had”
+Begins some contractions
+-herself
+-him
+-himself
+Ends some contracitons
+-behind
+-perhaps
+Related to
+dot 1456, “th”
+dot 236, opening outer quotation mark
+
+
+-----------------------
+Dot 35
+
+The letters or word “in”
+Superscript indicator
+Part of asterisk
+
+
+-----------------------
+Dot 135
+
+The letter O
+As a word, “o”
+Following dot 5, “one”
+Related to
+dot 246 “ow”
+dot 1256 “ou / out”
+
+
+-----------------------
+Dot 235
+
+The letters “ff”
+Following dot 5, plus sign
+Related to
+dot 123456 “for”
+
+
+-----------------------
+Dot 1235
+
+The letter R
+As a word “rather”
+Following dot 5, “right”
+Begins some contractions
+-receive
+-receiving
+-rejoice
+-rejoicing
+Ens some contractions
+-across
+-already
+-friend
+-together
+-your
+Part of some contractions
+-braille
+-great
+-yourself
+-yourselves
+Related to dot 12456, “er”
+Confused with dot 2456, “w”
+
+
+-----------------------
+Dot 45
+
+Special character
+Used for some symbols
+-copyright
+-trademark
+Used to start some contractions
+-upon
+-word
+-these
+-those
+-whose
+
+
+-----------------------
+Dot 145
+
+The letter D
+The number 4
+As a word “do”
+Following dot 5, “day”
+Ending a word following dot 46, “-ound”
+Part of the bullet symbol
+Begins some contractions
+-deceive
+-deceiving
+-declare
+-declaring
+Ends some contractions
+-good
+-paid
+-should
+-today
+-would
+Related to
+dot 256, “dis”
+
+
+-----------------------
+Dot 245
+
+The letter J
+The number 0
+As a word, “just”
+Part of the degree symbol 
+Part of some contractions
+-rejoice
+-rejoicing
+Related to 
+dot 356, “was”
+
+
+-----------------------
+Dot 1245
+
+The letter G
+The number 7
+As a word “go”
+Ending a word following dot 56, “-ong”
+Begins some contractions
+-good
+-great
+Ends some contractions
+-again
+-good
+-perceiving
+-receiving
+-rejoicing
+Part of some contractions
+against
+together
+Related to dot 2356, “gg / were”
+
+
+-----------------------
+Dot 345
+
+The letters “ar”
+Special symbol
+Used in some formatting
+-closing round parenthesis
+-closing square bracket
+-closing curly bracket
+-closing angle bracket
+-Used in some symbols
+-greater than
+
+
+-----------------------
+Dot 1345
+
+The letter N
+As a word, “not”
+Following dot 5, “name”
+Ending a word following dot 56, “tion”
+Begins some contractions
+-necessary
+-neither
+Ends some contractions
+-afternoon
+-beneath
+-children
+-tonight
+Confused with 
+dot 1246, “ed”
+
+
+-----------------------
+Dot 2345
+
+The letter T
+As a word “that”
+Following a dot 5, “time”
+Begins some contractions
+-today
+-together
+-tomorrow
+-tonight
+Ends some contractions
+-altogether
+-between
+-great
+Related to
+dot 1456, “th
+dot 34, “st”
+
+
+-----------------------
+Dot 12345
+
+The letter Q
+As a word “quite”
+Following a dot 5, “question”
+Starts the contraction “quick”
+
+
+
+
+-----------------------
+Dot 6
+
+The capital sign
+Begins a long dash
+Begins some formatting
+-Opening inner quotation mark
+-Closing inner quotation mark
+
+
+-----------------------
+Dot 16 
+
+The letters ch
+As a word, child
+Ends the backward slash
+Begins the contraction children
+Ends the contraction much
+
+
+-----------------------
+Dot 26
+
+The letters “en”
+As a word, “enough”
+[is it a useful term to say “low e”]
+Related to letter e
+
+
+
+
+-----------------------
+Dot 126
+
+The letters “gh”
+Part of some punctuation and math symbols
+Less than
+Part of some grouping punctuation
+-opening round parenthesis
+-opening square bracket
+-opening curly bracket
+-opening angle bracket
+Related to dot 345
+
+
+-----------------------
+Dot 36
+
+Part of some punctuation
+-dash
+-long dash
+Some are of math symbols
+-minus
+
+
+-----------------------
+Dot 136
+
+Letter U
+The word us
+Confused with
+ing (dot 346)
+
+
+-----------------------
+Dot 236
+
+The word “his”
+Part of some punctuation
+opening inner quotation mark
+Part of the math multiplication symbol
+
+
+
+-----------------------
+Dot 1236
+
+The letter V
+As a word, “very”
+Ends some contractions
+-Above
+-Conceive
+-Perceive
+-Receive
+Part of some contractions
+-Deceiving
+-Ourselves
+-Perceiving
+-REceiving
+-Themselves
+-Yourselves
+
+
+-----------------------
+Dot 46
+
+Part of some formatting
+-Italic symbol
+-Italic word
+-Italic passage
+-Italic terminator
+Part of some grouping punctuation
+-Opening square bracket
+-Closing square bracket
+Confused with letter "k"
+
+
+-----------------------
+Dot 146
+
+The letters “sh”
+As a word, “shall”
+Begins the contraction "should"
+Related to "s"
+
+
+-----------------------
+Dot 246
+
+The letters “ow”
+
+
+-----------------------
+Dot 1246
+
+The letters “ed”
+Confused with the letter “n”
+
+
+-----------------------
+Dot 346
+
+The letters “ing”
+Part of the contraction “upon”
+Confused with “u”
+
+
+-----------------------
+Dot 1346
+
+The letter “x”
+As a word, “it”
+Begins some contractions
+-its
+-itself
+
+
+-----------------------
+Dot 2346
+
+The word “the”
+Confused with “z”
+Begins some contractinos
+-themselves
+
+
+-----------------------
+Dot 12346
+
+The word “and”
+Part of the ampersand (&) symbol
+Confused with “y”
+
+
+-----------------------
+Dot 56
+
+Begins some formatting for grade 1 or uncontracted braille
+-grade 1 symbol
+-grade 1 word
+-grade 1 passate
+Confused with “bb”
+
+
+-----------------------
+Dot 156
+
+The letters “wh”
+As a word, “which”
+
+
+-----------------------
+Dot 256
+
+The letters “dis”
+Part of some special characters
+Multiplication dot
+Bullet
+Ellipsis
+
+
+-----------------------
+Dot 1256
+
+The letters “ou”
+The word “out”
+Part of the contraction “ourselves”
+Confused with “t”
+
+
+-----------------------
+Dot 356
+
+As a word, “was”
+Part of some punctuation
+closing outer quotation mark
+closing inner quotation mark
+
+
+-----------------------
+Dot 1356
+
+The letter “z”
+As a word, “as”
+Confused with “the”
+
+
+-----------------------
+Dot 2356
+
+The letters “gg”
+As a word, “were”
+Part of some formatting
+-italic passage
+-bold passage
+-underline passage
+-script passage
+Part of some symbols
+-Equals sign
+-Feel
+-Inches
+
+
+-----------------------
+Dot 12356
+
+The word “of”
+
+
+-----------------------
+Dot 456
+
+Begins some symbols
+-Underline symbol
+-Underline word
+-Underline passage
+-Underline terminator
+-Forward slash
+-Backward slash
+-Open curly bracket
+-Closing curly bracket
+-Degree
+-Angle
+-Hashtag
+-Bullet
+
+Confused with “l”
+
+
+-----------------------
+Dot 1456
+
+The word “this”
+
+
+-----------------------
+Dot 2456
+
+The letter “w”
+As a word, “will”
+Begins some contractions
+“would
+Ends some contractions
+-afterward
+-always
+-work
+-world
+-word
+
+
+-----------------------
+Dot 12456
+
+The letters “er”
+Part of some contractions
+-herself
+-perceive
+-perceiving
+-perhaps
+
+
+-----------------------
+Dot 3456
+
+The number sign
+
+
+
+-----------------------
+Dot 13456
+
+The letter “y”
+As a word “you”
+The suffix “ity”
+Begins some contractions
+-your
+-yourself
+-yourselves
+-Ends some contractions
+-beyond
+-young
+Part of the contration myself
+Confused with “and”
+
+
+-----------------------
+Dot 23456
+
+The word “with”
+
+
+-----------------------
+Dot123456
+
+The word “for”

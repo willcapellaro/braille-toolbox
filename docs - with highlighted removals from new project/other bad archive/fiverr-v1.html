@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="utf-8">
+  <title>Braille Toolbox</title>
+ 
+  
+  <link rel="stylesheet" type="text/css" href="fiverr.css">
+  <!--   <link rel="stylesheet" type="text/css" href="styles/range-override.css"> not to self: make sure to delete this in other files when it's not needed --> 
+
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous" async=""></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous" async=""></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous" async=""></script>
+  <style>@font-face {font-family: 'Brailleblocks'; src: url("fonts/Brailleblocks.otf");}</style>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Francois+One&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather&display=swap" rel="stylesheet">
+
+
+<meta property="og:title" content="Braille Toolbox">
+<meta property="og:site_name" content="">
+<meta property="og:url" content="http://brailletoolbox.com/">
+<meta property="og:description" content="Braille Toolbox is the world's most user-friendly braille reference. Read simple guides, use the innovative dot decoder, or preview text in braille code. Free to use forever!">
+<meta property="og:type" content="website">
+<!-- <meta property="og:image" content="https://github.com/willcapellaro/braille-toolbox/blob/main/docs/mktimg/BTX-Unfurl-v1.jpg">
+ --><meta property="og:image" content="http://brailletoolbox.com/mktimg/BTX-Unfurl-v1.jpg"><script type="text/javascript" src="https://platform-api.sharethis.com/js/sharethis.js#property=61f6a10d30d3010019e430f6&product=sticky-share-buttons" async="async"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css">
+<script defer data-domain="brailletoolbox.com" src="https://plausible.io/js/plausible.js"></script>
+<link rel="apple-touch-icon" sizes="180x180" href="imgs/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="imgs/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="imgs/favicon-16x16.png">
+<link rel="manifest" href="imgs/site.webmanifest"></head>   
+<script type="text/javascript" src="https://platform-api.sharethis.com/js/sharethis.js#property=61f6a10d30d3010019e430f6&product=sticky-share-buttons" async="async"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css">
+<script defer data-domain="brailletoolbox.com" src="https://plausible.io/js/plausible.js"></script>
+<link rel="apple-touch-icon" sizes="180x180" href="imgs/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="imgs/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="imgs/favicon-16x16.png">
+<link rel="manifest" href="imgs/site.webmanifest"></head>
+
+<body>
+<div class="wrapper">
+    
+  <a href="#maincontent" class="skiplink">Skip to content</a>
+  <!-- End of Skip Section -->
+
+
+   <section>
+      
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <a class="navbar-brand" href="index.html"><img src="imgs/btlogo.svg" alt="Braille toolbox logo"></a>
+    <button class="navbar-toggler" style="height: 2em; border: none;" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span><img class="ham_icon" src="braille/con_for.svg" alt="braille cell icon"></span>
+   </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto-end">
+        <li class="nav-item active">
+          <a class="nav-link" href="intro-to-braille.html">Intro to Braille</a>
+       </li>
+        <li class="nav-item">
+          <a class="nav-link" href="quick-reference.html">Quick Reference</a>
+       </li>
+        <li class="nav-item">
+          <a class="nav-link" href="write-in-braille.html">Write in Braille</a>
+       </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">More Tools</a>
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="slate-stylus-help.html">Slate & Stylus Quick Reference</a>
+            <a class="dropdown-item" href="dot-decoder.html">Dot Decoder</a>
+            <a class="dropdown-item" href="braillewriter-help.html">Braillewriter Help</a>
+          <a class="dropdown-item" href="about.html">About Braille Toolbox</a>
+          <a class="dropdown-item" href="font.html">Braille Toolbox Font</a></div>          </div>
+       </li>
+     </ul>
+   </div>
+ </nav>
+   <!-- End of Navigation Section -->
+
+
+<section>
+
+    <h1 id="maincontent">Introduction to Braille</h1>
+
+    <h2 id="toc_2">Super Basics!!!</h2>
+  
+    <p>Firstly, think of braille as the same ABC alphabet that we use in English, but made for touch reading. Each braille character, or <strong>cell</strong> is made of up to six dots. With braille characters representing letters, you can write anything in English (and many languages). Braille works by creating tactile shapes the blind can learn to read by touch. <span id="dots"> </span><span id="more"> <br><br>Dots are simple; they are either raised or not, and they should always be the same size and depth. The dot arrangement is also very regimented; characters are arrangements of a 2x3 grid of <strong>cells</strong>, an arrangement of two dots wide by three dots high. The writing of each charcters is done by describing which dots are raised. They're referred to by numbers; the three left dots are numbered 1, 2, and 3, and the right ones are 4, 5, and 6. So to describe the letter r, shown below, you'd say it has dots 1, 2, 3, and 5 raised, or simply describe it as "dot 1235."</span><button onclick="myFunction()" id="myBtn1" class="inline">More</button></p>
+    <br>
+  
+    <div class="box">
+      <div class="item"><img src="braille/dot1_a.svg" alt=" a single braille dot"> dot </div>
+      <div class="item"><img src="braille/dot123456_for.svg" alt=" a full braille cell: dot 123456"> cell </div>
+      <div class="item"><img src="braille/dot1235_r.svg" alt=" example braille letter r: dot 1235"> R </div>
+    </div>
+  
+    <p>There are only so many combinations a 2x3 grid can create. Most often a cell represents letters or punctuation marks, but often enough more than one cell is used to represent a character. Cells flow from left to right forming phrases and sentences, overflowing onto new lines top to bottom to fill pages of text, just like print.</p>
+  
+    <div class="box">
+      <div class="item"><img src="braille/comp_question.svg" alt=" example of braille question mark: dot 236 "> ? </div>
+      <div class="item"><img src="braille/word_radical!.svg" alt=" example of braille word radical! with exclamation point written in braille: dot 1235 dot 1 dot 15 dot 14 dot 1 dot 123 dot 235"> radical! </div>
+    </div>
+</section>
+  
+</section>
+<!-- End of Introduction Section -->
+
+
+<section>
+
+  <h2 id="toc_3">Letters</h2>
+  <h3 id="toc_4">Letters A to J</h3>
+  <p>Braille’s first ten letters use only the top four dots.
+    <p>The end of the alphabet follows the same pattern again, with these characters adding the bottom dots to the letters A to E. W is a weird one though...  <span id="dots2"> </span><span id="more2"> The letter W resembles a J, but adds the bottom right dot, instead of both bottom dots (like its end-of-of-the-alphabet neighbors).
+  </p>
+
+  <div class="box">
+    <div class="item"><img src="braille/dot1_a.svg" alt=" letter a: dot 1 "> a </div> 
+    <div class="item"><img src="braille/dot12_b.svg " alt=" letter b: dot 12"> b </div>
+    <div class="item"><img src="braille/dot14_c.svg " alt=" letter c: dot 14"> c </div>
+    <div class="item"><img src="braille/dot145_d.svg" alt=" letter d: dot 145 "> d </div>
+    <div class="item"><img src="braille/dot15_e.svg " alt=" letter e: dot 15"> e </div>
+    <div class="item"><img src="braille/dot124_f.svg" alt=" letter f: dot 124 "> f </div>
+    <div class="item"><img src="braille/dot1245_g.svg " alt=" letter g: dot 1245"> g </div>
+    <div class="item"><img src="braille/dot125_h.svg" alt=" letter h: dot 125 "> h </div> 
+    <div class="item"><img src="braille/dot24_i.svg " alt=" letter i: dot 24"> i </div>  
+    <div class="item"><img src="braille/dot245_j.svg" alt=" letter j: dot 145 "> j </div>
+  </div>
+ <!-- End of first 10 letters -->
+
+  <h3 id="toc_6">Letters U to Z (and W)</h3>
+
+  <p>The end of the alphabet follows the same pattern again, with these characters adding the bottom dots to the letters A to E. W is a weird one though...  <span id="dots2"> </span><span id="more2"> <br><br>The letter W resembles a J, but adds the bottom right dot, instead of both bottom dots (like its end-of-of-the-alphabet neighbors). <br><br>So why is W out of place like this? Blame France; When braille was invented there, France hadn't adopted the letter.</span><button onclick="myFunction2()" id="myBtn2" class="inline">More</button></p>
+  <br>
+
+  <div class="box">
+    <div class="item"><img src="braille/dot136_u.svg" alt=" letter u: dot 136 "> u </div>
+    <div class="item"><img src="braille/dot1236_v.svg " alt=" letter v: dot 1236"> v </div> 
+    <div class="item"><img src="braille/dot1346_x.svg " alt=" letter x: dot 1346"> x </div>
+    <div class="item"><img src="braille/dot13456_y.svg" alt=" letter y: dot 13456 "> y </div>
+    <div class="item"><img src="braille/dot1356_z.svg " alt=" letter z: dot 1356"> z </div>
+    <div class="item"><img src="braille/dot2456_w.svg " alt=" letter w: dot 2456"> w </div>
+  </div> 
+ <!-- End of u-z -->
+</section>
+ <!-- End of Letters Section -->
+
+<section>
+
+  <h2 id="toc_8">Numbers</h2>
+
+  <p>Basic numbers are written by using the number symbol which converts letters A (for 1) through J (for 0). The number prefix starts the number format, then things return to letters after a space. Texts with lots of math are usually written in a specialized braille code called Nemeth Braille.</p>
+
+  <div class="box">
+    <div class="item"><img src="braille/num1.svg" alt=" number 1: dot 1236 dot 1 "> #a <br>  1 </div>
+    <div class="item"><img src="braille/num2.svg" alt=" number 2: dot 1236 dot 12 "> #b <br> 2 </div>
+    <div class="item"><img src="braille/num3.svg" alt=" number 3: dot 1236 dot 14 "> #c <br> 3 </div>
+    <div class="item"><img src="braille/num4.svg" alt=" number 4: dot 1236 dot 145 "> #d <br> 4 </div>
+    <div class="item"><img src="braille/num5.svg" alt=" number 5: dot 1236 dot 15 "> #e <br> 5 </div>
+    <div class="item"><img src="braille/num6.svg" alt=" number 6: dot 1236 dot 124 "> #f <br> 6 </div>
+    <div class="item"><img src="braille/num7.svg" alt=" number 7: dot 1236 dot 1245 "> #g <br> 7 </div>
+    <div class="item"><img src="braille/num8.svg" alt=" number 8: dot 1236 dot 125 "> #h <br> 8 </div>
+    <div class="item"><img src="braille/num9.svg" alt=" number 9: dot 1236 dot 24 "> #i <br> 9 </div>
+    <div class="item"><img src="braille/num0.svg" alt=" number 0: dot 1236 dot 145 "> #j <br> 0 </div>  
+  </div>
+
+</section>
+  <!-- End of Numbers Section -->
+
+
+<section>
+  <h2 id="toc_9">Formatting and styling</h2>
+
+  <p>Capital and italic letters are created using special characters along with the letters described above.</p>
+
+  <h3 id="toc_10">Capitals</h3>
+
+  <p>A capital sign signals that an uppercase character is next. Use it once for an initial cap, twice to capitalize the whole word. Three starts an uppercase passage, with two more ending it.</p>
+
+  <div class="box">
+    <div class="item"><img src="braille/comp_cap_sign.svg" alt="capital symbol: dot 6"> &#8593; <br> &#8593; </div>
+    <div class="item"><img src="braille/comp_cap.svg" alt="example of capitalized word Cap: dot 6 dot 14 dot 1 dot 1234 "> &#8593;Cap <br> Cap </div>
+    <div class="item"><img src="braille/comp_word.svg" alt="example of uppercase word WORD: dot 6 dot 6 dot 246 dot 135 dot 1235 dot 145 "> &#8593;&#8593;WORD <br> WORD </div>
+  </div>
+
+  <h3 id="toc_11">Italics</h3>
+
+  <p>Italics use an italic symbol followed by a second character that indicates how much text will be italicized.</p>
+
+  <div class="box">
+    <div class="item"><img src="braille/comp_ital.svg " alt=" italic character symbol: dot 46 dot 23"> italic character </div>
+    <div class="item"><img src="braille/comp_n.svg" alt=" italiced letter n: dot 46 dot 23 dot 1345 "> <em>n</em> </div>
+    <div class="item"><img src="braille/comp_ital_word.svg" alt=" italic word symbol: "> italic word </div>
+    <div class="item"><img src="braille/comp_ital_passage.svg " alt=" begin italic passage"> begin  passage </div>
+    <div class="item"><img src="braille/comp_ital_passage_end.svg " alt=" end italic passage"> end  passage </div>
+  </div>
+</section>
+  <!-- End of Formating and Styling section -->
+
+
+<section>
+  <h2 id="toc_17">Currency</h2>
+
+  <p>Currency symbols such as the dollar, pound, euro, and yen are created with a currency sign (dot 4), followed by the letter depicted in the print symbol. </p>
+
+  <div class="box">
+    <div class="item"><img src="braille/comp_currency.svg" alt=" generic currency sign: dot 4"> &#164; <br> currrency sign </div>
+    <div class="item"><img src="braille/comp_dollar.svg" alt=" dollar sign: dot 4 dot 234"> &#36; <br> dollar sign </div>
+    <div class="item"><img src="braille/comp_euro.svg" alt=" euro currency sign: dot 4 dot 15"> &#8364; <br> euro sign </div>
+    <div class="item"><img src="braille/comp_pound.svg" alt=" pound sterling sign: dot 4 dot 123"> &#163; <br> pound sign</div>
+    <div class="item"><img src="braille/comp_yen.svg" alt=" yen currency sign: dot 4 dot 13456"> &#165; <br> yen sign</div>
+  </div>
+</section>
+  <!-- End of Currency Section -->
+
+<section>
+
+  <h2 id="toc_18">Contractions</h2>
+
+  <p>To communicate efficiently, English braille uses letters and special characters called contractions, which save space and effort similar to textspeak or SMS language. Braille books can get large, so contractions can help reduce text length by as much as 300%.</p>
+
+  <p>Some contractions are only valid as whole words, and some are only used as suffixes or prefixes and are indicated here. A great way to see how contractions work is to try our <a href="write-in-braille.html"> Write in Braille</a> feature.</p>
+
+  <h3 id="toc_19">A Contractions</h3>
+  <div class="box">
+    <div class="item"><img src="braille/con_about.svg" alt="contraction for word about: dot 1 dot 12">  ab <br> about </div>
+    <div class="item"><img src="braille/con_above.svg" alt="contraction for word above: dot 14 dot 12 dot 1236">  abv <br> above </div>
+    <div class="item"><img src="braille/con_according.svg" alt="contraction for word according: dot 1 dot 14">  ac <br> according </div>
+    <div class="item"><img src="braille/con_across.svg" alt="contraction for word across: dot 1 dot 14 dot 1235"> acr <br> across </div>
+    <div class="item"><img src="braille/con_after.svg" alt="contraction for word after: dot 1 dot 124"> af <br> after </div>
+    <div class="item"><img src="braille/con_afternoon.svg" alt="contraction for word afternoon: dot 1 dot 124 dot 1345">  afn <br> afternoon </div>
+    <div class="item"><img src="braille/con_afterward.svg" alt="contraction for word afterward: dot 1 dot 124 dot 1456">  afw <br> afterward </div>
+    <div class="item"><img src="braille/con_again.svg" alt="contraction for word again: dot 1 dot 1245">  ag </br> again </div>
+    <div class="item"><img src="braille/con_against.svg" alt="contraction for word against: dot 1 dot 1245 dot 34"> ag  dot*34</br> against </div>
+    <div class="item"><img src="braille/con_almost.svg" alt="contraction for word almost: dot 1 dot 123 dot 134"> alm </br> almost </div>
+    <div class="item"><img src="braille/con_already.svg" alt="contraction for word already: dot 1 dot 123 dot 1235">  alr </br> already </div>
+    <div class="item"><img src="braille/con_also.svg" alt="contraction for word also: dot 1 dot 123"> al </br> also </div>
+    <div class="item"><img src="braille/con_although.svg" alt="contraction for word although: dot 1 dot 123 dot 1456">  al dot*1456 <br> although </div>
+    <div class="item"><img src="braille/con_altogether.svg" alt="contraction for word altogether: dot 1 dot 123 dot 2345">  alt <br> altogether </div>
+    <div class="item"><img src="braille/con_always.svg" alt="contraction for word always: dot 1 dot 123 dot 1456">  alw <br> always </div>
+    <div class="item"><img src="braille/con_ance.svg" alt="contraction for suffix ance: dot 46 dot 15"> dot*46 e <br> ⌂ance </div>
+    <div class="item"><img src="braille/con_and.svg" alt="contraction for word and: dot 12346"> & <br> and </div>
+    <div class="item"><img src="braille/con_ar.svg" alt="contraction for string ar: dot 345"> dot*345 <br> ar </div>
+    <div class="item"><img src="braille/con_as.svg" alt="contraction for word or string as: dot 1356">  z <br> as </div>
+  </div>
+</section>
+  <!-- End of Contraction Section -->
+
+<footer>
+
+  <button onclick="topFunction()" id="scrolltop" title="Scroll to top">Return to Top</button>
+
+  <p class="legal">©2022 Will Capellaro & Braille Toolbox</p>
+</footer>
+<!-- End of Footer Element -->
+</div>
+<!-- End of Wrapper Section -->
+
+  <script> //this is the more/less expand function for the 1st paragraph
+    function myFunction() {
+      var dots = document.getElementById("dots");
+      var moreText = document.getElementById("more");
+      var btnText = document.getElementById("myBtn1");
+
+      if (dots.style.display === "none") {
+        dots.style.display = "inline";
+        btnText.innerHTML = "Read more"; 
+        moreText.style.display = "none";
+      } else {
+        dots.style.display = "none";
+        btnText.innerHTML = "Read less"; 
+        moreText.style.display = "inline";
+      }
+    }
+  </script>
+
+<script> //this is the more/less expand function for the U-Z paragraph
+  function myFunction2() {
+    var dots2 = document.getElementById("dots2");
+    var moreText2 = document.getElementById("more2");
+    var btnText2 = document.getElementById("myBtn2");
+
+    if (dots2.style.display === "none") {
+      dots2.style.display = "inline";
+      btnText2.innerHTML = "Read more"; 
+      moreText2.style.display = "none";
+    } else {
+      dots2.style.display = "none";
+      btnText2.innerHTML = "Read less"; 
+      moreText2.style.display = "inline";
+    }
+  }
+</script>
+
+<script> //this is the scroll to top button
+
+  //Get the button:
+  mybutton = document.getElementById("scrolltop");
+
+  // When the user scrolls down 20px from the top of the document, show the button
+  window.onscroll = function() {scrollFunction()};
+
+  function scrollFunction() {
+    if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+      mybutton.style.display = "block";
+      mybutton.style.opacity = 1;
+    } else {
+      mybutton.style.display = "block";
+      mybutton.style.opacity = 0;
+    }
+  }
+
+  // When the user clicks on the button, scroll to the top of the document
+  function topFunction() {
+    document.body.scrollTop = 0; // For Safari
+    document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+  }
+</script>
+
+<div class="sharethis-sticky-share-buttons"></div>
+</body>
+
+</html>
+
+
+
+

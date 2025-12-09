@@ -1,0 +1,203 @@
+
+<!-- https://en.wikipedia.org/wiki/Braille_ASCII#:~:text=Braille%20ASCII%20uses%20the%2064,each%20letter%20of%20the%20alphabet. -->
+
+<html>
+<head>
+	  <!-- <link rel="stylesheet" type="text/css" href="styles/styles.css"> -->
+
+<style>
+* {
+	margin: 0;
+	padding: 0;
+}
+body {
+	font-family: Helvetica, Sans-serif, monospace;
+/*	margin: 2em;*/
+	text-align: center;
+	display: grid;
+	grid-template-rows: auto 1fr auto;
+}
+body div:nth-child(3) {
+	background-color: #DDD;
+	padding: 2em 0;
+}
+h1 {
+	font-size: 2em;
+	margin: 2em 0;
+}
+h1, h2 {
+		opacity: .7;
+}
+ul { 
+	font-family: monospace;
+	font-size: 4em;
+	list-style: none; 
+	display: inline;
+	letter-spacing: -.25em;
+	user-select: none;
+	margin-right: .4em;
+}
+li {
+	display: inline;
+}
+li:hover
+ {
+	cursor: pointer;
+}
+li:hover:before
+ {
+	letter-spacing: -.17em;
+}
+
+/*  */
+body ul:nth-child(1) li:nth-child(1):before {
+	content: '⠠';
+}
+body ul:nth-child(1) li:nth-child(1):hover:before {
+	content: '^';
+}
+
+/*  */
+body ul:nth-child(1) li:nth-child(2):before {
+	content: '⠓';
+}
+body ul:nth-child(1) li:nth-child(2):hover:before {
+	content: 'H';
+}
+
+/*  */
+body ul:nth-child(1) li:nth-child(3):before {
+	content: '⠑';
+}
+body ul:nth-child(1) li:nth-child(3):hover:before {
+	content: 'e';
+}
+
+/*  */
+body ul:nth-child(1) li:nth-child(4):before {
+	content: '⠇';
+}
+body ul:nth-child(1) li:nth-child(4):hover:before {
+	content: 'l';
+}
+
+/*  */
+body ul:nth-child(1) li:nth-child(5):before {
+	content: '⠇';
+}
+body ul:nth-child(1) li:nth-child(5):hover:before {
+	content: 'l';
+}
+
+/*  */
+body ul:nth-child(1) li:nth-child(6):before {
+	content: '⠕';
+}
+body ul:nth-child(1) li:nth-child(6):hover:before {
+	content: 'o';
+}
+
+/**/
+/**/
+
+/*  */
+body ul:nth-child(2) li:nth-child(1):before {
+	content: '⠺';
+}
+body ul:nth-child(2) li:nth-child(1):hover:before {
+	content: 'w';
+}
+
+/*  */
+body ul:nth-child(2) li:nth-child(2):before {
+	content: '⠕';
+}
+body ul:nth-child(2) li:nth-child(2):hover:before {
+	content: 'o';
+}
+
+/*  */
+body ul:nth-child(2) li:nth-child(3):before {
+	content: '⠗';
+}
+body ul:nth-child(2) li:nth-child(3):hover:before {
+	content: 'r';
+}
+
+/*  */
+body ul:nth-child(2) li:nth-child(4):before {
+	content: '⠇';
+}
+body ul:nth-child(2) li:nth-child(4):hover:before {
+	content: 'l';
+}
+
+/*  */
+body ul:nth-child(2) li:nth-child(5):before {
+	content: '⠙';
+}
+body ul:nth-child(2) li:nth-child(5):hover:before {
+	content: 'd';
+}
+
+/*  */
+body ul:nth-child(2) li:nth-child(6):before {
+	content: '⠖';
+}
+body ul:nth-child(2) li:nth-child(6):hover:before {
+	content: '!';
+}
+
+textarea {
+	margin-top: 3em;
+}
+
+</style>
+</head>
+	<body>
+		<div><h1>Touch the letters to read braille!</h1></div>
+		<div id="interactionZone">
+		<ul>
+			<li> </li>
+			<li> </li>
+			<li> </li>
+			<li> </li>
+			<li> </li>
+			<li> </li>
+		</ul>
+		<ul>
+			<li> </li>
+			<li> </li>
+			<li> </li>
+			<li> </li>
+			<li> </li>
+			<li> </li>
+		</ul>	
+		</div>
+
+<div id="controls">
+	<h2>Use your own text</h2>
+	<br>
+<label for="inputField">New text:</label>
+<textarea id="inputField" name="inputField" rows="3" cols="50">
+Enter up to 255 characters here
+</textarea>
+<button>Write It!</button>
+</div>
+
+	</body>
+</html>
+<!-- 
+
+			<li>⠓</li>
+			<li>⠑</li>
+			<li>⠇</li>
+			<li>⠇</li>
+			<li>⠕</li>
+		</ul>
+		<ul>
+			<li>⠭</li>
+			<li>⠕</li>
+			<li>⠗</li>
+			<li>⠇</li>
+			<li>⠙</li> -->

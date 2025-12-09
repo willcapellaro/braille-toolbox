@@ -1,0 +1,453 @@
+[
+	{
+		"binary" : "000000", 
+		"dataDecoded" : {
+			"titvar" : "A space or indent", 
+			"descvar" : "This will also reset some formatting such as numbers, all caps, or italics."
+		}
+	}, 
+	{
+		"binary" : "100000", 
+		"dataDecoded" : {
+			"titvar" : "The capital sign", 
+			"descvar" : "Used as a prefix, this will capitalize the first letter of a word. Use it twice to capitalize the whole WORD! Also, you can use it three times in a row START SHOUTING IN ALL CAPS. When you're done, you can shut  that noise down by using the capital sign twice to end the passage."
+		}
+	}, 
+	{
+		"binary" : "010000", 
+		"dataDecoded" : {
+			"titvar" : "Special contraction character", 
+			"descvar" : "This is used in a lot of contraction as a prefix to another symbol. Decode the second symbol to find out what it is."
+		}
+	}, 
+	{
+		"binary" : "110000", 
+		"dataDecoded" : {
+			"titvar" : "Special contraction character", 
+			"descvar" : "Used in some contractions suffixes like -ful, -ity, -ment, -ong, -ness, or -tion. Decode other characters in the word to find out more."
+		}
+	}, 
+	{
+		"binary" : "001000", 
+		"dataDecoded" : {
+			"titvar" : "The currency symbol", 
+			"descvar" : "And other symbols." 
+		}
+	}, 
+	{
+		"binary" : "101000", 
+		"dataDecoded" : {
+			"titvar" : "Special contraction character, or italics", 
+			"descvar" : "Used in some contractions and as part of italic formatting symbols (which are two-character combinations)."
+		}
+	}, 
+	{
+		"binary" : "011000", 
+		"dataDecoded" : {
+			"titvar" : "Special contraction character.", 
+			"descvar" : " "
+		}
+	}, 
+	{
+		"binary" : "111000", 
+		"dataDecoded" : {
+			"titvar" : "Special contraction character<br>.", 
+			"descvar" : " "
+		}
+	}, 
+	{
+		"binary" : "000100", 
+		"dataDecoded" : {
+			"titvar" : "An apostrophe", 
+			"descvar" : "Assuredly an apostrophe (and not used in any contractions)."
+		}
+	}, 
+	{
+		"binary" : "100100", 
+		"dataDecoded" : {
+			"titvar" : "Dash or hyphen", 
+			"descvar" : "Probably a dash, possibly part of a long dash."
+		}
+	}, 
+	{
+		"binary" : "010100", 
+		"dataDecoded" : {
+			"titvar" : "Special contraction character", 
+			"descvar" : "Within a word, it's the string in. Also used in an asterisk (preceded by a dot 5)."
+		}
+	}, 
+	{
+		"binary" : "110100", 
+		"dataDecoded" : {
+			"titvar" : "Closing double quote.", 
+			"descvar" : " "
+		}
+	}, 
+	{
+		"binary" : "001100", 
+		"dataDecoded" : {
+			"titvar" : "The string st, or a special contraction character", 
+			"descvar" : "Used in slash, or a st. As a freestanding word, it's still.",
+			"wholeWord" : "<img src=\"braille/comp_dollar.svg \"alt=\"contraction for word still: dot 34\"> As a freestanding word, it's still."
+		}
+	}, 
+	{
+		"binary" : "101100", 
+		"dataDecoded" : {
+			"titvar" : "The string ing", 
+			"descvar" : "This is ing, anywhere in a word (not just a suffix)."
+		}
+	}, 
+	{
+		"binary" : "011100", 
+		"dataDecoded" : {
+			"titvar" : "Punctuation", 
+			"descvar" : "Possibly part of a closing parentheses."
+		}
+	}, 
+	{
+		"binary" : "111100", 
+		"dataDecoded" : {
+			"titvar" : "The number sign", 
+			"descvar" : "Letters after this number stand for numbers. A is 1, B is 2, and so on. Things go back to letters after a space; or you can throw down a few more of these babies to start or end a numerical passage, aka number party. No letters allowed!"
+		}
+	}, 
+	{
+		"binary" : "000010", 
+		"dataDecoded" : {
+			"titvar" : "Comma", 
+			"descvar" : "If you like your sentences to run long, use this just like a comma in print."
+		}
+	}, 
+	{
+		"binary" : "100010", 
+		"dataDecoded" : {
+			"titvar" : "The string en", 
+			"descvar" : "Also used for subscript formatting."
+		}
+	}, 
+	{
+		"binary" : "010010",  
+		"dataDecoded" : {
+			"titvar" : "A colon. ", 
+			"descvar" : "In a word, it can signify a double c. "
+		}
+	}, 
+	{
+		"binary" : "110010", 
+		"dataDecoded" : {
+			"titvar" : "A period", 
+			"descvar" : "This ends a sentence, full stop, for when you need to drop the mic."
+		}
+	}, 
+	{
+		"binary" : "001010", 
+		"dataDecoded" : {
+			"titvar" : "The letter i", 
+			"descvar" : "When preceded by a number sign, it’s the number 9. It’s also a contraction for about. As a suffix, it stands for -ity. As a single word, it’s in. Preceded by an x, it’s its."
+		}
+	}, 
+	{
+		"binary" : "101010", 
+		"dataDecoded" : {
+			"titvar" : "The string ow", 
+			"descvar" : "Also used in some math symbols."
+		}
+	}, 
+	{
+		"binary" : "011010", 
+		"dataDecoded" : {
+			"titvar" : "The letter j", 
+			"descvar" : "When preceded by a number sign, it’s the number 0. It’s also a contraction for just."
+		}
+	}, 
+	{
+		"binary" : "111010", 
+		"dataDecoded" : {
+			"titvar" : "The letter w", 
+			"descvar" : "Contractions: As a single word, this is will. Also used in contractions such as work, world, would, and word."
+		}
+	}, 
+	{
+		"binary" : "000110", 
+		"dataDecoded" : {
+			"titvar" : "A semicolon", 
+			"descvar" : "Nothing more to say here; it's a semicolon. Oh wait, it's used in some contractions too; many that start with “be”, as well a being the word “be” when used as a word."
+		}
+	}, 
+	{
+		"binary" : "100110", 
+		"dataDecoded" : {
+			"titvar" : "The word his, a question mark, or opening double quote", 
+			"descvar" : "At the beginning of a passage, it's an opening double quote. At the end of a passage, it's a question mark. As a freestanding word, it's him."
+		}
+	}, 
+	{
+		"binary" : "010110", 
+		"dataDecoded" : {
+			"titvar" : "Ff or exclamation mark", 
+			"descvar" : "At the end of a word, this is the best punctuation mark ever! Within a word, it's ff."
+		}
+	}, 
+	{
+		"binary" : "110110", 
+		"dataDecoded" : {
+			"titvar" : "The string gg or the word here", 
+			"descvar" : "A \"low g\", this is a unique contraction for the string gg."
+		}
+	}, 
+	{
+		"binary" : "001110", 
+		"dataDecoded" : {
+			"titvar" : "The letter s", 
+			"descvar" : "As a word contractions, it’s said. Preceded by an x, it's its."
+		}
+	}, 
+	{
+		"binary" : "101110", 
+		"dataDecoded" : {
+			"titvar" : "The word the.", 
+			"descvar" : "Other contractions: Also used in contractions such as their, there. But not they’re. Also, these."
+		}
+	}, 
+	{
+		"binary" : "011110", 
+		"dataDecoded" : {
+			"titvar" : "The letter t", 
+			"descvar" : "Contractions: It’s that as a single word."
+		}
+	}, 
+	{
+		"binary" : "111110", 
+		"dataDecoded" : {
+			"titvar" : "The word with", 
+			"descvar" : "Used as a whole word or within a word."
+		}
+	}, 
+	{
+		"binary" : "000001",  
+		"dataDecoded" : {
+			"titvar" : "Letter A", 
+			"descvar" : "Letter A is also number 1 if preceded by a number sign.<br><img src=\"braille/comp_dollar.svg \"alt=\"contraction for word still: dot 34\">",
+			"wholeWord" : ""
+		}
+	}, 
+	{
+		"binary" : "100001", 
+		"dataDecoded" : {
+			"titvar" : "Special contraction character", 
+			"descvar" : "In a word, this is a ch, or as a single word, child. Also used in a few contractions, such as character and children."
+		}
+	}, 
+	{
+		"binary" : "010001", 
+		"dataDecoded" : {
+			"titvar" : "The letter e", 
+			"descvar" : "When preceded by a number sign, it’s the number 5. It’s also a contraction for the word every. Followed by an i, it’s either."
+		}
+	}, 
+	{
+		"binary" : "110001", 
+		"dataDecoded" : {
+			"titvar" : "The word which", 
+			"descvar" : "When preceded by dot 5, it stands for where."
+		}
+	}, 
+	{
+		"binary" : "001001", 
+		"dataDecoded" : {
+			"titvar" : "The letter c", 
+			"descvar" : "When preceded by a number sign, it’s the number c. It’s also a contraction for the word can."
+		}
+	}, 
+	{
+		"binary" : "101001", 
+		"dataDecoded" : {
+			"titvar" : "The word shall", 
+			"descvar" : ""
+		}
+	}, 
+	{
+		"binary" : "011001",  
+		"dataDecoded" : {
+			"titvar" : "The letter d", 
+			"descvar" : "When preceded by a number sign, it’s the number 4. It’s also a contraction for the word do. It can also serve as the prefix dis-. Preceded by dot 5, it’s day. Followed by cv, it’s deceive. Followed by cvl, it’s declare."
+		}
+	}, 
+	{
+		"binary" : "111001", 
+		"dataDecoded" : {
+			"titvar" : "The string th and other contractions.", 
+			"descvar" : "Used in a few contractions such as those, through, and this."
+		}
+	}, 
+	{
+		"binary" : "000101", 
+		"dataDecoded" : {
+			"titvar" : "The letter k", 
+			"descvar" : "Most often, just a k. But used as a contraction word, it’s knowledge. Preceded by a dot 5 cell, it’s a contraction for the word know."
+		}
+	}, 
+	{
+		"binary" : "100101", 
+
+		"dataDecoded" : {
+			"titvar" : "The letter u", 
+			"descvar" : "Contractions: As a word, it’s us. Preceded by a dot 5, it’s under. Preceded by a dot 45, it’s upon."
+		}
+	}, 
+	{
+		"binary" : "010101",  
+		"dataDecoded" : {
+			"titvar" : "The letter o", 
+			"descvar" : "In a word, it’s ow. Preceded by a dot 5, it’s the word one."
+		}
+	}, 
+	{
+		"binary" : "110101", 
+		"dataDecoded" : {
+			"titvar" : "The letter z", 
+			"descvar" : "Contractions: As a single letter word, it stands for as."
+		}
+	}, 
+	{
+		"binary" : "001101", 
+		"dataDecoded" : {
+			"titvar" : "The letter m", 
+			"descvar" : "As a word contraction, it stands fo more. Followed by a dot 34, it stands for must."
+		}
+	}, 
+	{
+		"binary" : "101101", 
+		"dataDecoded" : {
+			"titvar" : "The letter x", 
+			"descvar" : "Contractions: X marks the spot, but also marks the word it. Followed by an s, it’s its, and followed by an f, it’s itself."
+		}
+	}, 
+	{
+		"binary" : "011101", 
+		"dataDecoded" : {
+			"titvar" : "The letter n", 
+			"descvar" : "As a word, contraction, it’s not. No really it is not. Preceded b a dot 5, it’s name."
+		}
+	}, 
+	{
+		"binary" : "111101", 
+		"dataDecoded" : {
+			"titvar" : "The letter y", 
+			"descvar" : "Contractions: As a word, this is you. Followed by an r, it’s your. Preceded by a dot 5, it’s young. It also starts yourself and yourselves."
+		}
+	}, 
+	{
+		"binary" : "000011", 
+		"dataDecoded" : {
+			"titvar" : "The letter b", 
+			"descvar" : "What's better than letter b?<br>When preceded by a number sign, it's the number 2. As a standalone character or a prefix, it's short for but."
+		}
+	}, 
+	{
+		"binary" : "100011", 
+		"dataDecoded" : {
+			"titvar" : "Possibly part of an opening parenthesis.", 
+			"descvar" : " "
+		}
+	}, 
+	{
+		"binary" : "010011", 
+		"dataDecoded" : {
+			"titvar" : "The letter h", 
+			"descvar" : "When preceded by a number sign, it’s the number 8. It’s also a contraction for the word have. Preceded by a dot 5, it’s here. Preceded by a dot 456, it’s had."
+		}
+	}, 
+	{
+		"binary" : "110011", 
+		"dataDecoded" : {
+			"titvar" : "The string ou", 
+			"descvar" : "A common enough conbination ought to h1ve its own contraction outright."
+		}
+	}, 
+	{
+		"binary" : "001011", 
+		"dataDecoded" : {
+			"titvar" : "The letter f", 
+			"descvar" : "In a word, it can signify a double f. When preceded by a number sign, it’s the number 6. It’s also a contraction for from. Used at the end of several contractions like oneself, myself, and thyself."
+		}
+	}, 
+	{
+		"binary" : "110101", 
+		"dataDecoded" : {
+			"titvar" : "The suffix ed", 
+			"descvar" : " "
+		}
+	}, 
+	{
+		"binary" : "011011", 
+		"dataDecoded" : {
+			"titvar" : "The letter g", 
+			"descvar" : "In a word, it's often gg. When preceded by a number sign, it’s the number 7. It’s also a contraction for the word go. It also used to end many contractions that end in -ing. Followed by a d, it’s good!"
+		}
+	}, 
+	{
+		"binary" : "111011", 
+		"dataDecoded" : {
+			"titvar" : "The string er", 
+			"descvar" : "Turns out that er is common enough to have it's own contaction. Er gets 'er done."
+		}
+	}, 
+	{
+		"binary" : "000111", 
+		"dataDecoded" : {
+			"titvar" : "The letter l or ll", 
+			"descvar" : "Just an l, but in the middle of of a word it often stands for ll. or at the end of a word it can stand for -less. As a word, it can stand for like. Double it for the word little."
+		}
+	}, 
+	{
+		"binary" : "100111", 
+		"dataDecoded" : {
+			"titvar" : "The letter v", 
+			"descvar" : "Contractions: As a single word contraction, this is very."
+		}
+	}, 
+	{
+		"binary" : "010111", 
+		"dataDecoded" : {
+			"titvar" : "The letter r", 
+			"descvar" : "Contractions: As a word, it’s rather rather. Preceded by a dot 5, it’s right. It also starts a few words, like receive, receiving, rejoice, and rejoicing."
+		}
+	}, 
+	{
+		"binary" : "110111", 
+		"dataDecoded" : {
+			"titvar" : "Of ", 
+			"descvar" : "This is of, as a word or string."
+		}
+	}, 
+	{
+		"binary" : "001111", 
+		"dataDecoded" : {
+			"titvar" : "The letter p", 
+			"descvar" : "Preceded by a dot 5, it’s part. As a word, it’s people. It’s people!"
+		}
+	}, 
+	{
+		"binary" : "101111", 
+		"dataDecoded" : {
+			"titvar" : "And or ampersand", 
+			"descvar" : "Clearly an and. Not used in other contractions."
+		}
+	}, 
+	{
+		"binary" : "011111", 
+		"dataDecoded" : {
+			"titvar" : "The letter q", 
+			"descvar" : "Contractions: On it’s own it’s quite. Preceded by a dot 5, it’s a question."
+		}
+	}, 
+	{
+		"binary" : "111111", 
+		"dataDecoded" : {
+			"titvar" : "The word for", 
+			"descvar" : "This is really not used for anything else."
+		}
+	}
+]

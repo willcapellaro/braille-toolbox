@@ -1,0 +1,21 @@
+{
+  "about": "This JSON file contains mappings of braille contractions used in the Braille Toolbox application.",
+  "contractions": {
+    "con_about": "about",
+    "con_and": "and",
+    "con_but": "but",
+    "con_can": "can",
+    "con_cannot": "cannot",
+    "con_for": "for",
+    "con_from": "from",
+    "con_have": "have",
+    "con_is": "is",
+    "con_it": "it",
+    "con_of": "of",
+    "con_the": "the",
+    "con_to": "to",
+    "con_with": "with",
+    "con_you": "you",
+    "con_your": "your"
+  }
+}

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style> 
+        @font-face {
+            font-family: 'MyWebFont'; 
+            src: url('fonts/OverpassMono-Braille.otf');
+        }
+        body {
+            font-family: 'MyWebFont', sans-serif;
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+        }
+        .container {
+            width: 45%;
+            padding: 10px;
+            border: 1px solid black;
+            line-height: 1.6;
+        }
+        .letter {
+            display: inline-block;
+            padding: 2px;
+            border: 1px solid black;
+        }
+        .highlight {
+            background-color: yellow;
+        }
+        #box2 {
+            font-family: 'Times New Roman', serif;
+        }
+    </style>
+    <title>Text Highlight on Hover</title>
+</head>
+<body>
+    <div id="box1" class="container">
+        “Gross knowledge” for all means knowledge from whatever source derived, including (but not limited to) the following items: 
+        compensation for services, including fees, commissions, fringe benefits, and similar items.
+    </div>
+
+    <div id="box2" class="container">
+        <!-- Empty panel for now -->
+    </div>
+
+    <script>
+        function wrapTextInDivs(containerId, text) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            for (let i = 0; i < text.length; i++) {
+                const span = document.createElement('div');
+                span.className = 'letter';
+                span.dataset.index = i;
+                span.innerText = text[i];
+                container.appendChild(span);
+            }
+        }
+
+        const text = document.getElementById('box1').innerText;
+        wrapTextInDivs('box1', text);
+        wrapTextInDivs('box2', text);
+    </script>
+</body>
+</html>

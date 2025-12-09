@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="101px" height="70px" viewBox="0 0 101 70" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>con_must</title>
+    <g id="con_must" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <circle id="O" fill="#222" cx="12" cy="57" r="7"></circle>
+        <circle id="O" fill="#222" cx="12" cy="11" r="7"></circle>
+        <circle id="O" fill="#222" cx="33" cy="11" r="7"></circle>
+        <circle id="O-C-4" fill="#222" transform="translate(6700000, 5700000) scale(-1, 1) translate(-6700000, -5700000) " cx="67" cy="57" r="7"></circle>
+        <circle id="O-C-5" fill="#222" transform="translate(8800000, 1100000) scale(-1, 1) translate(-8800000, -1100000) " cx="88" cy="11" r="7"></circle>
+        <circle id="O-C-5" fill="#222" cx="67" cy="57" r="7"></circle>
+        <circle id="O-C-6" fill="#222" cx="88" cy="11" r="7"></circle>
+    </g>
+</svg>

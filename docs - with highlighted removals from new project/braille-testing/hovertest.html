@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Highlight on Hover</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+        }
+
+        .container {
+            width: 45%;
+            padding: 10px;
+            border: 1px solid black;
+            line-height: 1.6;
+            word-wrap: break-word;
+        }
+
+        .letter {
+            display: inline-block; /* Make divs behave like inline elements */
+            padding: 2px;
+        }
+
+        #box1 {
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+        }
+
+        #box2 {
+            font-family: 'Times New Roman', serif;
+            font-size: 20px;
+        }
+
+        .highlight {
+            background-color: yellow;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="box1" class="container">
+        “Gross income” means all income from whatever source derived, including (but not limited to) the following items: 
+        compensation for services, including fees, commissions, fringe benefits, and similar items.
+    </div>
+
+    <div id="box2" class="container">
+        “Gross income” means all income from whatever source derived, including (but not limited to) the following items: 
+        compensation for services, including fees, commissions, fringe benefits, and similar items.
+    </div>
+
+    <script>
+        // Function to remove any existing highlights
+        function clearHighlights() {
+            const highlighted = document.querySelectorAll('.highlight');
+            highlighted.forEach(el => el.classList.remove('highlight'));
+        }
+
+        // Function to highlight characters in both boxes
+        function highlightCorrespondingCharacters(index) {
+            clearHighlights(); // Remove old highlights
+
+            const box1Divs = document.querySelectorAll('#box1 .letter');
+            const box2Divs = document.querySelectorAll('#box2 .letter');
+
+            // Highlight the corresponding characters if they exist
+            if (index < box1Divs.length && index < box2Divs.length) {
+                box1Divs[index].classList.add('highlight'); // Highlight in first box
+                box2Divs[index].classList.add('highlight'); // Highlight in second box
+            }
+        }
+
+        // Wrap each character in a div to enable highlighting
+        function wrapTextInDivs(containerId) {
+            const container = document.getElementById(containerId);
+            const text = container.textContent;
+            container.innerHTML = ''; // Clear existing text
+
+            text.split('').forEach((char, index) => {
+                const div = document.createElement('div');
+                div.textContent = char;
+                div.classList.add('letter');
+                div.dataset.index = index; // Attach index to each div for easier identification
+                container.appendChild(div);
+            });
+        }
+
+        // Initialize the text in divs
+        function initializeHoverEffect() {
+            wrapTextInDivs('box1');
+            wrapTextInDivs('box2');
+
+            const box1Divs = document.querySelectorAll('#box1 .letter');
+            const box2Divs = document.querySelectorAll('#box2 .letter');
+
+            box1Divs.forEach((div, index) => {
+                div.addEventListener('mouseover', () => highlightCorrespondingCharacters(index));
+            });
+
+            box2Divs.forEach((div, index) => {
+                div.addEventListener('mouseover', () => highlightCorrespondingCharacters(index));
+            });
+        }
+
+        // Run the initialization when the page loads
+        initializeHoverEffect();
+    </script>
+</body>
+</html>

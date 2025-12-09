@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="45px" height="70px" viewBox="0 0 45 70" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">`
+    <title>dot 2345 t</title>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="dot-2345" fill="#222">
+            <circle id="O" cx="12" cy="34" r="7"></circle>
+            <circle id="O" cx="12" cy="57" r="7"></circle>
+            <circle id="O" cx="33" cy="11" r="7"></circle>
+            <circle id="O" cx="33" cy="34" r="7"></circle>
+        </g>
+    </g>
+</svg>

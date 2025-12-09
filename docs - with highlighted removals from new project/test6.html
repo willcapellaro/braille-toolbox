@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style> @font-face {font-family: 'MyWebFont'; src: url('fonts/OverpassMono-Braille.otf');}</style>
+    <title>Text Highlight on Hover</title>
+    <style>
+        body {
+            font-family: 'MyWebFont', sans-serif;
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+        }
+
+        .container {
+            width: 45%;
+            padding: 10px;
+            border: 1px solid black;
+            line-height: 1.6;
+        }
+
+        .letter {
+            display: inline-block;
+            padding: 2px;
+        }
+
+        #box1 {
+            font-family: 'MyWebFont', arial;
+            font-size: 100px;
+            color: red;
+        }
+
+        #box2 {
+            font-family: 'Times New Roman', serif;
+            font-size: 20px;
+        }
+
+        .highlight {
+            background-color: yellow;
+        }
+        h1 {
+            font-size: 80px;
+        }
+    </style>
+</head>
+<body>
+    <div id="box1" class="container">
+        “Gross knowledge” for all means knowledge from whatever source derived, including (but not limited to) the following items: 
+        compensation for services, including fees, commissions, fringe benefits, and similar items.
+    </div>
+
+    <div id="box2" class="container">
+        “Gross knowledge” for all means knowledge from whatever source derived, including (but not limited to) the following items: 
+        compensation for services, including fees, commissions, fringe benefits, and similar items.
+    </div>
+
+    <script>
+        const translations = {
+            "knowledge": "knowledge",
+            "for": "for",
+            "from": "from"
+        };
+
+        function translateText(containerId) {
+            const container = document.getElementById(containerId);
+            let text = container.innerHTML;
+
+            for (const [word, braille] of Object.entries(translations)) {
+                const regex = new RegExp(`\\b${word}\\b`, 'g');
+                text = text.replace(regex, `<span class="letter" data-index="##">${braille}</span>`);
+            }
+
+            container.innerHTML = text;
+        }
+
+        function wrapTextInDivs(containerId) {
+            const container = document.getElementById(containerId);
+            const text = container.innerText;
+            container.innerHTML = '';
+
+            for (let i = 0; i < text.length; i++) {
+                const span = document.createElement('span');
+                span.className = 'letter';
+                span.dataset.index = i;
+                span.innerText = text[i];
+                container.appendChild(span);
+            }
+        }
+
+        function clearHighlights() {
+            const highlighted = document.querySelectorAll('.highlight');
+            highlighted.forEach(el => el.classList.remove('highlight'));
+        }
+
+        function highlightCorrespondingCharacters(index) {
+            clearHighlights();
+
+            const box1Divs = document.querySelectorAll('#box1 .letter');
+            const box2Divs = document.querySelectorAll('#box2 .letter');
+
+            if (index < box1Divs.length && index < box2Divs.length) {
+                box1Divs[index].classList.add('highlight');
+                box2Divs[index].classList.add('highlight');
+            }
+        }
+
+        translateText('box1');
+        wrapTextInDivs('box1');
+        wrapTextInDivs('box2');
+    </script>
+</body>
+</html>

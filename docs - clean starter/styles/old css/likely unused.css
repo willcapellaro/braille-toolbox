@@ -1,0 +1,82 @@
+/*probably not used*/
+
+caption {
+	text-align: center; 
+	margin: 2rem;
+	color: red;
+}
+
+.microcopy {
+	display: none;
+}
+
+.betatag {
+	text-align: center;
+	border: 1px solid grey;
+	padding: 1rem;
+	font-family: sans-serif;
+	opacity: .9;
+}
+
+/*.refgrid ul {
+display: grid;
+grid-template-columns: auto auto;
+}*/
+
+.refgrid ul li {
+line-height: 1rem;
+}
+
+
+.microcopycenter {
+	text-align: center;
+}
+.titling_box h1 {
+	margin-top: 1rem;
+	margin-bottom: 0;
+}
+
+.titling_box  {
+	margin-bottom: 3rem;
+}
+
+.titling_box a {
+	color: #d1b;
+}
+
+
+
+@media only screen and (min-width: 1600px)  {  /* - - - - - - - - - - - - - - - - - - 
+
+/*  
+
+
+ /$$$$$$$        /$$$$$$        /$$$$$$        /$$$$$$      
+| $$__  $$      |_  $$_/       /$$__  $$      /$$__  $$     
+| $$  \ $$        | $$        | $$  \__/     | $$  \__/     
+| $$$$$$$         | $$        | $$ /$$$$     | $$ /$$$$     
+| $$__  $$        | $$        | $$|_  $$     | $$|_  $$     
+| $$  \ $$        | $$        | $$  \ $$     | $$  \ $$     
+| $$$$$$$/       /$$$$$$      |  $$$$$$/     |  $$$$$$/     
+|_______/       |______/       \______/       \______/      
+                                                                                
+*/
+
+
+.betatag {
+	display: inline;
+	border: 1px solid;
+	padding: 3px 6px 2px 6px;
+	margin-right: 5px;
+	color: red;
+	font-size: .8rem;
+	text-transform: uppercase;
+}
+
+.microcopy {
+	display: block;
+	color: brown;
+	font-size: .9rem;
+	text-align: center;
+	line-height: 12px;
+}

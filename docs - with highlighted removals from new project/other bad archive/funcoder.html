@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html style="height: 100%; overflow: hidden; overscroll-behavior: contain;" lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Braille Dot Decoder</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="styles/styles.css">
+  <link rel="stylesheet" type="text/css" href="styles/range-override.css">
+  <link rel="stylesheet" type="text/css" href="styles/speci2al-checks-decoder.css">
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous" async=""></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous" async=""></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous" async=""></script>
+  <style>  @font-face { font-family: 'MyWebFont';  src: url(fonts/OverpassMono-Braille.otf);}</style>
+  <style>  @font-face { font-family: 'Brailleblocks'; src: url(fonts/Brailleblocks.otf);</style>
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Francois+One&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Francois+One&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Francois+One&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&display=swap" rel="stylesheet">
+
+
+<meta property="og:title" content="Dot Decoder">
+<meta property="og:site_name" content="Braille Toolbox">
+<meta property="og:url" content="http://brailletoolbox.com/">
+<meta property="og:description" content="Translate any braille content to print through an interactive decoder.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="http://brailletoolbox.com/mktimg/BTX-Unfurl-v1.jpg">
+
+<meta name="twitter:label1" value="Total Dots Decoded" />
+<meta name="twitter:data1" value="1403" />
+<script type="text/javascript" src="https://platform-api.sharethis.com/js/sharethis.js#property=61f6a10d30d3010019e430f6&product=sticky-share-buttons" async="async"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css">
+<script defer data-domain="brailletoolbox.com" src="https://plausible.io/js/plausible.js"></script>
+
+<!-- <style>
+.firstDecade {background: darkkhaki;}
+.secondDecade {background: darkseagreen;}
+.thirdDecade {background: gold;}
+.fourthDecade {background: lightskyblue;}
+</style>
+ -->
+<link rel="apple-touch-icon" sizes="180x180" href="imgs/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="imgs/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="imgs/favicon-16x16.png">
+<link rel="manifest" href="imgs/site.webmanifest"></head>
+
+
+<body class="decoderlayout2" style="height: 100%; overflow: hidden; overscroll-behavior: contain;">
+
+<!-- id="bgId" class="firstDecade" -->
+
+
+  <div>
+    <form class="decoderinput" action="#" onchange="verify();">
+      <p>
+        <label for="dot1"><span class="hidelabel">Dot 1</span></label>
+        <label class="myCheckbox">
+        <input type="checkbox" name="dot1" id="dot1" />
+        <span></span>
+        </label>
+       </p>
+      <p>
+        <label for="dot2"><span class="hidelabel">Dot 2</span></label>
+        <label class="myCheckbox">
+        <input type="checkbox" name="dot2" id="dot2" />
+        <span></span>
+        </label>
+      </p>
+      <p>
+        <label for="dot3"><span class="hidelabel">Dot 3</span></label>
+        <label class="myCheckbox">
+        <input type="checkbox" name="dot3" id="dot3" />
+        <span></span>
+        </label>
+      </p>
+      <p>
+        <label for="dot4"><span class="hidelabel">Dot 4</span></label>
+        <label class="myCheckbox">
+        <input type="checkbox" name="dot4" id="dot4"/>
+        <span></span>
+        </label>
+      </p>
+      <p>
+        <label for="dot5"><span class="hidelabel">Dot 5</span></label>
+        <label class="myCheckbox">
+        <input type="checkbox" name="dot5" id="dot5" />
+        <span></span>
+        </label>
+      </p>
+      <p>
+        <label for="dot6"><span class="hidelabel">Dot 6</span></label>
+        <label class="myCheckbox">
+        <input type="checkbox" name="dot6" id="dot6" />
+        <span></span>
+        </label>
+      </p>
+    </form>
+  </div>
+
+  <div class="decoderoutput">
+    <div>
+      <h3 id="titvarDecoded">Letter a</h3>
+      <p id="descvarDecoded" >This configuration, dot 1, is an example of a letter A, or number 1 (if preceded by a number sign).</p> 
+    </div>
+  </div>
+<div class="sharethis-sticky-share-buttons"></div>
+
+<!-- id="typedText" -->
+
+</body>
+
+<!-- find and replace content basd on input -->
+<script>
+  var characters = [];
+
+  var portions = (window.location + '').split('/');
+  var link = '';
+  for (var i = 0; i < (portions.length - 1); i++)
+  {
+    link += portions[i] + '/';
+  }
+  link += 'dot-decoder-content-blank.json';
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.open("GET", link, true);
+  xhttp.setRequestHeader("Content-Type", "application/json");
+  xhttp.send();
+  xhttp.onreadystatechange = function() {
+    if (xhttp.readyState == 4 && xhttp.status == 200)
+    {
+      characters = JSON.parse(xhttp.responseText);
+      document.getElementById('dot1').checked = true;
+      document.getElementById('dot2').checked = false;
+      document.getElementById('dot3').checked = false;
+      document.getElementById('dot4').checked = false;
+      document.getElementById('dot5').checked = false;
+      document.getElementById('dot6').checked = false;
+      verify();
+    }
+  };
+  
+// function changeBg()
+// {
+//     if (document.getElementById('dot1').checked = false && document.getElementById('dot2').checked = false;)
+//       {
+//       var element = document.getElementById("bgId");
+//       element.classList.add("firstDecade");
+//       }
+//     else if (document.getElementById('dot1').checked = true && document.getElementById('dot2').checked = false;)
+//       {
+//       var element = document.getElementById("bgId");
+//       element.classList.add("secondDecade");
+//       }
+//     else if (document.getElementById('dot1').checked = true && document.getElementById('dot2').checked = true;) 
+//       { 
+//       var element = document.getElementById("bgId");
+//       element.classList.add("thirdDecade");
+//       }
+//     else if (document.getElementById('dot1').checked = false && document.getElementById('dot2').checked = true;) 
+//       {
+//       var element = document.getElementById("bgId");
+//       element.classList.add("fourthDecade");
+//       }
+
+// }
+
+
+  function verify()
+  {
+    var binaryString = '';
+    for (var i = 6; i > 0; i--)
+    {
+      if (document.getElementById('dot' + i).checked)
+      {
+        binaryString += '1';
+      }
+      else
+      {
+        binaryString += '0';
+      }
+    }
+    /*for (var i = 1; i < 7; i++)
+    {
+      if (document.getElementById('dot' + i).checked)
+      {
+        binaryString += '1';
+      }
+      else
+      {
+        binaryString += '0';
+      }
+    }*/
+    console.log(binaryString);
+    for (var i = 0; i < characters.length; i++)
+    {
+      if (characters[i]['binary'] == binaryString)
+      {
+        document.getElementById('titvarDecoded').innerHTML = characters[i]['dataDecoded']['titvar'];
+        document.getElementById('descvarDecoded').innerHTML = characters[i]['dataDecoded']['descvar'];
+        changeBg();
+      }
+    }
+  }
+</script>
+</html>
+<!-- <div class="otherpage">-->
