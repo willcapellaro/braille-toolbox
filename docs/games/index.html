@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Game Projects | Braille Toolbox</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="styles/styles.css">
+  <link rel="stylesheet" type="text/css" href="styles/range-override.css">
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous" async=""></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous" async=""></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous" async=""></script>
+  
+  <style> @font-face {font-family: 'MyWebFont'; src: url(fonts/OverpassMono-Braille.otf);}</style>  
+
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Francois+One&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css">
+
+  <!-- Project Page Specific Styles -->
+  <style>
+    /* Layout Overrides */
+    .otherpage {
+        max-width: 1200px; /* Wider container for cards */
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    /* Filter Styles */
+    #filter-container {
+        margin-bottom: 30px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+    .filter-btn {
+        border-radius: 20px;
+        border: 2px solid #ddd;
+        background: white;
+        padding: 5px 15px;
+        font-family: 'Francois One', sans-serif;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: #555;
+    }
+    .filter-btn:hover {
+        background: #f0f0f0;
+        border-color: #bbb;
+    }
+    .filter-btn.active {
+        background: #333;
+        border-color: #333;
+        color: white;
+    }
+
+    /* Card Styles */
+    .game-card {
+        border: none;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        transition: transform 0.2s;
+        overflow: hidden;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .game-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+
+    /* Image Flip Effect */
+    .card-img-wrapper {
+        position: relative;
+        width: 100%;
+        padding-top: 56.25%; /* 16:9 Aspect Ratio */
+        background: #f4f4f4;
+        overflow: hidden;
+    }
+    .card-img-top, .card-img-hover {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: opacity 0.4s ease-in-out;
+    }
+    .card-img-hover {
+        opacity: 0;
+    }
+    /* Show gameplay image on hover */
+    .card-img-wrapper:hover .card-img-hover {
+        opacity: 1;
+    }
+
+    /* Card Content */
+    .card-body {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        color: #fff; /* Assuming dark bg colors usually */
+        margin-bottom: 10px;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+
+    .card-title {
+        font-family: 'Francois One', sans-serif;
+        font-size: 1.4rem;
+        margin-bottom: 5px;
+        color: #222;
+    }
+    
+    .card-tagline {
+        font-family: 'Merriweather', serif;
+        font-style: italic;
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 15px;
+    }
+
+    .card-text {
+        font-family: 'Merriweather', serif;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        color: #444;
+        flex-grow: 1; /* Pushes footer down */
+        margin-bottom: 20px;
+    }
+
+    .project-tags {
+        margin-bottom: 15px;
+        font-size: 0.8rem;
+    }
+    .project-tag {
+        color: #888;
+        background: #f8f8f8;
+        padding: 2px 6px;
+        border-radius: 4px;
+        margin-right: 5px;
+        display: inline-block;
+        margin-bottom: 5px;
+    }
+
+    .card-footer-custom {
+        margin-top: auto;
+        display: flex;
+        gap: 10px;
+        border-top: 1px solid #eee;
+        padding-top: 15px;
+    }
+
+    /* Action Buttons */
+    .btn-play {
+        background-color: #28a745;
+        color: white;
+        flex: 2;
+        font-weight: bold;
+    }
+    .btn-play:hover { background-color: #218838; color: white; }
+    
+    .btn-docs {
+        background-color: #f8f9fa;
+        border: 1px solid #ddd;
+        color: #333;
+        flex: 1;
+    }
+    .btn-docs:hover { background-color: #e2e6ea; }
+
+    .last-updated {
+        font-size: 0.75rem;
+        color: #999;
+        margin-top: 10px;
+        text-align: right;
+    }
+
+    /* Loading State */
+    #loading {
+        text-align: center;
+        padding: 50px;
+        font-family: 'Francois One', sans-serif;
+        color: #666;
+    }
+  </style>
+</head>
+
+<body>
+
+  <a href="#maincontent" class="skiplink">Skip to content</a>
+
+<nav class="navbar navbar-expand-lg navbar-light">
+  <a class="navbar-brand" href="index.html"><img src="imgs/btlogo.svg" alt="Braille toolbox logo"></a>
+  <button class="navbar-toggler" style="height: 2em; border: none;" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span><img class="ham_icon" src="braille/con_for.svg" alt="braille cell icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="intro.html">Intro to Braille</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="quickref.html">Quick Reference</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="write.html">Write in Braille</a>
+      </li>
+      <!-- Added Project Link to Nav -->
+      <li class="nav-item active">
+        <a class="nav-link" href="projects.html">Game Projects</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          More Tools
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="slate.html">Slate & Stylus Quick Reference</a>
+          <a class="dropdown-item" href="digitactile.html">Digi-Tactile Simulator</a>
+          <a class="dropdown-item" href="decode.html">Dot Decoder</a>
+          <a class="dropdown-item" href="braillewriter.html">Braillewriter Help</a>
+          <a class="dropdown-item" href="about.html">About Braille Toolbox</a>
+          <a class="dropdown-item" href="font.html">Braille Toolbox Font</a>
+        </div>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="otherpage">
+  <h1 id="maincontent" class="text-center mb-4">Game Projects</h1>
+  
+  <div id="loading">
+    <i class="fas fa-spinner fa-spin fa-2x"></i><br><br>Loading Projects...
+  </div>
+
+  <!-- Tag Filters -->
+  <div id="filter-container">
+    <!-- Buttons injected by JS -->
+  </div>
+
+  <!-- Game Grid -->
+  <div id="games-grid" class="row">
+    <!-- Cards injected by JS -->
+  </div>
+
+</div>
+
+<p class="legal">©2025 Will Capellaro & Braille Toolbox</p>
+
+<!-- Logic to Fetch and Render -->
+<script>
+    // 1. Configuration
+    const SHEET_ID = '1hRfYQLPK2HgHX8M1ZvZgxod3vQAZmGAb1bhO39_OieQ';
+    const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv`;
+    const IMG_DIR = 'directory-imgs/';
+
+    // 2. CSV Parser (Handles quoted fields properly)
+    function parseCSV(str) {
+        const arr = [];
+        let quote = false;
+        let col = 0, row = 0;
+        
+        for (let c = 0; c < str.length; c++) {
+            let cc = str[c], nc = str[c+1];
+            arr[row] = arr[row] || [];
+            arr[row][col] = arr[row][col] || '';
+            
+            if (cc == '"' && quote && nc == '"') { arr[row][col] += cc; ++c; continue; }
+            if (cc == '"') { quote = !quote; continue; }
+            if (cc == ',' && !quote) { ++col; continue; }
+            if (cc == '\r' && nc == '\n' && !quote) { ++row; col = 0; ++c; continue; }
+            if (cc == '\n' && !quote) { ++row; col = 0; continue; }
+            if (cc == '\r' && !quote) { ++row; col = 0; continue; }
+            arr[row][col] += cc;
+        }
+        return arr;
+    }
+
+    // 3. Map raw array to objects based on header row
+    function mapData(data) {
+        const headers = data[0].map(h => h.trim().toLowerCase());
+        const projects = [];
+
+        for(let i = 1; i < data.length; i++) {
+            const row = data[i];
+            // Skip empty rows
+            if(row.length < 2 || !row[0]) continue;
+
+            const obj = {};
+            headers.forEach((h, index) => {
+                obj[h] = row[index] ? row[index].trim() : '';
+            });
+
+            // Only add enabled projects
+            if(obj.enabled && obj.enabled.toLowerCase() === 'true') {
+                projects.push(obj);
+            }
+        }
+        return projects;
+    }
+
+    // 4. Render Functions
+    function renderFilters(allTags, projects) {
+        const container = document.getElementById('filter-container');
+        
+        // "All" button
+        const allBtn = document.createElement('button');
+        allBtn.className = 'filter-btn active';
+        allBtn.textContent = 'All';
+        allBtn.onclick = () => filterProjects('All', allBtn);
+        container.appendChild(allBtn);
+
+        allTags.forEach(tag => {
+            const btn = document.createElement('button');
+            btn.className = 'filter-btn';
+            btn.textContent = tag;
+            btn.onclick = () => filterProjects(tag, btn);
+            container.appendChild(btn);
+        });
+    }
+
+    function filterProjects(tag, btnElement) {
+        // Update Button States
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btnElement.classList.add('active');
+
+        // Filter Grid
+        const cards = document.querySelectorAll('.game-col');
+        cards.forEach(card => {
+            const tags = card.dataset.tags.toLowerCase().split(',').map(t=>t.trim());
+            if (tag === 'All' || tags.includes(tag.toLowerCase())) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    function renderProjects(projects) {
+        const grid = document.getElementById('games-grid');
+        const loading = document.getElementById('loading');
+        loading.style.display = 'none';
+
+        projects.forEach(p => {
+            // Process Tags
+            const tagList = p.tags ? p.tags.split(',').map(t => t.trim()) : [];
+            const tagHTML = tagList.map(t => `<span class="project-tag">#${t}</span>`).join('');
+            
+            // HTML Structure
+            const col = document.createElement('div');
+            col.className = 'col-lg-4 col-md-6 mb-4 game-col';
+            col.dataset.tags = p.tags || '';
+
+            // Buttons Logic
+            let buttonsHtml = '';
+            if(p.play_url) {
+                buttonsHtml += `<a href="${p.play_url}" class="btn btn-sm btn-play">Play!</a>`;
+            }
+            if(p.project_url || p.discussion_url) {
+                const url = p.discussion_url || p.project_url;
+                buttonsHtml += `<a href="${url}" class="btn btn-sm btn-docs">Docs</a>`;
+            }
+
+            // Status Badge
+            const statusHtml = p.status_string 
+                ? `<div class="status-badge" style="background-color: ${p.status_colorname || '#999'}">${p.status_string}</div>` 
+                : '';
+
+            // Image Logic (with fallback)
+            const img1 = p.title_img ? `${IMG_DIR}${p.title_img}` : 'https://via.placeholder.com/600x340?text=No+Image';
+            const img2 = p.gameplay_img ? `${IMG_DIR}${p.gameplay_img}` : img1;
+
+            col.innerHTML = `
+                <div class="game-card">
+                    <div class="card-img-wrapper">
+                        <img src="${img1}" class="card-img-top" alt="${p.title_alt || 'Game Title Screen'}">
+                        <img src="${img2}" class="card-img-hover" alt="${p.gameplay_alt || 'Gameplay Screenshot'}">
+                    </div>
+                    <div class="card-body">
+                        <div>
+                            ${statusHtml}
+                            <h2 class="card-title">${p.title}</h2>
+                            <h3 class="card-tagline">${p.tagline}</h3>
+                        </div>
+                        <div class="project-tags">${tagHTML}</div>
+                        <p class="card-text">${p.description}</p>
+                        
+                        <div class="card-footer-custom">
+                            ${buttonsHtml}
+                        </div>
+                        <div class="last-updated">Updated: ${p.last_updated}</div>
+                    </div>
+                </div>
+            `;
+            grid.appendChild(col);
+        });
+    }
+
+    // 5. Main Execution
+    fetch(CSV_URL)
+        .then(response => response.text())
+        .then(csvText => {
+            const rawData = parseCSV(csvText);
+            const projects = mapData(rawData);
+            
+            // Extract unique tags
+            const allTags = new Set();
+            projects.forEach(p => {
+                if(p.tags) {
+                    p.tags.split(',').forEach(t => allTags.add(t.trim()));
+                }
+            });
+
+            renderFilters(Array.from(allTags).sort(), projects);
+            renderProjects(projects);
+        })
+        .catch(err => {
+            console.error(err);
+            document.getElementById('loading').innerHTML = "Error loading projects.<br>Please try again later.";
+        });
+
+</script>
+
+</body>
+</html>
