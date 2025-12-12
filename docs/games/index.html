@@ -4,30 +4,42 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Game Projects | Braille Toolbox</title>
+  
+  <!-- UPDATED PATHS: Pointing back one level (../) -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-  <link rel="stylesheet" type="text/css" href="styles/styles.css">
-  <link rel="stylesheet" type="text/css" href="styles/range-override.css">
+  <link rel="stylesheet" type="text/css" href="../styles/styles.css">
+  <link rel="stylesheet" type="text/css" href="../styles/range-override.css">
+  
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous" async=""></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous" async=""></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous" async=""></script>
   
-  <style> @font-face {font-family: 'MyWebFont'; src: url(fonts/OverpassMono-Braille.otf);}</style>  
+  <style> @font-face {font-family: 'MyWebFont'; src: url(../fonts/OverpassMono-Braille.otf);}</style>  
 
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Francois+One&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Merriweather&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css">
 
-  <!-- Project Page Specific Styles -->
   <style>
     /* Layout Overrides */
     .otherpage {
-        max-width: 1200px; /* Wider container for cards */
+        max-width: 1200px;
         margin: 0 auto;
         padding: 20px;
     }
+    
+    .intro-text {
+        max-width: 800px;
+        margin: 0 auto 40px auto;
+        text-align: center;
+        font-family: 'Merriweather', serif;
+        font-size: 1.1rem;
+        color: #444;
+        line-height: 1.6;
+    }
 
-    /* Filter Styles */
+    /* Filters */
     #filter-container {
         margin-bottom: 30px;
         display: flex;
@@ -37,30 +49,31 @@
     }
     .filter-btn {
         border-radius: 20px;
-        border: 2px solid #ddd;
+        border: 2px solid #555; /* Increased contrast for AAA */
         background: white;
         padding: 5px 15px;
         font-family: 'Francois One', sans-serif;
         cursor: pointer;
         transition: all 0.2s;
-        color: #555;
+        color: #222; /* Darker text */
     }
-    .filter-btn:hover {
+    .filter-btn:hover, .filter-btn:focus {
         background: #f0f0f0;
-        border-color: #bbb;
+        border-color: #000;
+        outline: 3px solid #b3d7ff; /* Focus state for accessibility */
     }
     .filter-btn.active {
-        background: #333;
-        border-color: #333;
+        background: #222;
+        border-color: #222;
         color: white;
     }
 
     /* Card Styles */
     .game-card {
-        border: none;
+        border: 1px solid #e0e0e0;
         background: #fff;
         border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         transition: transform 0.2s;
         overflow: hidden;
         height: 100%;
@@ -72,14 +85,16 @@
         box-shadow: 0 8px 25px rgba(0,0,0,0.1);
     }
 
-    /* Image Flip Effect */
+    /* Image Area & Zero State */
     .card-img-wrapper {
         position: relative;
         width: 100%;
         padding-top: 56.25%; /* 16:9 Aspect Ratio */
-        background: #f4f4f4;
+        background-color: #f8f9fa;
         overflow: hidden;
+        border-bottom: 1px solid #eee;
     }
+    
     .card-img-top, .card-img-hover {
         position: absolute;
         top: 0;
@@ -89,12 +104,30 @@
         object-fit: cover;
         transition: opacity 0.4s ease-in-out;
     }
-    .card-img-hover {
-        opacity: 0;
+    .card-img-hover { opacity: 0; }
+    
+    /* Only do hover flip if we have images */
+    .card-img-wrapper.has-images:hover .card-img-hover { opacity: 1; }
+
+    /* Subtle Zero State for Missing Images */
+    .no-image-placeholder {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f4f4f4;
+        background-image: radial-gradient(#e0e0e0 1px, transparent 1px);
+        background-size: 20px 20px;
     }
-    /* Show gameplay image on hover */
-    .card-img-wrapper:hover .card-img-hover {
-        opacity: 1;
+    .no-image-placeholder::after {
+        content: "⠠⠛"; /* Braille 'G' indicator or similar subtle icon */
+        font-family: 'MyWebFont', monospace;
+        font-size: 4rem;
+        color: #d1d1d1;
     }
 
     /* Card Content */
@@ -105,30 +138,34 @@
         flex-grow: 1;
     }
     
+    /* Status Badge - AAA Compliance Strategy */
+    /* We use the color as a border/accent rather than bg to ensure text contrast */
     .status-badge {
         display: inline-block;
-        padding: 3px 8px;
-        border-radius: 4px;
+        padding: 4px 12px;
+        border-radius: 50px;
         font-size: 0.75rem;
-        font-weight: bold;
+        font-weight: 700;
         text-transform: uppercase;
-        color: #fff; /* Assuming dark bg colors usually */
+        color: #222; /* Always dark text */
+        background: #fff;
+        border: 2px solid #ccc; /* Default fallback */
         margin-bottom: 10px;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        letter-spacing: 0.05em;
     }
 
     .card-title {
         font-family: 'Francois One', sans-serif;
         font-size: 1.4rem;
         margin-bottom: 5px;
-        color: #222;
+        color: #111;
     }
     
     .card-tagline {
         font-family: 'Merriweather', serif;
         font-style: italic;
         font-size: 0.9rem;
-        color: #666;
+        color: #555; /* Darkened for contrast */
         margin-bottom: 15px;
     }
 
@@ -136,23 +173,26 @@
         font-family: 'Merriweather', serif;
         font-size: 0.95rem;
         line-height: 1.6;
-        color: #444;
-        flex-grow: 1; /* Pushes footer down */
+        color: #333; /* Darkened for contrast */
+        flex-grow: 1; 
         margin-bottom: 20px;
     }
 
+    /* Tags - AAA Compliant */
     .project-tags {
         margin-bottom: 15px;
         font-size: 0.8rem;
     }
     .project-tag {
-        color: #888;
-        background: #f8f8f8;
-        padding: 2px 6px;
+        color: #222;
+        background: #fff;
+        border: 1px solid #767676; /* Sufficient contrast against white */
+        padding: 2px 8px;
         border-radius: 4px;
         margin-right: 5px;
         display: inline-block;
         margin-bottom: 5px;
+        font-weight: 600;
     }
 
     .card-footer-custom {
@@ -163,36 +203,43 @@
         padding-top: 15px;
     }
 
-    /* Action Buttons */
-    .btn-play {
-        background-color: #28a745;
-        color: white;
-        flex: 2;
+    /* Buttons - 1:1 Split */
+    .btn-custom {
+        flex: 1; /* Force equal width */
         font-weight: bold;
+        padding: 10px 5px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
-    .btn-play:hover { background-color: #218838; color: white; }
+    
+    .btn-play {
+        background-color: #1f7a36; /* Darker Green for better contrast */
+        border: 1px solid #1f7a36;
+        color: white;
+    }
+    .btn-play:hover { background-color: #145525; color: white; text-decoration: none;}
     
     .btn-docs {
-        background-color: #f8f9fa;
-        border: 1px solid #ddd;
+        background-color: #fff;
+        border: 2px solid #555;
         color: #333;
-        flex: 1;
     }
-    .btn-docs:hover { background-color: #e2e6ea; }
+    .btn-docs:hover { background-color: #f0f0f0; color: #000; text-decoration: none;}
 
     .last-updated {
         font-size: 0.75rem;
-        color: #999;
+        color: #767676; /* AAA compliant grey */
         margin-top: 10px;
         text-align: right;
     }
 
-    /* Loading State */
     #loading {
         text-align: center;
         padding: 50px;
         font-family: 'Francois One', sans-serif;
-        color: #666;
+        color: #444;
     }
   </style>
 </head>
@@ -201,38 +248,39 @@
 
   <a href="#maincontent" class="skiplink">Skip to content</a>
 
+<!-- UPDATED NAV: Links go back one level (../) -->
 <nav class="navbar navbar-expand-lg navbar-light">
-  <a class="navbar-brand" href="index.html"><img src="imgs/btlogo.svg" alt="Braille toolbox logo"></a>
+  <a class="navbar-brand" href="../index.html"><img src="../imgs/btlogo.svg" alt="Braille toolbox logo"></a>
   <button class="navbar-toggler" style="height: 2em; border: none;" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span><img class="ham_icon" src="braille/con_for.svg" alt="braille cell icon"></span>
+    <span><img class="ham_icon" src="../braille/con_for.svg" alt="braille cell icon"></span>
   </button>
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
-        <a class="nav-link" href="intro.html">Intro to Braille</a>
+        <a class="nav-link" href="../intro.html">Intro to Braille</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="quickref.html">Quick Reference</a>
+        <a class="nav-link" href="../quickref.html">Quick Reference</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="write.html">Write in Braille</a>
+        <a class="nav-link" href="../write.html">Write in Braille</a>
       </li>
-      <!-- Added Project Link to Nav -->
+      <!-- Active Page -->
       <li class="nav-item active">
-        <a class="nav-link" href="projects.html">Game Projects</a>
+        <a class="nav-link" href="index.html">Game Projects</a>
       </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           More Tools
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="slate.html">Slate & Stylus Quick Reference</a>
-          <a class="dropdown-item" href="digitactile.html">Digi-Tactile Simulator</a>
-          <a class="dropdown-item" href="decode.html">Dot Decoder</a>
-          <a class="dropdown-item" href="braillewriter.html">Braillewriter Help</a>
-          <a class="dropdown-item" href="about.html">About Braille Toolbox</a>
-          <a class="dropdown-item" href="font.html">Braille Toolbox Font</a>
+          <a class="dropdown-item" href="../slate.html">Slate & Stylus Quick Reference</a>
+          <a class="dropdown-item" href="../digitactile.html">Digi-Tactile Simulator</a>
+          <a class="dropdown-item" href="../decode.html">Dot Decoder</a>
+          <a class="dropdown-item" href="../braillewriter.html">Braillewriter Help</a>
+          <a class="dropdown-item" href="../about.html">About Braille Toolbox</a>
+          <a class="dropdown-item" href="../font.html">Braille Toolbox Font</a>
         </div>
       </li>
     </ul>
@@ -240,34 +288,32 @@
 </nav>
 
 <div class="otherpage">
-  <h1 id="maincontent" class="text-center mb-4">Game Projects</h1>
+  <h1 id="maincontent" class="text-center mb-3">Game Projects Directory</h1>
   
+  <p class="intro-text">
+    Welcome to the Braille Toolbox game lab. Here you will find prototypes, educational games, and tools designed to help you learn and practice Braille. Browse the projects below, filter by tag, and click "Play" to launch a game or "Docs" to learn more about how it was built.
+  </p>
+
   <div id="loading">
-    <i class="fas fa-spinner fa-spin fa-2x"></i><br><br>Loading Projects...
+    <i class="fas fa-spinner fa-spin fa-2x"></i><br><br>Loading Directory...
   </div>
 
-  <!-- Tag Filters -->
-  <div id="filter-container">
-    <!-- Buttons injected by JS -->
-  </div>
-
-  <!-- Game Grid -->
-  <div id="games-grid" class="row">
-    <!-- Cards injected by JS -->
-  </div>
+  <div id="filter-container"></div>
+  <div id="games-grid" class="row"></div>
 
 </div>
 
 <p class="legal">©2025 Will Capellaro & Braille Toolbox</p>
 
-<!-- Logic to Fetch and Render -->
 <script>
     // 1. Configuration
     const SHEET_ID = '1hRfYQLPK2HgHX8M1ZvZgxod3vQAZmGAb1bhO39_OieQ';
     const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv`;
-    const IMG_DIR = 'directory-imgs/';
+    // Update Image Directory to be relative to this file location if needed, 
+    // assuming images are in a folder named 'directory-imgs' NEXT to this html file.
+    const IMG_DIR = 'directory-imgs/'; 
 
-    // 2. CSV Parser (Handles quoted fields properly)
+    // 2. CSV Parser
     function parseCSV(str) {
         const arr = [];
         let quote = false;
@@ -289,14 +335,13 @@
         return arr;
     }
 
-    // 3. Map raw array to objects based on header row
+    // 3. Map Data
     function mapData(data) {
         const headers = data[0].map(h => h.trim().toLowerCase());
         const projects = [];
 
         for(let i = 1; i < data.length; i++) {
             const row = data[i];
-            // Skip empty rows
             if(row.length < 2 || !row[0]) continue;
 
             const obj = {};
@@ -304,7 +349,6 @@
                 obj[h] = row[index] ? row[index].trim() : '';
             });
 
-            // Only add enabled projects
             if(obj.enabled && obj.enabled.toLowerCase() === 'true') {
                 projects.push(obj);
             }
@@ -312,11 +356,10 @@
         return projects;
     }
 
-    // 4. Render Functions
-    function renderFilters(allTags, projects) {
+    // 4. Render Logic
+    function renderFilters(allTags) {
         const container = document.getElementById('filter-container');
         
-        // "All" button
         const allBtn = document.createElement('button');
         allBtn.className = 'filter-btn active';
         allBtn.textContent = 'All';
@@ -333,11 +376,9 @@
     }
 
     function filterProjects(tag, btnElement) {
-        // Update Button States
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btnElement.classList.add('active');
 
-        // Filter Grid
         const cards = document.querySelectorAll('.game-col');
         cards.forEach(card => {
             const tags = card.dataset.tags.toLowerCase().split(',').map(t=>t.trim());
@@ -351,43 +392,56 @@
 
     function renderProjects(projects) {
         const grid = document.getElementById('games-grid');
-        const loading = document.getElementById('loading');
-        loading.style.display = 'none';
+        document.getElementById('loading').style.display = 'none';
 
         projects.forEach(p => {
-            // Process Tags
+            // Safe Tags
             const tagList = p.tags ? p.tags.split(',').map(t => t.trim()) : [];
             const tagHTML = tagList.map(t => `<span class="project-tag">#${t}</span>`).join('');
             
-            // HTML Structure
+            // Buttons
+            let buttonsHtml = '';
+            if(p.play_url) {
+                buttonsHtml += `<a href="${p.play_url}" class="btn btn-custom btn-play">Play</a>`;
+            }
+            if(p.project_url || p.discussion_url) {
+                const url = p.discussion_url || p.project_url;
+                buttonsHtml += `<a href="${url}" class="btn btn-custom btn-docs">Docs</a>`;
+            }
+
+            // Status Badge (Color as Border)
+            let statusHtml = '';
+            if (p.status_string) {
+                // Default to gray if no color provided
+                const color = p.status_colorname || '#999';
+                // Using color as border ensures AAA text contrast (text is black)
+                statusHtml = `<div class="status-badge" style="border-color: ${color}; color: #222;">${p.status_string}</div>`;
+            }
+
+            // Image Logic
+            let imgHTML = '';
+            let hasImages = false;
+            
+            if (p.title_img && p.title_img.length > 0) {
+                const img1 = `${IMG_DIR}${p.title_img}`;
+                const img2 = p.gameplay_img ? `${IMG_DIR}${p.gameplay_img}` : img1;
+                imgHTML = `
+                    <img src="${img1}" class="card-img-top" alt="${p.title_alt || 'Game Title'}">
+                    <img src="${img2}" class="card-img-hover" alt="${p.gameplay_alt || 'Gameplay'}">
+                `;
+                hasImages = true;
+            } else {
+                imgHTML = `<div class="no-image-placeholder" aria-label="No preview image available"></div>`;
+            }
+
             const col = document.createElement('div');
             col.className = 'col-lg-4 col-md-6 mb-4 game-col';
             col.dataset.tags = p.tags || '';
 
-            // Buttons Logic
-            let buttonsHtml = '';
-            if(p.play_url) {
-                buttonsHtml += `<a href="${p.play_url}" class="btn btn-sm btn-play">Play!</a>`;
-            }
-            if(p.project_url || p.discussion_url) {
-                const url = p.discussion_url || p.project_url;
-                buttonsHtml += `<a href="${url}" class="btn btn-sm btn-docs">Docs</a>`;
-            }
-
-            // Status Badge
-            const statusHtml = p.status_string 
-                ? `<div class="status-badge" style="background-color: ${p.status_colorname || '#999'}">${p.status_string}</div>` 
-                : '';
-
-            // Image Logic (with fallback)
-            const img1 = p.title_img ? `${IMG_DIR}${p.title_img}` : 'https://via.placeholder.com/600x340?text=No+Image';
-            const img2 = p.gameplay_img ? `${IMG_DIR}${p.gameplay_img}` : img1;
-
             col.innerHTML = `
                 <div class="game-card">
-                    <div class="card-img-wrapper">
-                        <img src="${img1}" class="card-img-top" alt="${p.title_alt || 'Game Title Screen'}">
-                        <img src="${img2}" class="card-img-hover" alt="${p.gameplay_alt || 'Gameplay Screenshot'}">
+                    <div class="card-img-wrapper ${hasImages ? 'has-images' : ''}">
+                        ${imgHTML}
                     </div>
                     <div class="card-body">
                         <div>
@@ -409,19 +463,16 @@
         });
     }
 
-    // 5. Main Execution
+    // 5. Execution
     fetch(CSV_URL)
         .then(response => response.text())
         .then(csvText => {
             const rawData = parseCSV(csvText);
             const projects = mapData(rawData);
             
-            // Extract unique tags
             const allTags = new Set();
             projects.forEach(p => {
-                if(p.tags) {
-                    p.tags.split(',').forEach(t => allTags.add(t.trim()));
-                }
+                if(p.tags) p.tags.split(',').forEach(t => allTags.add(t.trim()));
             });
 
             renderFilters(Array.from(allTags).sort(), projects);
