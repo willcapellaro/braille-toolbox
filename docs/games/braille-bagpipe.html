@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Braille Master - Hasbro Style</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Varela+Round&display=swap');
+
+        :root {
+            --plastic-yellow: #eec643;
+            --plastic-blue: #00a8e8;
+            --plastic-orange: #e07a1f;
+            --plastic-red: #d92b2b;
+            --neon-blue: #00f3ff;
+            --neon-pink: #ff00ff;
+            --off-dark: #1a1a1a;
+            --led-bg: #111;
+        }
+
+        body {
+            background-color: #222;
+            background-image: radial-gradient(circle at center, #2e2e2e 0%, #111 100%);
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Varela Round', sans-serif;
+            user-select: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- CABLE SVG --- */
+        #cable-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            filter: drop-shadow(0 0 5px var(--plastic-blue));
+        }
+
+        .cable-line {
+            fill: none;
+            stroke: var(--plastic-blue);
+            stroke-width: 8;
+            stroke-linecap: round;
+        }
+
+        /* --- CENTRAL UNIT --- */
+        #central-unit {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 320px;
+            height: 320px;
+            z-index: 2;
+            /* Heptagon approximation using clip-path not perfect for borders, 
+               using a rounded heptagon vibe with CSS shapes */
+            background: linear-gradient(135deg, var(--plastic-blue), var(--plastic-orange));
+            border-radius: 40px;
+            box-shadow: 
+                inset 5px 5px 15px rgba(255,255,255,0.3),
+                inset -5px -5px 15px rgba(0,0,0,0.5),
+                0 20px 50px rgba(0,0,0,0.6),
+                0 0 20px var(--plastic-orange);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            border: 8px solid #333;
+        }
+
+        /* Decorative bezel outline */
+        #central-unit::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 44px;
+            border: 2px solid var(--neon-blue);
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        /* LCD Screen */
+        .lcd-panel {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            width: 90px;
+            height: 60px;
+            background: #000;
+            border: 4px solid var(--plastic-yellow);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 5px #000;
+        }
+
+        .lcd-emoji {
+            font-size: 24px;
+        }
+
+        .lcd-text {
+            color: #0f0;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 8px;
+            text-align: center;
+            margin-top: 4px;
+            text-transform: uppercase;
+            line-height: 1.2;
+        }
+
+        /* The Big Dial */
+        .dial-container {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: #222;
+            border: 10px solid #555;
+            box-shadow: 
+                0 0 15px rgba(0,0,0,0.8),
+                inset 0 0 20px #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .spinner-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 4px dashed var(--plastic-yellow);
+            animation: spin 10s linear infinite;
+            opacity: 0.3;
+        }
+
+        .target-letter-display {
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, #ff4d4d, #900);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 70px;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 0 10px #ffaaaa;
+            box-shadow: 
+                inset 0 0 20px rgba(0,0,0,0.5),
+                0 0 20px var(--plastic-red);
+            border: 4px solid #fff;
+        }
+
+        /* Buttons */
+        .control-btn {
+            position: absolute;
+            bottom: 25px;
+            width: 80px;
+            height: 40px;
+            border-radius: 20px;
+            border: none;
+            font-family: 'Varela Round', sans-serif;
+            font-weight: bold;
+            font-size: 14px;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.4), 0 5px 10px rgba(0,0,0,0.3);
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        .control-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 rgba(0,0,0,0.4);
+        }
+
+        .btn-solve {
+            right: 40px;
+            background: linear-gradient(#4caf50, #2e7d32);
+            border: 2px solid #a5d6a7;
+        }
+
+        .btn-quit {
+            left: 40px;
+            background: linear-gradient(#3f51b5, #1a237e);
+            border: 2px solid #7986cb;
+        }
+
+        /* Port for cable */
+        .unit-port {
+            position: absolute;
+            right: -10px;
+            top: 50%;
+            width: 20px;
+            height: 40px;
+            background: #444;
+            border-radius: 5px;
+        }
+
+        /* --- KEYBOARD (Switchbrailles) --- */
+        #keyboard {
+            position: absolute;
+            top: 60%; /* Initial pos */
+            left: 40%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10; /* Above cable */
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+            transition: transform 0.3s ease; /* For rotation modes */
+        }
+
+        .wing {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            background: linear-gradient(to bottom, var(--plastic-yellow), #b88a00);
+            border-radius: 10px;
+            border: 2px solid #fff;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-origin: center;
+        }
+        
+        /* Left Wing: Dots 3, 2, 1 (displayed left to right visually) */
+        .wing.left {
+            border-right: none;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            background: linear-gradient(to bottom, var(--plastic-orange), #a65205);
+        }
+
+        /* Right Wing: Dots 4, 5, 6 */
+        .wing.right {
+            border-left: none;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            background: linear-gradient(to bottom, var(--plastic-blue), #0077a3);
+        }
+
+        /* The Hinge */
+        .hinge {
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b);
+            border-radius: 50%;
+            border: 3px solid #fff;
+            z-index: 12;
+            cursor: grab;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.4);
+            position: relative;
+        }
+        
+        .hinge:active {
+            cursor: grabbing;
+        }
+
+        .hinge::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 50%;
+        }
+        
+        .hinge-tooltip {
+            position: absolute;
+            top: -40px;
+            background: #000;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            white-space: nowrap;
+        }
+
+        .hinge:hover .hinge-tooltip {
+            opacity: 1;
+        }
+
+        /* Keys */
+        .key {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #333;
+            border: 4px solid #555;
+            cursor: pointer;
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.8);
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        /* Key ON state */
+        .key.active {
+            background: var(--neon-pink);
+            border-color: #ffccff;
+            box-shadow: 
+                0 0 10px var(--neon-pink),
+                0 0 20px var(--neon-pink),
+                inset -2px -2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .key.active::after {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 30%;
+            height: 20%;
+            background: rgba(255,255,255,0.8);
+            border-radius: 50%;
+            filter: blur(1px);
+        }
+
+        /* Port on keyboard */
+        .kb-port {
+            position: absolute;
+            right: 0px;
+            top: -15px;
+            width: 10px;
+            height: 10px;
+            background: #222;
+            z-index: -1;
+        }
+
+        /* --- MODES --- */
+        /* Straight Mode (Default) */
+        
+        /* V-Mode */
+        .mode-v .wing.left {
+            transform: rotate(-30deg) translateY(-10px);
+            border-radius: 10px;
+            margin-right: -10px;
+        }
+        .mode-v .wing.right {
+            transform: rotate(30deg) translateY(-10px);
+            border-radius: 10px;
+            margin-left: -10px;
+        }
+
+        /* Folded Mode */
+        .mode-folded .wing.left {
+            transform: rotate(-70deg) translate(15px, 20px);
+        }
+        .mode-folded .wing.right {
+            transform: rotate(70deg) translate(-15px, 20px);
+        }
+
+        /* Key Labels (Hidden for difficulty, but good for debug) */
+        .key-label {
+            position: absolute;
+            bottom: -20px;
+            width: 100%;
+            text-align: center;
+            color: #666;
+            font-size: 10px;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes flashGreen {
+            0% { background-color: #222; }
+            50% { background-color: #0f0; }
+            100% { background-color: #222; }
+        }
+
+        @keyframes flashRed {
+            0% { background-color: #222; }
+            50% { background-color: #f00; }
+            100% { background-color: #222; }
+        }
+
+        .success-anim {
+            animation: flashGreen 0.5s ease;
+        }
+        .fail-anim {
+            animation: flashRed 0.5s ease;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Cable Layer -->
+    <svg id="cable-layer">
+        <path id="cable-path" class="cable-line" d="M0,0 C0,0 0,0 0,0" />
+    </svg>
+
+    <!-- Central Game Unit -->
+    <div id="central-unit">
+        <div class="unit-port" id="unit-port"></div>
+        
+        <!-- LCD Display -->
+        <div class="lcd-panel" id="lcd-panel">
+            <div class="lcd-emoji" id="lcd-emoji">🤖</div>
+            <div class="lcd-text" id="lcd-text">READY</div>
+        </div>
+
+        <!-- Target Display -->
+        <div class="dial-container">
+            <div class="spinner-ring"></div>
+            <div class="target-letter-display" id="target-display">A</div>
+        </div>
+
+        <!-- Buttons -->
+        <button class="control-btn btn-quit" onclick="resetGame()">QUIT</button>
+        <button class="control-btn btn-solve" onclick="checkAnswer()">SOLVE</button>
+    </div>
+
+    <!-- Switchbrailles Keyboard -->
+    <div id="keyboard" class="mode-v">
+        <div class="kb-port" id="kb-port"></div>
+        
+        <!-- Left Wing (Dots 3, 2, 1) - Note standard Braille column 1 is top-down 1,2,3 -->
+        <!-- We will map them visually: [3] [2] [1] -- Hinge -- [4] [5] [6] -->
+        <div class="wing left">
+            <div class="key" data-dot="3" onclick="toggleKey(this)"></div>
+            <div class="key" data-dot="2" onclick="toggleKey(this)"></div>
+            <div class="key" data-dot="1" onclick="toggleKey(this)"></div>
+        </div>
+
+        <div class="hinge" id="hinge">
+            <div class="hinge-tooltip">Click to Fold / Drag to Move</div>
+        </div>
+
+        <!-- Right Wing (Dots 4, 5, 6) -->
+        <div class="wing right">
+            <div class="key" data-dot="4" onclick="toggleKey(this)"></div>
+            <div class="key" data-dot="5" onclick="toggleKey(this)"></div>
+            <div class="key" data-dot="6" onclick="toggleKey(this)"></div>
+        </div>
+    </div>
+
+    <script>
+        /* --- GAME LOGIC --- */
+        
+        const brailleAlphabet = {
+            'A': [1],
+            'B': [1, 2],
+            'C': [1, 4],
+            'D': [1, 4, 5],
+            'E': [1, 5],
+            'F': [1, 2, 4],
+            'G': [1, 2, 4, 5],
+            'H': [1, 2, 5],
+            'I': [2, 4],
+            'J': [2, 4, 5],
+            'K': [1, 3],
+            'L': [1, 2, 3],
+            'M': [1, 3, 4],
+            'N': [1, 3, 4, 5],
+            'O': [1, 3, 5],
+            'P': [1, 2, 3, 4],
+            'Q': [1, 2, 3, 4, 5],
+            'R': [1, 2, 3, 5],
+            'S': [2, 3, 4],
+            'T': [2, 3, 4, 5],
+            'U': [1, 3, 6],
+            'V': [1, 2, 3, 6],
+            'W': [2, 4, 5, 6],
+            'X': [1, 3, 4, 6],
+            'Y': [1, 3, 4, 5, 6],
+            'Z': [1, 3, 5, 6]
+        };
+
+        let currentTarget = 'A';
+        let currentInput = new Set();
+        let modes = ['mode-straight', 'mode-v', 'mode-folded'];
+        let currentModeIndex = 1; // Start in V
+
+        function initGame() {
+            pickNewLetter();
+            updateCable();
+        }
+
+        function pickNewLetter() {
+            const keys = Object.keys(brailleAlphabet);
+            currentTarget = keys[Math.floor(Math.random() * keys.length)];
+            document.getElementById('target-display').innerText = currentTarget;
+            document.getElementById('lcd-text').innerText = "SPELL " + currentTarget;
+            document.getElementById('lcd-emoji').innerText = "🤔";
+            resetKeys();
+        }
+
+        function toggleKey(el) {
+            const dot = parseInt(el.dataset.dot);
+            if (currentInput.has(dot)) {
+                currentInput.delete(dot);
+                el.classList.remove('active');
+            } else {
+                currentInput.add(dot);
+                el.classList.add('active');
+            }
+            // Simple visual/haptic feedback
+            el.style.transform = "scale(0.9)";
+            setTimeout(() => el.style.transform = "scale(1)", 100);
+        }
+
+        function resetKeys() {
+            currentInput.clear();
+            document.querySelectorAll('.key').forEach(k => k.classList.remove('active'));
+        }
+
+        function resetGame() {
+            document.getElementById('lcd-text').innerText = "RESET";
+            document.getElementById('lcd-emoji').innerText = "🔄";
+            setTimeout(pickNewLetter, 1000);
+        }
+
+        function checkAnswer() {
+            const targetDots = brailleAlphabet[currentTarget];
+            const inputArr = Array.from(currentInput).sort();
+            const targetArr = targetDots.sort();
+
+            const isCorrect = JSON.stringify(inputArr) === JSON.stringify(targetArr);
+            const lcdPanel = document.getElementById('lcd-panel');
+
+            if (isCorrect) {
+                document.getElementById('lcd-text').innerText = "GREAT!";
+                document.getElementById('lcd-emoji').innerText = "😎";
+                lcdPanel.classList.add('success-anim');
+                setTimeout(() => {
+                    lcdPanel.classList.remove('success-anim');
+                    pickNewLetter();
+                }, 1500);
+            } else {
+                document.getElementById('lcd-text').innerText = "NOPE!";
+                document.getElementById('lcd-emoji').innerText = "😵";
+                lcdPanel.classList.add('fail-anim');
+                setTimeout(() => lcdPanel.classList.remove('fail-anim'), 500);
+            }
+        }
+
+        /* --- DRAG & DROP + HINGE LOGIC --- */
+
+        const keyboard = document.getElementById('keyboard');
+        const hinge = document.getElementById('hinge');
+        let isDragging = false;
+        let startX, startY, initialLeft, initialTop;
+        let hasMoved = false;
+
+        hinge.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            hasMoved = false;
+            startX = e.clientX;
+            startY = e.clientY;
+            
+            // Get current computed style
+            const style = window.getComputedStyle(keyboard);
+            initialLeft = parseInt(style.left);
+            initialTop = parseInt(style.top);
+            
+            hinge.style.cursor = 'grabbing';
+            e.stopPropagation(); // Prevent text selection
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            
+            if (Math.abs(dx) > 2 || Math.abs(dy) > 2) hasMoved = true;
+
+            keyboard.style.left = `${initialLeft + dx}px`;
+            keyboard.style.top = `${initialTop + dy}px`;
+            
+            updateCable();
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isDragging && !hasMoved) {
+                // It was a click, switch mode
+                switchMode();
+            }
+            isDragging = false;
+            hinge.style.cursor = 'grab';
+        });
+
+        function switchMode() {
+            currentModeIndex = (currentModeIndex + 1) % modes.length;
+            keyboard.className = modes[currentModeIndex];
+            // Update cable after animation
+            setTimeout(updateCable, 350); 
+        }
+
+        /* --- CABLE DRAWING LOGIC --- */
+        
+        function updateCable() {
+            const unitPort = document.getElementById('unit-port').getBoundingClientRect();
+            // We approximate the cable connection point on the keyboard (top right of the right wing roughly)
+            const kbRect = document.getElementById('keyboard').getBoundingClientRect();
+            
+            // Determine cable hookup point on keyboard based on mode
+            // This is a rough approximation to center of hinge for simplicity, 
+            // offset slightly to the right to look like it plugs into the side.
+            const kbX = kbRect.left + kbRect.width; 
+            const kbY = kbRect.top + (kbRect.height/2);
+
+            const startX = unitPort.right;
+            const startY = unitPort.top + (unitPort.height / 2);
+
+            const endX = kbX - 20; // Offset into the unit slightly
+            const endY = kbY;
+
+            // Create a Bezier curve
+            // Control points creates the "slack"
+            const cp1X = startX + 100;
+            const cp1Y = startY;
+            const cp2X = endX + 50;
+            const cp2Y = endY - 100; // Curve upwards
+
+            const pathStr = `M ${startX} ${startY} C ${cp1X} ${cp1Y}, ${cp2X} ${cp2Y}, ${endX} ${endY}`;
+            document.getElementById('cable-path').setAttribute('d', pathStr);
+        }
+
+        // Initialize
+        window.onload = initGame;
+        window.onresize = updateCable;
+
+    </script>
+</body>
+</html>
