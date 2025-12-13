@@ -1,9 +1,0 @@
-{
-  "name": "braille-typing-tutor",
-  "version": "1.0.0",
-  "description": "A simple Braille typing tutor web app.",
-  "main": "index.html",
-  "scripts": {},
-  "author": "",
-  "license": "MIT"
-}
