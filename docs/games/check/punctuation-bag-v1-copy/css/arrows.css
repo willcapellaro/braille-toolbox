@@ -1,0 +1,4 @@
+/* Arrow image rendering: force pixelated for all arrows */
+.arrow-img, .arrow, .game-arrow, .missed-arrow, .hit-arrow, img[data-arrow], img.arrow {
+	image-rendering: pixelated !important;
+}

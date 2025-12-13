@@ -1,0 +1,30 @@
+import { Application } from 'pixi.js';
+export declare class Game {
+    private app;
+    private gameContainer;
+    private spotlights;
+    private inmates;
+    private gameState;
+    private keysPressed;
+    private gameLoop;
+    private scoreText;
+    private livesText;
+    private levelText;
+    private lastInmateSpawn;
+    private inmateSpawnInterval;
+    constructor(app: Application);
+    private setupUI;
+    private setupEventListeners;
+    private createSpotlights;
+    private spawnInmate;
+    private handleKeyDown;
+    private handleKeyUp;
+    private updateSpotlightStates;
+    private updateSpotlights;
+    private updateInmates;
+    private updateUI;
+    private gameOver;
+    start(): void;
+    resize(): void;
+    pause(): void;
+}

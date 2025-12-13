@@ -1,0 +1,17 @@
+@keyframes animate__rubberBand {
+	0% { transform: scale3d(1, 1, 1); }
+	30% { transform: scale3d(1.25, 0.75, 1); }
+	40% { transform: scale3d(0.75, 1.25, 1); }
+	50% { transform: scale3d(1.15, 0.85, 1); }
+	65% { transform: scale3d(.95, 1.05, 1); }
+	75% { transform: scale3d(1.05, .95, 1); }
+	100% { transform: scale3d(1, 1, 1); }
+}
+.animate__rubberBand { animation-name: animate__rubberBand; }
+/* Animate.css v4.1.1 | MIT License | https://animate.style/ */
+/* Only the classes needed for tada and headShake are included for minimal footprint */
+.animate__animated { animation-duration: 1s; animation-fill-mode: both; }
+@keyframes animate__tada { 0% { transform: scale3d(1, 1, 1); } 10%, 20% { transform: scale3d(0.9, 0.9, 0.9) rotate(-3deg); } 30%, 50%, 70%, 90% { transform: scale3d(1.1, 1.1, 1.1) rotate(3deg); } 40%, 60%, 80% { transform: scale3d(1.1, 1.1, 1.1) rotate(-3deg); } 100% { transform: scale3d(1, 1, 1); } }
+.animate__tada { animation-name: animate__tada; }
+@keyframes animate__headShake { 0% { transform: translateX(0); } 6.5% { transform: translateX(-6px) rotateY(-9deg); } 18.5% { transform: translateX(5px) rotateY(7deg); } 31.5% { transform: translateX(-3px) rotateY(-5deg); } 43.5% { transform: translateX(2px) rotateY(3deg); } 50% { transform: translateX(0); } 100% { transform: translateX(0); } }
+.animate__headShake { animation-timing-function: ease-in-out; animation-name: animate__headShake; }

@@ -1,0 +1,35 @@
+{
+  "name": "spotlight-six",
+  "version": "1.0.0",
+  "description": "A tower defense-style game where players control spotlights to catch escaping inmates",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "webpack serve --mode development",
+    "build": "webpack --mode production",
+    "dev": "webpack serve --mode development --open",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "game",
+    "typescript",
+    "pixi.js",
+    "tower-defense"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "copy-webpack-plugin": "^11.0.0",
+    "css-loader": "^7.1.2",
+    "html-webpack-plugin": "^5.5.0",
+    "style-loader": "^4.0.0",
+    "ts-loader": "^9.4.0",
+    "typescript": "^5.0.0",
+    "webpack": "^5.80.0",
+    "webpack-cli": "^5.1.0",
+    "webpack-dev-server": "^4.15.0"
+  },
+  "dependencies": {
+    "pixi.js": "^7.3.0"
+  }
+}
