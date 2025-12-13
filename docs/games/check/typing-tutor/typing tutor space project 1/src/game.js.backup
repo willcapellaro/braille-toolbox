@@ -1,0 +1,637 @@
+import * as THREE from 'three';
+import { WordLibrary } from './userData.js';
+
+export class Game {
+    constructor(canvas) {
+        this.canvas = canvas;
+        this.scene = null;
+        this.camera = null;
+        this.renderer = null;
+        this.orb = null;
+        this.currentWord = '';
+        this.currentWordIndex = 0;
+        this.typedChars = '';
+        this.stars = [];
+        this.animationId = null;
+        
+        this.wordLibrary = new WordLibrary();
+        this.userManager = new UserManager();
+        
+        // Braille character mapping (Unicode Braille patterns)
+        this.brailleMapping = {
+            'a': '⠁', 'b': '⠃', 'c': '⠉', 'd': '⠙', 'e': '⠑', 'f': '⠋', 'g': '⠛', 'h': '⠓',
+            'i': '⠊', 'j': '⠚', 'k': '⠅', 'l': '⠇', 'm': '⠍', 'n': '⠝', 'o': '⠕', 'p': '⠏',
+            'q': '⠟', 'r': '⠗', 's': '⠎', 't': '⠞', 'u': '⠥', 'v': '⠧', 'w': '⠺', 'x': '⠭',
+            'y': '⠽', 'z': '⠵'
+        };
+    
+    init() {
+        this.setupScene();
+        this.createOrb();
+        this.createStarField();
+        this.createNebula();
+        this.setupLighting();
+        this.animate();
+    }
+    
+    setupScene() {
+        // Scene
+        this.scene = new THREE.Scene();
+        this.scene.background = new THREE.Color(0x000011);
+        
+        // Camera
+        this.camera = new THREE.PerspectiveCamera(
+            75,
+            window.innerWidth / window.innerHeight,
+            0.1,
+            1000
+        );
+        this.camera.position.z = 5;
+        
+        // Renderer
+        this.renderer = new THREE.WebGLRenderer({ antialias: true });
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.setPixelRatio(window.devicePixelRatio);
+        this.container.appendChild(this.renderer.domElement);
+        
+        // Handle resize
+        window.addEventListener('resize', () => this.onWindowResize());
+    }
+    
+    createOrb() {
+        const geometry = new THREE.IcosahedronGeometry(1, 1);
+        
+        // Create a custom material with animated properties
+        const material = new THREE.MeshPhongMaterial({
+            color: 0x00ffff,
+            emissive: 0x001133,
+            shininess: 100,
+            transparent: true,
+            opacity: 0.8
+        });
+        
+        this.orb = new THREE.Mesh(geometry, material);
+        this.scene.add(this.orb);
+        
+        // Add wireframe overlay
+        const wireGeometry = new THREE.IcosahedronGeometry(1.01, 1);
+        const wireMaterial = new THREE.MeshBasicMaterial({
+            color: 0x00ffff,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.3
+        });
+        
+        const wireframe = new THREE.Mesh(wireGeometry, wireMaterial);
+        this.scene.add(wireframe);
+        this.wireframe = wireframe;
+    }
+    
+    createStarField() {
+        const starGeometry = new THREE.BufferGeometry();
+        const starMaterial = new THREE.PointsMaterial({
+            color: 0xffffff,
+            size: 2,
+            transparent: true,
+            opacity: 0.8
+        });
+        
+        const starVertices = [];
+        
+        for (let i = 0; i < 10000; i++) {
+            const x = (Math.random() - 0.5) * 2000;
+            const y = (Math.random() - 0.5) * 2000;
+            const z = (Math.random() - 0.5) * 2000;
+            
+            starVertices.push(x, y, z);
+        }
+        
+        starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+        
+        this.stars = new THREE.Points(starGeometry, starMaterial);
+        this.scene.add(this.stars);
+    }
+    
+    createNebula() {
+        const nebulaGeometry = new THREE.PlaneGeometry(50, 50);
+        const nebulaMaterial = new THREE.MeshBasicMaterial({
+            color: 0x4b0082,
+            transparent: true,
+            opacity: 0.1,
+            side: THREE.DoubleSide
+        });
+        
+        this.nebula = new THREE.Mesh(nebulaGeometry, nebulaMaterial);
+        this.nebula.position.z = -20;
+        this.scene.add(this.nebula);
+    }
+    
+    setupLighting() {
+        // Ambient light
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.2);
+        this.scene.add(ambientLight);
+        
+        // Point light
+        const pointLight = new THREE.PointLight(0x00ffff, 1, 100);
+        pointLight.position.set(10, 10, 10);
+        this.scene.add(pointLight);
+        
+        // Directional light
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+        directionalLight.position.set(-1, 1, 1);
+        this.scene.add(directionalLight);
+    }
+    
+    setupEventListeners() {
+        // Keyboard input
+        this.keydownHandler = (event) => {
+            if (this.gameState === 'playing' && !this.isPaused) {
+                // Don't handle Escape - let UI manager handle it globally
+                if (event.key !== 'Escape') {
+                    this.handleKeyPress(event);
+                }
+            }
+        };
+        
+        document.addEventListener('keydown', this.keydownHandler);
+    }
+    
+    startGame() {
+        this.gameState = 'playing';
+        this.isPaused = false;
+        this.score = 0;
+        this.lives = 3;
+        this.wordsTyped = 0;
+        this.startTime = Date.now();
+        this.bestWPM = 0;
+        
+        // Set current level based on user progress for all modes
+        if (this.userManager) {
+            const progress = this.userManager.getProgressForMode(this.mode);
+            this.currentLevel = progress ? progress.level : 3;
+            console.log(`Starting game - Mode: ${this.mode}, Level: ${this.currentLevel}, Progress:`, progress);
+        }
+        
+        this.nextWord();
+        this.updateUI();
+    }
+    
+    restart() {
+        this.startGame();
+    }
+    
+    pause() {
+        this.isPaused = true;
+    }
+    
+    resume() {
+        this.isPaused = false;
+    }
+    
+    convertWordToBrailleFormat(word) {
+        // For Braille mode, randomly replace one character with its Braille equivalent
+        if (this.mode === 'braille' && word.length > 1) {
+            const randomIndex = Math.floor(Math.random() * word.length);
+            const char = word[randomIndex].toLowerCase();
+            if (this.brailleMapping[char]) {
+                // Store original word for comparison and create display version
+                this.originalWord = word;
+                return word.slice(0, randomIndex) + this.brailleMapping[char] + word.slice(randomIndex + 1);
+            }
+        }
+        this.originalWord = word;
+        return word;
+    }
+
+    nextWord() {
+        if (this.gameState !== 'playing') return;
+        
+        // Get word based on current mode and level
+        const baseWord = this.wordLibrary.getRandomWord(this.mode, this.currentLevel);
+        this.currentWord = this.convertWordToBrailleFormat(baseWord);
+        this.typedWord = '';
+        this.updateWordDisplay();
+    }
+    
+    handleKeyPress(event) {
+        if (event.key === 'Backspace') {
+            this.typedWord = this.typedWord.slice(0, -1);
+        } else if (event.key === 'Enter') {
+            this.submitWord();
+        } else if (event.key.length === 1 && /[a-zA-Z\s]/.test(event.key)) {
+            this.typedWord += event.key.toLowerCase();
+        }
+        
+        this.updateWordDisplay();
+        
+        // Auto-submit when word is complete
+        const compareWord = this.mode === 'braille' ? this.originalWord : this.currentWord;
+        if (this.typedWord === compareWord) {
+            setTimeout(() => this.submitWord(), 100);
+        }
+    }
+    
+    submitWord() {
+        // For Braille mode, compare against original word
+        const compareWord = this.mode === 'braille' ? this.originalWord : this.currentWord;
+        if (this.typedWord === compareWord) {
+            this.correctWord();
+        } else {
+            this.incorrectWord();
+        }
+    }
+    
+    correctWord() {
+        this.score += this.currentWord.length * 10;
+        this.wordsTyped++;
+        this.animateOrb('correct');
+        
+        // Update user stats immediately after each correct word
+        if (this.userManager) {
+            const gameData = {
+                mode: this.mode,
+                score: this.score,
+                wpm: this.bestWPM,
+                wordsTyped: 1, // Just this one word
+                level: this.currentLevel
+            };
+            
+            this.userManager.updateUserStats(gameData);
+            
+            // Check if we leveled up
+            if (gameData.leveledUp) {
+                this.currentLevel = gameData.newLevel;
+                this.showProgressNotification(`Level Up! ${this.currentLevel}-letter words unlocked!`);
+                this.animateLevelUp();
+            }
+        }
+        
+        this.nextWord();
+        this.updateUI();
+        this.calculateWPM();
+    }
+    
+    showProgressNotification(message) {
+        // Create a temporary notification with enhanced styling
+        const notification = document.createElement('div');
+        notification.className = 'progress-notification';
+        notification.textContent = message;
+        
+        // Level-based gradient colors
+        const levelGradients = [
+            'linear-gradient(45deg, #00ff00, #00cc00)', // Level 3 - Green
+            'linear-gradient(45deg, #0088ff, #0066cc)', // Level 4 - Blue  
+            'linear-gradient(45deg, #8800ff, #6600cc)', // Level 5 - Purple
+            'linear-gradient(45deg, #ff0088, #cc0066)', // Level 6 - Magenta
+            'linear-gradient(45deg, #ff8800, #cc6600)', // Level 7 - Orange
+            'linear-gradient(45deg, #ffff00, #cccc00)', // Level 8 - Yellow
+            'linear-gradient(45deg, #88ff88, #66cc66)', // Level 9 - Light Green
+            'linear-gradient(45deg, #ff88ff, #cc66cc)', // Level 10 - Pink
+            'linear-gradient(45deg, #88ffff, #66cccc)', // Level 11 - Cyan
+            'linear-gradient(45deg, #ffffff, #cccccc)'  // Level 12 - White (Master)
+        ];
+        
+        const gradientIndex = Math.min(this.currentLevel - 3, levelGradients.length - 1);
+        const gradient = levelGradients[gradientIndex];
+        
+        notification.style.cssText = `
+            position: fixed;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: ${gradient};
+            color: ${this.currentLevel >= 12 ? '#000' : '#fff'};
+            padding: 25px 35px;
+            border-radius: 20px;
+            font-size: 1.5em;
+            font-weight: 900;
+            z-index: 1000;
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.8);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            animation: levelUpNotification 4s ease-in-out;
+            text-align: center;
+            min-width: 300px;
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Remove after animation
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 4000);
+    }
+    
+    incorrectWord() {
+        this.lives--;
+        this.animateOrb('incorrect');
+        
+        if (this.lives <= 0) {
+            this.gameOver();
+        } else {
+            this.nextWord();
+        }
+        
+        this.updateUI();
+    }
+    
+    calculateWPM() {
+        if (!this.startTime) return;
+        
+        const timeElapsed = (Date.now() - this.startTime) / (1000 * 60); // minutes
+        const wpm = Math.round(this.wordsTyped / timeElapsed);
+        
+        if (wpm > this.bestWPM) {
+            this.bestWPM = wpm;
+        }
+        
+        document.getElementById('wpm').textContent = wpm;
+    }
+    
+    animateOrb(type) {
+        if (type === 'correct') {
+            // Green flash
+            this.orb.material.color.setHex(0x00ff00);
+            this.orb.material.emissive.setHex(0x003300);
+            
+            setTimeout(() => {
+                this.orb.material.color.setHex(0x00ffff);
+                this.orb.material.emissive.setHex(0x001133);
+            }, 200);
+        } else {
+            // Red flash
+            this.orb.material.color.setHex(0xff0000);
+            this.orb.material.emissive.setHex(0x330000);
+            
+            setTimeout(() => {
+                this.orb.material.color.setHex(0x00ffff);
+                this.orb.material.emissive.setHex(0x001133);
+            }, 200);
+        }
+    }
+    
+    animateLevelUp() {
+        if (!this.orb) return;
+        
+        // Store original properties
+        const originalScale = this.orb.scale.x;
+        const originalColor = 0x00ffff;
+        const originalEmissive = 0x001133;
+        
+        // Level-based colors - each level gets a unique color progression
+        const levelColors = [
+            { main: 0x00ff00, emissive: 0x003300 }, // Level 3 - Green
+            { main: 0x0088ff, emissive: 0x001144 }, // Level 4 - Blue
+            { main: 0x8800ff, emissive: 0x220044 }, // Level 5 - Purple
+            { main: 0xff0088, emissive: 0x440022 }, // Level 6 - Magenta
+            { main: 0xff8800, emissive: 0x442200 }, // Level 7 - Orange
+            { main: 0xffff00, emissive: 0x444400 }, // Level 8 - Yellow
+            { main: 0x88ff88, emissive: 0x224422 }, // Level 9 - Light Green
+            { main: 0xff88ff, emissive: 0x442244 }, // Level 10 - Pink
+            { main: 0x88ffff, emissive: 0x224444 }, // Level 11 - Cyan
+            { main: 0xffffff, emissive: 0x444444 }  // Level 12 - White (Master)
+        ];
+        
+        const colorIndex = Math.min(this.currentLevel - 3, levelColors.length - 1);
+        const levelColor = levelColors[colorIndex];
+        
+        // Animation parameters
+        const maxScale = 2.5 + (this.currentLevel * 0.2); // Bigger growth for higher levels
+        const growDuration = 1000; // 1 second growth
+        const shrinkDuration = 3000; // 3 second shrink back
+        
+        // Stop any existing level up animation
+        if (this.levelUpAnimation) {
+            clearInterval(this.levelUpAnimation);
+        }
+        
+        let startTime = Date.now();
+        let phase = 'growing';
+        
+        this.levelUpAnimation = setInterval(() => {
+            const elapsed = Date.now() - startTime;
+            
+            if (phase === 'growing') {
+                // Growing phase with color change
+                const progress = Math.min(elapsed / growDuration, 1);
+                const easeProgress = this.easeOutElastic(progress);
+                
+                // Scale animation
+                const currentScale = originalScale + (maxScale - originalScale) * easeProgress;
+                this.orb.scale.setScalar(currentScale);
+                this.wireframe.scale.setScalar(currentScale * 1.01);
+                
+                // Color animation
+                const colorProgress = Math.sin(progress * Math.PI * 3) * 0.5 + 0.5;
+                const r = Math.floor(((levelColor.main >> 16) & 0xff) * colorProgress + 
+                                   ((originalColor >> 16) & 0xff) * (1 - colorProgress));
+                const g = Math.floor(((levelColor.main >> 8) & 0xff) * colorProgress + 
+                                   ((originalColor >> 8) & 0xff) * (1 - colorProgress));
+                const b = Math.floor((levelColor.main & 0xff) * colorProgress + 
+                                   (originalColor & 0xff) * (1 - colorProgress));
+                
+                this.orb.material.color.setHex((r << 16) | (g << 8) | b);
+                this.orb.material.emissive.setHex(levelColor.emissive);
+                
+                // Transition to shrinking phase
+                if (progress >= 1) {
+                    phase = 'shrinking';
+                    startTime = Date.now();
+                }
+            } else {
+                // Shrinking phase back to normal
+                const progress = Math.min(elapsed / shrinkDuration, 1);
+                const easeProgress = this.easeOutQuart(progress);
+                
+                // Scale back to normal
+                const currentScale = maxScale - (maxScale - originalScale) * easeProgress;
+                this.orb.scale.setScalar(currentScale);
+                this.wireframe.scale.setScalar(currentScale * 1.01);
+                
+                // Color back to original with sparkle effect
+                const sparkle = Math.sin(elapsed * 0.01) * 0.1 + 0.9;
+                const colorProgress = easeProgress;
+                
+                const r = Math.floor(((originalColor >> 16) & 0xff) * colorProgress + 
+                                   ((levelColor.main >> 16) & 0xff) * (1 - colorProgress));
+                const g = Math.floor(((originalColor >> 8) & 0xff) * colorProgress + 
+                                   ((levelColor.main >> 8) & 0xff) * (1 - colorProgress));
+                const b = Math.floor((originalColor & 0xff) * colorProgress + 
+                                   (levelColor.main & 0xff) * (1 - colorProgress));
+                
+                this.orb.material.color.setHex(((r * sparkle) << 16) | ((g * sparkle) << 8) | (b * sparkle));
+                
+                // Emissive back to normal
+                const er = Math.floor(((originalEmissive >> 16) & 0xff) * colorProgress + 
+                                    ((levelColor.emissive >> 16) & 0xff) * (1 - colorProgress));
+                const eg = Math.floor(((originalEmissive >> 8) & 0xff) * colorProgress + 
+                                    ((levelColor.emissive >> 8) & 0xff) * (1 - colorProgress));
+                const eb = Math.floor((originalEmissive & 0xff) * colorProgress + 
+                                    (levelColor.emissive & 0xff) * (1 - colorProgress));
+                
+                this.orb.material.emissive.setHex((er << 16) | (eg << 8) | eb);
+                
+                // Animation complete
+                if (progress >= 1) {
+                    clearInterval(this.levelUpAnimation);
+                    this.levelUpAnimation = null;
+                    
+                    // Ensure final state is exactly original
+                    this.orb.scale.setScalar(originalScale);
+                    this.wireframe.scale.setScalar(originalScale * 1.01);
+                    this.orb.material.color.setHex(originalColor);
+                    this.orb.material.emissive.setHex(originalEmissive);
+                }
+            }
+        }, 16); // ~60 FPS
+    }
+    
+    // Easing functions for smooth animations
+    easeOutElastic(t) {
+        const c4 = (2 * Math.PI) / 3;
+        return t === 0 ? 0 : t === 1 ? 1 : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1;
+    }
+    
+    easeOutQuart(t) {
+        return 1 - Math.pow(1 - t, 4);
+    }
+    
+    updateWordDisplay() {
+        document.getElementById('current-word').textContent = this.currentWord;
+        document.getElementById('typed-word').textContent = this.typedWord;
+        
+        // Color feedback
+        const currentWordEl = document.getElementById('current-word');
+        const typedWordEl = document.getElementById('typed-word');
+        
+        if (this.typedWord.length > 0) {
+            if (this.currentWord.startsWith(this.typedWord)) {
+                typedWordEl.style.color = '#4CAF50';
+            } else {
+                typedWordEl.style.color = '#ff4444';
+            }
+        }
+    }
+    
+    updateUI() {
+        document.getElementById('score').textContent = this.score;
+        document.getElementById('lives').textContent = this.lives;
+        
+        // Update progress indicator in real-time
+        if (this.userManager) {
+            const progress = this.userManager.getProgressForMode(this.mode);
+            if (progress) {
+                const wordsNeeded = 15 - progress.levelProgress;
+                const progressText = wordsNeeded > 0 
+                    ? `Level ${progress.level} • ${wordsNeeded} words to Level ${progress.level + 1}`
+                    : `Level ${progress.level} • Max Level!`;
+                document.getElementById('progress-indicator').textContent = progressText;
+            }
+        }
+    }
+    
+    gameOver() {
+        this.gameState = 'gameOver';
+        
+        // Update UI
+        document.getElementById('final-score').textContent = this.score;
+        document.getElementById('final-wpm').textContent = this.bestWPM;
+        document.getElementById('words-typed').textContent = this.wordsTyped;
+        
+        // Stats are already updated per word, just save final state
+        if (this.userManager) {
+            // Save any remaining data or trigger final save
+            this.userManager.saveUserData();
+        }
+        
+        document.getElementById('game-over').classList.remove('hidden');
+    }
+    
+    animate() {
+        this.animationId = requestAnimationFrame(() => this.animate());
+        
+        // Only update animations if not paused
+        if (!this.isPaused) {
+            this.time += 0.01;
+            
+            // Rotate orb
+            if (this.orb) {
+                this.orb.rotation.x += 0.005;
+                this.orb.rotation.y += 0.01;
+            }
+            
+            // Rotate wireframe
+            if (this.wireframe) {
+                this.wireframe.rotation.x += 0.003;
+                this.wireframe.rotation.y += 0.007;
+            }
+            
+            // Animate stars
+            if (this.stars) {
+                this.stars.rotation.y += 0.0005;
+            }
+            
+            // Animate nebula
+            if (this.nebula) {
+                this.nebula.rotation.z += 0.001;
+            }
+            
+            // Pulsing effect for orb
+            if (this.orb && this.gameState === 'playing') {
+                const scale = 1 + Math.sin(this.time * 2) * 0.05;
+                this.orb.scale.setScalar(scale);
+            }
+        }
+        
+        this.renderer.render(this.scene, this.camera);
+    }
+    
+    onWindowResize() {
+        this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+    
+    destroy() {
+        // Cancel animations
+        if (this.animationId) {
+            cancelAnimationFrame(this.animationId);
+        }
+        
+        if (this.levelUpAnimation) {
+            clearInterval(this.levelUpAnimation);
+        }
+        
+        // Remove event listeners
+        if (this.keydownHandler) {
+            document.removeEventListener('keydown', this.keydownHandler);
+        }
+        
+        // Clean up THREE.js
+        if (this.renderer) {
+            if (this.container && this.renderer.domElement) {
+                this.container.removeChild(this.renderer.domElement);
+            }
+            this.renderer.dispose();
+        }
+        
+        // Clean up geometries and materials
+        if (this.scene) {
+            this.scene.traverse((object) => {
+                if (object.geometry) {
+                    object.geometry.dispose();
+                }
+                if (object.material) {
+                    if (Array.isArray(object.material)) {
+                        object.material.forEach(material => material.dispose());
+                    } else {
+                        object.material.dispose();
+                    }
+                }
+            });
+        }
+    }
+}

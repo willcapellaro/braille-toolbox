@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Viewer</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <div class="app-container">
+        <div class="image-container" id="imageContainer">
+            <div class="image-wrapper" id="imageWrapper">
+                <img id="imageElement" alt="Image preview">
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-zone-text">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <p>Drag anfd drop an image here</p>
+                        <p class="drop-zone-hint">or click the upload button</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="control-panel" id="controlPanel">
+            <div class="panel-content">
+                <h3>Controls</h3>
+                <div class="form-row">
+                    <label for="modeSelect" class="label-with-info">
+                        View Mode
+                        <button id="cssCodeToggle" class="expand-toggle" type="button" aria-expanded="false" aria-controls="cssCodeBlock" title="Show CSS code">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                    </label>
+                    <select id="modeSelect">
+                        <option value="actual">Actual Size</option>
+                        <option value="fit">Fit (contain)</option>
+                        <option value="fill">Fill (cover)</option>
+                    </select>
+                    <div id="cssCodeBlock" class="code-block" hidden>
+<pre id="cssTooltipCode"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="toolbar">
+            <button class="toolbar-button" id="panelToggle" title="Toggle Control Panel">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </button>
+            <button class="toolbar-button" id="uploadButton" title="Upload Image">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+            </button>
+            <button class="toolbar-button" id="viewModeToggle" title="Toggle Fit/Fill Mode">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="viewModeIcon">
+                    <path d="M8 3v5m0 0H3m5 0h5M16 3v5m0 0h5m-5 0h-5M8 21v-5m0 0H3m5 0h5M16 21v-5m0 0h5m-5 0h-5" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                </svg>
+            </button>
+        </div>
+        
+        <input type="file" id="fileInput" accept="image/jpeg,image/jpg,image/png" multiple style="display: none;">
+
+        <div id="notifications" class="notifications" aria-live="polite" aria-atomic="true"></div>
+        
+        <div id="debugPanel" style="position: fixed; top: 10px; right: 10px; background: rgba(0,0,0,0.9); color: #0f0; padding: 10px; border: 2px solid #0f0; border-radius: 4px; font-family: monospace; font-size: 11px; max-width: 500px; max-height: 400px; overflow: auto; z-index: 9999;">
+            <div style="font-weight: bold; margin-bottom: 5px;">DEBUG LOG</div>
+            <div id="debugLog"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Debug logger that writes to visible panel
+        window.debugLog = function(msg) {
+            const log = document.getElementById('debugLog');
+            if (log) {
+                const div = document.createElement('div');
+                div.textContent = new Date().toLocaleTimeString() + ' - ' + msg;
+                log.appendChild(div);
+                log.scrollTop = log.scrollHeight;
+            }
+            console.log('[DEBUG] ' + msg);
+        };
+        
+        window.debugLog('=== PAGE LOADING ===');
+        
+        window.addEventListener('error', function(e) {
+            window.debugLog('ERROR: ' + e.message + ' in ' + e.filename + ':' + e.lineno);
+            console.error('[Script Error]', e.filename, e.lineno, e.message, e.error);
+        });
+        
+        window.debugLog('[Boot] HTML scripts starting to load');
+    </script>
+    <script src="app/scripts/modernizr.js" onload="window.debugLog('[Script] modernizr.js loaded')" onerror="window.debugLog('[Script] modernizr.js FAILED')"></script>
+    <script src="app/scripts/modernizr-platform.js" onload="window.debugLog('[Script] modernizr-platform.js loaded')" onerror="window.debugLog('[Script] modernizr-platform.js FAILED')"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js" onload="window.debugLog('[Script] lodash loaded: ' + typeof _)" onerror="window.debugLog('[Script] lodash FAILED')"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/2.2.9/pixi.dev.js" onload="window.debugLog('[Script] PIXI loaded: ' + typeof PIXI)" onerror="window.debugLog('[Script] pixi.dev.js FAILED')"></script>
+    <script src="app/scripts/pixi/ColorMatrixFilter2.js" onload="window.debugLog('[Script] ColorMatrixFilter2.js loaded')" onerror="window.debugLog('[Script] ColorMatrixFilter2.js FAILED')"></script>
+    <script src="app/scripts/pixi/DepthDisplacementFilter.js" onload="window.debugLog('[Script] DepthDisplacementFilter.js loaded')" onerror="window.debugLog('[Script] DepthDisplacementFilter.js FAILED')"></script>
+    <script src="app/scripts/pixi/DepthPerspectiveFilter.js" onload="window.debugLog('[Script] DepthPerspectiveFilter.js loaded')" onerror="window.debugLog('[Script] DepthPerspectiveFilter.js FAILED')"></script>
+    <script src="app/scripts/pixi/utils.js" onload="window.debugLog('[Script] utils.js loaded')" onerror="window.debugLog('[Script] utils.js FAILED')"></script>
+    <script src="app/scripts/classes/DepthyViewer.js" onload="window.debugLog('[Script] DepthyViewer loaded: ' + typeof DepthyViewer)" onerror="window.debugLog('[Script] DepthyViewer.js FAILED')"></script>
+    <script src="src/image-viewer.js" onload="window.debugLog('[Script] image-viewer.js loaded')" onerror="window.debugLog('[Script] image-viewer.js FAILED')"></script>
+</body>
+</html>
+

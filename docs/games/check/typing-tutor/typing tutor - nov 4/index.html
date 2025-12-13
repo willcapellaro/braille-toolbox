@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Viewer</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <div class="app-container">
+        <div class="image-container" id="imageContainer">
+            <div class="image-wrapper" id="imageWrapper">
+                <img id="imageElement" alt="Image preview">
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-zone-text">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <p>Drag anfd drop an image here</p>
+                        <p class="drop-zone-hint">or click the upload button</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="control-panel" id="controlPanel">
+            <div class="panel-content">
+                <h3>Controls</h3>
+                <div class="form-row">
+                    <label for="modeSelect" class="label-with-info">
+                        View Mode
+                        <button id="cssCodeToggle" class="expand-toggle" type="button" aria-expanded="false" aria-controls="cssCodeBlock" title="Show CSS code">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                    </label>
+                    <select id="modeSelect">
+                        <option value="actual">Actual Size</option>
+                        <option value="fit">Fit (contain)</option>
+                        <option value="fill">Fill (cover)</option>
+                    </select>
+                    <div id="cssCodeBlock" class="code-block" hidden>
+<pre id="cssTooltipCode"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="toolbar">
+            <button class="toolbar-button" id="panelToggle" title="Toggle Control Panel">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </button>
+            <button class="toolbar-button" id="uploadButton" title="Upload Image">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+            </button>
+            <button class="toolbar-button" id="viewModeToggle" title="Toggle Fit/Fill Mode">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="viewModeIcon">
+                    <path d="M8 3v5m0 0H3m5 0h5M16 3v5m0 0h5m-5 0h-5M8 21v-5m0 0H3m5 0h5M16 21v-5m0 0h5m-5 0h-5" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                </svg>
+            </button>
+        </div>
+        
+        <input type="file" id="fileInput" accept="image/jpeg,image/jpg,image/png" style="display: none;">
+    </div>
+    
+    <script src="src/image-viewer.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PNG Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-image { 
+            border: 2px solid #ccc; 
+            margin: 10px; 
+            padding: 10px;
+            display: inline-block;
+            image-rendering: pixelated;
+        }
+        img { 
+            width: 64px; 
+            height: 64px; 
+            image-rendering: pixelated;
+        }
+    </style>
+</head>
+<body>
+    <h1>PNG File Test</h1>
+    <p>Testing if PNG files can be loaded directly in the browser...</p>
+    
+    <div class="test-image">
+        <h3>road.png</h3>
+        <img src="public/road.png" onerror="this.parentElement.innerHTML += '<p style=color:red>Failed to load!</p>'" onload="this.parentElement.innerHTML += '<p style=color:green>Loaded successfully!</p>'">
+    </div>
+    
+    <div class="test-image">
+        <h3>grass.png</h3>
+        <img src="public/grass.png" onerror="this.parentElement.innerHTML += '<p style=color:red>Failed to load!</p>'" onload="this.parentElement.innerHTML += '<p style=color:green>Loaded successfully!</p>'">
+    </div>
+    
+    <div class="test-image">
+        <h3>roadstripe.png</h3>
+        <img src="public/roadstripe.png" onerror="this.parentElement.innerHTML += '<p style=color:red>Failed to load!</p>'" onload="this.parentElement.innerHTML += '<p style=color:green>Loaded successfully!</p>'">
+    </div>
+    
+    <script>
+        console.log('PNG Test page loaded - check console for any errors');
+        
+        // Test canvas creation from images
+        function testCanvasConversion(src, name) {
+            const img = new Image();
+            img.onload = function() {
+                console.log(`✅ ${name} loaded as Image:`, this.width, 'x', this.height);
+                
+                // Test canvas conversion
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = this.width;
+                    canvas.height = this.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(this, 0, 0);
+                    
+                    console.log(`✅ ${name} successfully drawn to canvas`);
+                    
+                    // Test data URL conversion
+                    const dataUrl = canvas.toDataURL();
+                    console.log(`✅ ${name} converted to data URL:`, dataUrl.substring(0, 50) + '...');
+                    
+                } catch (error) {
+                    console.error(`❌ ${name} canvas conversion failed:`, error);
+                }
+            };
+            
+            img.onerror = function(error) {
+                console.error(`❌ ${name} failed to load as Image:`, error);
+            };
+            
+            img.src = src;
+        }
+        
+        // Test all images
+        testCanvasConversion('public/road.png', 'public/road.png');
+        testCanvasConversion('public/grass.png', 'public/grass.png');
+        testCanvasConversion('public/roadstripe.png', 'roadstripe.png');
+    </script>
+</body>
+</html>
