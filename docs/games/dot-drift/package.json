@@ -1,0 +1,29 @@
+{
+  "name": "grid-racer",
+  "version": "1.0.0",
+  "description": "A grid-based racing game built with Pixi.js and TypeScript",
+  "main": "src/main.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "serve": "vite preview --port 3000"
+  },
+  "keywords": [
+    "game",
+    "pixi.js",
+    "accessibility",
+    "braille",
+    "racing"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vite": "^5.0.0"
+  },
+  "dependencies": {
+    "pixi.js": "^8.0.0"
+  }
+}
