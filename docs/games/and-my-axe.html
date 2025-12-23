@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>And My Axe - Braille Learning</title>
+    <style>
+        :root {
+            --bg-dark: #0f0a08;
+            --stone-dark: #1c1917;
+            --stone-light: #2e2a28;
+            --wood-dark: #3e2723;
+            --wood-light: #5d4037;
+            --metal: #607d8b;
+            --metal-shine: #cfd8dc;
+            --torch-orange: #ff6d00;
+            --braille-active: #ffd600;
+            --text-color: #eceff1;
+            --accent: #ff3d00;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            background-color: #000;
+            color: var(--text-color);
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- App Container --- */
+        #app {
+            width: 100%;
+            max-width: 450px;
+            height: 100%;
+            position: relative;
+            background-color: var(--bg-dark);
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Global UI --- */
+        .mute-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 40px;
+            height: 40px;
+            z-index: 1000;
+            cursor: pointer;
+            opacity: 0.7;
+            background: rgba(0,0,0,0.4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--metal);
+        }
+        .mute-btn:active { transform: scale(0.9); }
+        .mute-icon { width: 20px; height: 20px; fill: var(--text-color); }
+        
+        .nav-back {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            color: #888;
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 100;
+            line-height: 1;
+        }
+
+        /* --- Dynamic Backgrounds --- */
+        .bg-room {
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(circle at 50% 40%, rgba(255, 109, 0, 0.15), transparent 80%),
+                repeating-linear-gradient(90deg, var(--stone-dark) 0px, var(--stone-dark) 40px, var(--stone-light) 41px, var(--stone-light) 42px);
+            z-index: 0;
+        }
+        
+        .torch-flicker {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255, 61, 0, 0.1), transparent 60%);
+            animation: flicker 4s infinite alternate;
+            pointer-events: none;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.9; transform: translate(-50%, -50%) scale(1.02); }
+            100% { opacity: 0.6; transform: translate(-50%, -50%) scale(0.98); }
+        }
+
+        /* --- Views System --- */
+        .view {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            z-index: 10;
+            padding: 20px;
+            padding-top: 60px; /* Space for UI */
+        }
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.95);
+            z-index: -1;
+        }
+
+        /* --- TITLE SCREEN --- */
+        #view-title {
+            justify-content: center;
+            text-align: center;
+            background: rgba(0,0,0,0.6);
+        }
+        .title-logo {
+            font-size: 3rem;
+            font-weight: 900;
+            line-height: 1;
+            text-transform: uppercase;
+            color: var(--accent);
+            text-shadow: 0 0 20px var(--accent), 4px 4px 0px #000;
+            margin-bottom: 10px;
+            letter-spacing: -2px;
+        }
+        .title-sub {
+            font-size: 1.2rem;
+            color: var(--metal-shine);
+            margin-bottom: 40px;
+            letter-spacing: 2px;
+        }
+        .title-axe {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 40px;
+            filter: drop-shadow(0 0 15px rgba(255, 61, 0, 0.4));
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+        /* --- EXPLAINER --- */
+        #view-explainer {
+            justify-content: center;
+            text-align: center;
+            background: rgba(0,0,0,0.85);
+        }
+        .explainer-card {
+            background: var(--stone-dark);
+            border: 2px solid var(--wood-light);
+            padding: 30px;
+            border-radius: 4px;
+            box-shadow: 0 0 30px #000;
+        }
+        .explainer-text {
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-size: 1rem;
+            color: #ddd;
+        }
+        .explainer-highlight {
+            color: var(--braille-active);
+            font-weight: bold;
+        }
+
+        /* --- BUTTONS --- */
+        .btn-main {
+            background: var(--wood-light);
+            border: 1px solid var(--wood-dark);
+            color: white;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 0 var(--wood-dark), 0 0 15px rgba(0,0,0,0.5);
+            transition: transform 0.1s;
+        }
+        .btn-main:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 var(--wood-dark);
+        }
+
+        /* --- LEVEL SELECT --- */
+        .level-header {
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px black;
+        }
+        .level-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            width: 100%;
+            overflow-y: auto;
+            padding-bottom: 100px;
+            scrollbar-width: none;
+        }
+        .level-grid::-webkit-scrollbar { display: none; }
+
+        /* --- SHIELD ASSETS --- */
+        .shield {
+            width: 110px;
+            height: 130px;
+            margin: 0 auto;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .shield:active { transform: scale(0.95); }
+        
+        .shield-shape {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--wood-light), #2a1b18);
+            border: 4px solid var(--metal);
+            border-radius: 50% 50% 50% 50% / 15% 15% 85% 85%;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 5px 10px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .shield.locked .shield-shape {
+            filter: grayscale(1) brightness(0.4);
+            border-color: #333;
+        }
+        .shield-dots { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
+        .dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background-color: rgba(0,0,0,0.4);
+            box-shadow: inset 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        .dot.active {
+            background-color: var(--metal-shine);
+            box-shadow: 0 0 5px rgba(255,255,255,0.5);
+        }
+        .shield-label { font-size: 1.2rem; font-weight: bold; color: var(--metal-shine); text-shadow: 0 2px 2px black; }
+        
+        .slash-mark {
+            position: absolute; top: 50%; left: 50%;
+            width: 90%; height: 6px;
+            background: #fff;
+            box-shadow: 0 0 10px #fff;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            opacity: 0.9;
+            display: none;
+        }
+        .completed .slash-mark { display: block; }
+
+        /* --- LEARNING VIEW --- */
+        .back-container {
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .shield-back-large {
+            width: 280px; height: 350px;
+            background: linear-gradient(135deg, #2d1e1b, #1a100e);
+            border-radius: 50% 50% 50% 50% / 15% 15% 85% 85%;
+            border: 8px solid var(--wood-light);
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.9);
+            padding: 30px;
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            margin-bottom: 20px;
+        }
+        .learning-dots { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
+        .learning-dots .dot { width: 20px; height: 20px; }
+        .learning-dots .dot.active { background-color: var(--braille-active); box-shadow: 0 0 10px var(--braille-active); }
+        .rune-decor { color: rgba(255,255,255,0.1); font-size: 1.5rem; margin-bottom: 10px; }
+        .learning-text { font-size: 0.95rem; line-height: 1.4; color: #ccc; margin-bottom: 10px; }
+        .highlight-text { color: var(--torch-orange); font-weight: bold; font-size: 1.1rem; }
+
+        /* --- GAME VIEW --- */
+        .target-area {
+            flex: 1; width: 100%;
+            display: flex; align-items: center; justify-content: center;
+            perspective: 800px;
+        }
+        
+        /* Axe Animation */
+        .axe-container {
+            position: absolute; bottom: -50px; right: -20px;
+            width: 200px; height: 300px;
+            transform-origin: bottom right;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: rotate(10deg) translateY(120px);
+            pointer-events: none; z-index: 50;
+        }
+        .axe-container.ready { transform: rotate(-10deg) translateY(0); }
+        .axe-container.thrown {
+            transition: all 0.4s ease-in;
+            transform: translate(-50vw, -40vh) scale(0.2) rotate(-720deg);
+            opacity: 0;
+        }
+
+        /* Input UI */
+        .braille-input-overlay {
+            width: 100%;
+            background: linear-gradient(to top, #000 20%, rgba(0,0,0,0.8));
+            padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            z-index: 60;
+            border-top: 2px solid var(--wood-dark);
+        }
+        .input-cell {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;
+            margin-bottom: 20px; padding: 10px;
+            background: rgba(255,255,255,0.05); border-radius: 10px;
+        }
+        .input-dot {
+            width: 50px; height: 50px;
+            border-radius: 50%; border: 3px solid #444; background: #111;
+            cursor: pointer; transition: all 0.1s;
+        }
+        .input-dot.on {
+            background: var(--braille-active); border-color: #fff;
+            box-shadow: 0 0 20px var(--braille-active);
+        }
+        .throw-prompt {
+            height: 30px; color: var(--accent); font-weight: bold; text-transform: uppercase;
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .throw-prompt.visible { opacity: 1; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%{opacity:0.5} 50%{opacity:1} 100%{opacity:0.5} }
+        
+        .impact-flash {
+            position: absolute; inset: 0; background: white;
+            opacity: 0; pointer-events: none; z-index: 100;
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <!-- Shared Ambient Layers -->
+    <div class="bg-room"></div>
+    <div class="torch-flicker"></div>
+
+    <!-- Mute Button (Always visible) -->
+    <div class="mute-btn" id="mute-toggle" onclick="SoundEngine.toggleMute()">
+        <svg class="mute-icon" viewBox="0 0 24 24" id="mute-icon-svg">
+            <!-- Dynamic path set by JS -->
+            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+        </svg>
+    </div>
+
+    <!-- VIEW 1: TITLE SCREEN -->
+    <div id="view-title" class="view">
+        <svg class="title-axe" viewBox="0 0 100 200">
+             <path d="M45,180 L55,180 L60,20 L40,20 Z" fill="#5d4037" stroke="#3e2723" stroke-width="2"/>
+             <rect x="40" y="30" width="20" height="10" fill="#a1887f"/>
+             <path d="M50,20 Q10,20 10,60 Q30,45 50,50 Q70,45 90,60 Q90,20 50,20 Z" fill="#607d8b" stroke="#cfd8dc" stroke-width="2"/>
+        </svg>
+        <div class="title-logo">AND MY AXE</div>
+        <div class="title-sub">EARLY BETA</div>
+        <button class="btn-main" onclick="Game.startFromTitle()">Start Game</button>
+    </div>
+
+    <!-- VIEW 2: EXPLAINER -->
+    <div id="view-explainer" class="view hidden">
+        <div class="explainer-card">
+            <h2 style="color:var(--accent); margin-top:0;">THE FORGE</h2>
+            <div class="explainer-text">
+                Braille is not random. It is built.
+                <br><br>
+                Look at the shield. <span class="explainer-highlight">Learn the pattern</span>.
+                <br>
+                Tap the dots to <span class="explainer-highlight">Forge the input</span>.
+                <br>
+                Throw the axe to <span class="explainer-highlight">Lock it in</span>.
+            </div>
+            <button class="btn-main" onclick="Game.finishExplainer()">I Understand</button>
+        </div>
+    </div>
+
+    <!-- VIEW 3: LEVEL SELECT -->
+    <div id="view-level-select" class="view hidden">
+        <div class="level-header">Select Target</div>
+        <div class="level-grid" id="level-grid">
+            <!-- Shields injected via JS -->
+        </div>
+    </div>
+
+    <!-- VIEW 4: LEARNING -->
+    <div id="view-learning" class="view hidden">
+        <div class="nav-back" onclick="Game.goToMenu()">←</div>
+        <div class="back-container">
+            <div class="shield-back-large">
+                <div class="rune-decor">ᚠ ᚢ ᚦ ᚨ ᚱ ᚲ</div>
+                <div class="learning-dots" id="learning-dots-display"></div>
+                <div class="learning-text" id="learning-sentence"></div>
+                <div class="highlight-text" id="learning-highlight"></div>
+            </div>
+            <button class="btn-main" onclick="Game.startThrowing()">I AM READY</button>
+        </div>
+    </div>
+
+    <!-- VIEW 5: GAMEPLAY -->
+    <div id="view-game" class="view hidden">
+        <div class="nav-back" onclick="Game.goToMenu()">←</div>
+        
+        <div class="target-area" id="game-target-area">
+            <div class="shield target-shield" id="target-shield">
+                <div class="shield-shape">
+                    <div class="shield-dots" id="target-dots"></div>
+                    <div class="shield-label" id="target-label"></div>
+                    <div class="slash-mark" id="target-slash"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Axe SVG -->
+        <div class="axe-container" id="player-axe">
+            <svg style="width:100%; height:100%; filter: drop-shadow(5px 5px 5px rgba(0,0,0,0.5));" viewBox="0 0 100 200">
+                <path d="M45,180 L55,180 L60,20 L40,20 Z" fill="#5d4037" stroke="#3e2723" stroke-width="2"/>
+                <rect x="40" y="30" width="20" height="10" fill="#a1887f"/>
+                <path d="M50,20 Q10,20 10,60 Q30,45 50,50 Q70,45 90,60 Q90,20 50,20 Z" fill="#607d8b" stroke="#cfd8dc" stroke-width="2"/>
+                <path d="M10,60 Q50,70 90,60" stroke="#cfd8dc" stroke-width="3" fill="none"/>
+            </svg>
+        </div>
+
+        <div class="braille-input-overlay">
+            <div class="throw-prompt" id="throw-prompt">TAP SCREEN TO THROW</div>
+            <div class="input-cell">
+                <!-- Standard Braille Layout 1-6 -->
+                <div class="input-dot" data-idx="0" onclick="Game.toggleDot(0)"></div>
+                <div class="input-dot" data-idx="3" onclick="Game.toggleDot(3)"></div>
+                <div class="input-dot" data-idx="1" onclick="Game.toggleDot(1)"></div>
+                <div class="input-dot" data-idx="4" onclick="Game.toggleDot(4)"></div>
+                <div class="input-dot" data-idx="2" onclick="Game.toggleDot(2)"></div>
+                <div class="input-dot" data-idx="5" onclick="Game.toggleDot(5)"></div>
+            </div>
+        </div>
+        
+        <div class="impact-flash" id="flash"></div>
+    </div>
+</div>
+
+<script>
+/**
+ * AUDIO ENGINE
+ * Synthesizes sounds on the fly using Web Audio API.
+ */
+const SoundEngine = {
+    ctx: null,
+    muted: false,
+
+    init: function() {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        this.ctx = new AudioContext();
+    },
+
+    resume: function() {
+        if (this.ctx && this.ctx.state === 'suspended') {
+            this.ctx.resume();
+        }
+    },
+
+    toggleMute: function() {
+        this.muted = !this.muted;
+        const iconPath = this.muted 
+            ? "M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73 4.27 3zM12 4L9.91 6.09 12 8.18V4z"
+            : "M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z";
+        
+        document.getElementById('mute-icon-svg').querySelector('path').setAttribute('d', iconPath);
+        document.getElementById('mute-toggle').style.opacity = this.muted ? "0.4" : "1";
+    },
+
+    play: function(type) {
+        if (this.muted || !this.ctx) return;
+        const t = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        switch (type) {
+            case 'click':
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, t);
+                osc.frequency.exponentialRampToValueAtTime(300, t + 0.1);
+                gain.gain.setValueAtTime(0.1, t);
+                gain.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
+                osc.start(t); osc.stop(t + 0.1);
+                break;
+
+            case 'chord':
+                // Arpeggio
+                [0, 0.05, 0.1].forEach((delay, i) => {
+                    const o = this.ctx.createOscillator();
+                    const g = this.ctx.createGain();
+                    o.connect(g);
+                    g.connect(this.ctx.destination);
+                    o.type = 'triangle';
+                    // Simple A major triad approx
+                    const freq = [440, 554, 659][i]; 
+                    o.frequency.value = freq;
+                    g.gain.setValueAtTime(0, t + delay);
+                    g.gain.linearRampToValueAtTime(0.1, t + delay + 0.05);
+                    g.gain.exponentialRampToValueAtTime(0.001, t + delay + 0.4);
+                    o.start(t + delay);
+                    o.stop(t + delay + 0.4);
+                });
+                break;
+
+            case 'whoosh':
+                // White noise buffer for whoosh
+                const bufferSize = this.ctx.sampleRate * 0.5;
+                const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+                
+                const noise = this.ctx.createBufferSource();
+                noise.buffer = buffer;
+                const noiseGain = this.ctx.createGain();
+                // Filter to make it sound like air
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(200, t);
+                filter.frequency.linearRampToValueAtTime(1000, t + 0.1);
+                filter.frequency.linearRampToValueAtTime(200, t + 0.3);
+
+                noise.connect(filter);
+                filter.connect(noiseGain);
+                noiseGain.connect(this.ctx.destination);
+                
+                noiseGain.gain.setValueAtTime(0.2, t);
+                noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+                noise.start(t);
+                break;
+
+            case 'hit':
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(100, t);
+                osc.frequency.exponentialRampToValueAtTime(0.01, t + 0.3);
+                gain.gain.setValueAtTime(0.3, t);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+                osc.start(t); osc.stop(t + 0.3);
+                break;
+        }
+    }
+};
+
+/**
+ * GAME DATA
+ */
+const Levels = [
+    { id: 'A', num: '1', dots: [0], sentence: "Braille is elegant. A single dot starts the journey.", highlight: "Braille is simple." },
+    { id: 'B', num: '2', dots: [0, 1], sentence: "Like building blocks, we add one below.", highlight: "Vertical stacking." },
+    { id: 'C', num: '3', dots: [0, 3], sentence: "Spread your wings. Top left, top right.", highlight: "Top row pair." },
+    { id: 'D', num: '4', dots: [0, 3, 4], sentence: "A strong corner creates a new shape.", highlight: "Adding strength." },
+    { id: 'E', num: '5', dots: [0, 4], sentence: "A diagonal line cuts across the cell.", highlight: "Cross connection." },
+    { id: 'F', num: '6', dots: [0, 1, 3], sentence: "Three points make a triad.", highlight: "Top and left." },
+    { id: 'G', num: '7', dots: [0, 1, 3, 4], sentence: "A full box. Four dots standing guard.", highlight: "The square." },
+    { id: 'H', num: '8', dots: [0, 1, 4], sentence: "Missing the top right corner.", highlight: "Bottom heavy." },
+    { id: 'I', num: '9', dots: [1, 3], sentence: "A slide down the mirror.", highlight: "Slanted up." },
+    { id: 'J', num: '0', dots: [1, 3, 4], sentence: "The final digit hooks the bottom.", highlight: "The hook." }
+];
+
+/**
+ * GAME LOGIC
+ */
+const Game = {
+    progress: JSON.parse(localStorage.getItem('andMyAxeProgress')) || ['A'],
+    currentLvlIdx: 0,
+    input: new Set(),
+    ready: false,
+
+    startFromTitle: function() {
+        SoundEngine.init();
+        SoundEngine.resume();
+        SoundEngine.play('click');
+        
+        // Show explainer if first time (simple check: progress is just 'A')
+        if (this.progress.length === 1 && this.progress[0] === 'A') {
+            this.switchView('view-explainer');
+        } else {
+            this.goToMenu();
+        }
+    },
+
+    finishExplainer: function() {
+        SoundEngine.play('click');
+        this.goToMenu();
+    },
+
+    switchView: function(id) {
+        document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+        document.getElementById(id).classList.remove('hidden');
+    },
+
+    goToMenu: function() {
+        this.renderGrid();
+        this.switchView('view-level-select');
+        this.resetState();
+    },
+
+    renderGrid: function() {
+        const grid = document.getElementById('level-grid');
+        grid.innerHTML = '';
+        Levels.forEach((lvl, idx) => {
+            const unlocked = idx < this.progress.length;
+            const completed = idx < this.progress.length - 1;
+            let status = 'locked';
+            if (completed) status = 'completed';
+            else if (unlocked) status = 'unlocked';
+
+            const div = document.createElement('div');
+            div.className = `shield ${status}`;
+            if (status !== 'locked') {
+                div.onclick = () => this.selectLevel(idx);
+            }
+
+            let dotsHtml = '';
+            for(let i=0; i<6; i++) {
+                dotsHtml += `<div class="dot ${lvl.dots.includes(i) ? 'active' : ''}"></div>`;
+            }
+
+            div.innerHTML = `
+                <div class="shield-shape">
+                    <div class="shield-dots">${dotsHtml}</div>
+                    <div class="shield-label">${lvl.id} / ${lvl.num}</div>
+                    <div class="slash-mark"></div>
+                </div>
+            `;
+            grid.appendChild(div);
+        });
+    },
+
+    selectLevel: function(idx) {
+        SoundEngine.play('click');
+        this.currentLvlIdx = idx;
+        const data = Levels[idx];
+
+        // Fill Learning View
+        const display = document.getElementById('learning-dots-display');
+        display.innerHTML = '';
+        for(let i=0; i<6; i++) {
+            display.innerHTML += `<div class="dot ${data.dots.includes(i) ? 'active' : ''}"></div>`;
+        }
+        document.getElementById('learning-sentence').innerText = data.sentence;
+        document.getElementById('learning-highlight').innerText = data.highlight;
+
+        this.switchView('view-learning');
+    },
+
+    startThrowing: function() {
+        SoundEngine.play('click');
+        const data = Levels[this.currentLvlIdx];
+        
+        // Setup Target
+        let dotsHtml = '';
+        for(let i=0; i<6; i++) {
+            dotsHtml += `<div class="dot ${data.dots.includes(i) ? 'active' : ''}"></div>`;
+        }
+        document.getElementById('target-dots').innerHTML = dotsHtml;
+        document.getElementById('target-label').innerText = `${data.id} / ${data.num}`;
+        document.getElementById('target-slash').style.display = 'none';
+
+        this.resetState();
+        this.switchView('view-game');
+    },
+
+    resetState: function() {
+        this.input.clear();
+        this.ready = false;
+        document.querySelectorAll('.input-dot').forEach(d => d.classList.remove('on'));
+        const axe = document.getElementById('player-axe');
+        axe.style.transform = ''; 
+        axe.classList.remove('ready', 'thrown');
+        document.getElementById('throw-prompt').classList.remove('visible');
+        document.getElementById('view-game').onclick = null;
+    },
+
+    toggleDot: function(idx) {
+        if (this.ready) return;
+        SoundEngine.play('click');
+        
+        if (this.input.has(idx)) this.input.delete(idx);
+        else this.input.add(idx);
+
+        // Visual update
+        const el = document.querySelector(`.input-dot[data-idx="${idx}"]`);
+        el.classList.toggle('on');
+
+        this.checkPattern();
+    },
+
+    checkPattern: function() {
+        const target = Levels[this.currentLvlIdx].dots;
+        if (this.input.size !== target.length) return;
+        
+        let match = true;
+        target.forEach(d => { if(!this.input.has(d)) match = false; });
+
+        if (match) this.armWeapon();
+    },
+
+    armWeapon: function() {
+        this.ready = true;
+        SoundEngine.play('chord');
+        document.getElementById('player-axe').classList.add('ready');
+        document.getElementById('throw-prompt').classList.add('visible');
+
+        // Enable throw on background click
+        setTimeout(() => {
+            document.getElementById('view-game').onclick = (e) => {
+                if (!e.target.classList.contains('input-dot')) {
+                    this.throwAxe();
+                }
+            };
+        }, 50);
+    },
+
+    throwAxe: function() {
+        if (!this.ready) return;
+        this.ready = false;
+        document.getElementById('view-game').onclick = null;
+        document.getElementById('throw-prompt').classList.remove('visible');
+        
+        document.getElementById('player-axe').classList.add('thrown');
+        SoundEngine.play('whoosh');
+
+        setTimeout(() => {
+            this.impact();
+        }, 350);
+    },
+
+    impact: function() {
+        SoundEngine.play('hit');
+        
+        // Visuals
+        const flash = document.getElementById('flash');
+        flash.style.opacity = '0.6';
+        setTimeout(() => flash.style.opacity = '0', 100);
+        document.getElementById('target-slash').style.display = 'block';
+
+        // Save Progress
+        if (this.currentLvlIdx === this.progress.length - 1 && this.currentLvlIdx < Levels.length - 1) {
+            this.progress.push(Levels[this.currentLvlIdx + 1].id);
+            localStorage.setItem('andMyAxeProgress', JSON.stringify(this.progress));
+        } else if (this.currentLvlIdx === Levels.length - 1) {
+             this.progress.push('DONE'); 
+             localStorage.setItem('andMyAxeProgress', JSON.stringify(this.progress));
+        }
+
+        setTimeout(() => this.goToMenu(), 1500);
+    }
+};
+
+</script>
+</body>
+</html>

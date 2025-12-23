@@ -856,6 +856,34 @@ const stripeAccessible = await testHttpAccess('./roadstripe.png');    if (!roadA
     // Update handler
     slider.addEventListener('input', (e) => {
       const newValue = parseInt((e.target as HTMLInputElement).value);
+      
+      // Validate the new value before applying
+      let isValid = true;
+      let errorMessage = '';
+      
+      if (property === 'trackVNumber' && newValue >= this.gridVNumber) {
+        isValid = false;
+        errorMessage = 'Track height must be less than grid height';
+      } else if (property === 'trackHNumber' && newValue >= this.gridHNumber) {
+        isValid = false;
+        errorMessage = 'Track width must be less than grid width';
+      } else if (property === 'trackThickness' && newValue < 1) {
+        isValid = false;
+        errorMessage = 'Track thickness must be at least 1';
+      } else if (property === 'gridVNumber' && this.trackVNumber >= newValue) {
+        isValid = false;
+        errorMessage = 'Grid height must be greater than track height';
+      } else if (property === 'gridHNumber' && this.trackHNumber >= newValue) {
+        isValid = false;
+        errorMessage = 'Grid width must be greater than track width';
+      }
+      
+      if (!isValid) {
+        console.warn(`⚠️ Invalid value: ${errorMessage}`);
+        slider.value = (this as any)[property].toString();
+        return;
+      }
+      
       valueDisplay.textContent = newValue.toString();
       (this as any)[property] = newValue;
       this.rebuildTrack();
@@ -1852,6 +1880,11 @@ const stripeAccessible = await testHttpAccess('./roadstripe.png');    if (!roadA
     this.chordInput.setDebounceProvider(() => this.debounceAmount);
     
     this.chordInput.onChord((event: ChordInputEvent) => {
+      // Resume audio context on first chord input if needed
+      if (this.audioContext && this.audioContext.state === 'suspended') {
+        this.audioContext.resume();
+      }
+      
       // Calculate typing speed based on chord timing
       const currentTime = performance.now();
       if (this.lastKeyTime > 0) {
@@ -2065,7 +2098,8 @@ const stripeAccessible = await testHttpAccess('./roadstripe.png');    if (!roadA
       const currentDirection = this.getDirection(this.lastPos, this.playerPos);
       
       // Only count lap changes when entering flag line from a new direction and game is playing
-      if (!wasOnFlag && this.gameState === 'playing') {
+      // Also ensure player has moved away from start position (hasMoved=true) to prevent immediate lap count
+      if (!wasOnFlag && this.gameState === 'playing' && this.hasMoved && this.laps > 0) {
         // Player entering flag line from the West (left) - increment lap
         if (currentDirection === 'E') {
           this.laps++;
@@ -2209,6 +2243,21 @@ const stripeAccessible = await testHttpAccess('./roadstripe.png');    if (!roadA
   initAudio() {
     try {
       this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      
+      // Resume audio context on first user interaction (required by browser autoplay policies)
+      const resumeAudio = () => {
+        if (this.audioContext && this.audioContext.state === 'suspended') {
+          this.audioContext.resume().then(() => {
+            console.log('🔊 Audio context resumed');
+          });
+        }
+        // Remove listeners after first interaction
+        document.removeEventListener('keydown', resumeAudio);
+        document.removeEventListener('click', resumeAudio);
+      };
+      
+      document.addEventListener('keydown', resumeAudio, { once: true });
+      document.addEventListener('click', resumeAudio, { once: true });
     } catch (error) {
       console.warn('Audio context not available:', error);
       this.audioEnabled = false;

@@ -10,7 +10,7 @@ const CHORD_MAPPINGS: ChordConfig = {
   'north': ['s', 'f', 'j', 'k'],
   'east': ['f', 'k'], 
   'west': ['d', 'j', 'k', 'l'],
-  'south': ['j', 'd', 'j']
+  'south': ['d', 'j']
 };
 
 // Debounce timing (milliseconds)
