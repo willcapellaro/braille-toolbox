@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Neon Cascade: Accessible Edition</title>
+    <!-- Import Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #05050a;
+            --panel: #11111a;
+            --border: #00f2ff;
+            --accent: #ff0055;
+            --text-main: #e0e0e0;
+            --font-head: 'Orbitron', sans-serif;
+            --font-ui: 'Rajdhani', sans-serif;
+            --font-mono: 'Share Tech Mono', monospace;
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: var(--font-ui);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            touch-action: none;
+        }
+
+        #app {
+            display: flex;
+            flex-direction: row;
+            background: var(--panel);
+            border: 2px solid #333;
+            box-shadow: 0 0 50px rgba(0, 242, 255, 0.1);
+            border-radius: 8px;
+            max-width: 100%;
+            max-height: 100%;
+            position: relative;
+        }
+
+        /* Side Panels */
+        .sidebar {
+            width: 240px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: rgba(0,0,0,0.2);
+        }
+        .left { border-right: 1px solid #333; }
+        .right { border-left: 1px solid #333; text-align: right; align-items: flex-end; }
+
+        h1 {
+            margin: 0;
+            font-family: var(--font-head);
+            font-weight: 900;
+            font-size: 28px;
+            color: #fff;
+            text-transform: uppercase;
+            line-height: 1;
+            letter-spacing: 2px;
+            background: linear-gradient(to bottom, #fff, #aaa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            font-family: var(--font-mono);
+            color: var(--border);
+            font-size: 12px;
+            margin-top: 5px;
+            letter-spacing: 1px;
+        }
+
+        .panel-section { margin-bottom: 25px; }
+        .label {
+            font-family: var(--font-head);
+            font-size: 10px;
+            color: #666;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        .value {
+            font-family: var(--font-mono);
+            font-size: 32px;
+            color: var(--accent);
+            text-shadow: 0 0 10px rgba(255,0,85,0.4);
+        }
+
+        /* Controls Help */
+        .key-row { margin-bottom: 8px; font-size: 14px; color: #888; }
+        .key {
+            display: inline-block;
+            background: #222;
+            border: 1px solid #444;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-family: var(--font-mono);
+            color: #fff;
+            font-size: 12px;
+            box-shadow: 0 2px 0 #000;
+        }
+
+        /* Settings Toggles */
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .toggle-row input { margin-right: 10px; }
+        .range-row {
+            margin-bottom: 10px;
+        }
+        .range-row label { display: block; font-size: 12px; color: #888; margin-bottom: 4px;}
+
+        /* Game Area */
+        .game-area {
+            position: relative;
+            background: #000;
+        }
+        
+        canvas { display: block; }
+
+        /* Overlay */
+        #overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(5, 5, 10, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            text-align: center;
+        }
+        
+        button.start-btn {
+            background: var(--border);
+            color: #000;
+            border: none;
+            padding: 15px 40px;
+            font-family: var(--font-head);
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 30px;
+            clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+            transition: transform 0.1s, background 0.2s;
+        }
+        button.start-btn:hover {
+            transform: scale(1.05);
+            background: #fff;
+        }
+        button.start-btn:active { transform: scale(0.95); }
+
+        /* Mobile Styles */
+        @media (max-width: 850px) {
+            .sidebar { display: none; }
+            #app { border: none; width: 100%; height: 100%; }
+            .game-area { width: 100%; height: 100%; display: flex; justify-content: center; background: #000; }
+            
+            #mob-hud {
+                position: absolute;
+                top: 0; left: 0; right: 0;
+                padding: 10px;
+                display: flex;
+                justify-content: space-between;
+                pointer-events: none;
+                z-index: 10;
+            }
+            .mob-stat {
+                background: rgba(0,0,0,0.7);
+                padding: 5px 10px;
+                border: 1px solid #333;
+                border-radius: 4px;
+                text-align: center;
+            }
+            .mob-label { font-size: 10px; color: #888; font-family: var(--font-head); }
+            .mob-val { font-size: 18px; color: #fff; font-family: var(--font-mono); }
+        }
+        
+        @media (min-width: 851px) {
+            #mob-hud { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <!-- Left Sidebar: Settings & Info -->
+    <div class="sidebar left">
+        <div>
+            <h1>NEON<br>CASCADE</h1>
+            <div class="subtitle">ACCESSIBLE MATCH-3</div>
+        </div>
+
+        <div class="panel-section">
+            <div class="label">Accessibility</div>
+            <label class="toggle-row">
+                <input type="checkbox" id="cb-mode-toggle"> Colorblind Mode (Braille)
+            </label>
+            <label class="toggle-row">
+                <input type="checkbox" id="blind-mode-toggle"> Blind Mode (TTS)
+            </label>
+            <div class="range-row">
+                <label>TTS Speed</label>
+                <input type="range" id="tts-speed" min="0.5" max="2" step="0.1" value="1.5" style="width:100%">
+            </div>
+        </div>
+
+        <div class="panel-section">
+            <div class="label">Controls</div>
+            <div class="key-row"><span class="key">WASD</span> or <span class="key">Arrows</span> Move</div>
+            <div class="key-row"><span class="key">Space</span> Hard Drop</div>
+            <div class="key-row"><span class="key">H</span> or <span class="key">W</span> Hold</div>
+            <div class="key-row"><span class="key">+</span> <span class="key">-</span> Speed</div>
+        </div>
+    </div>
+
+    <!-- Main Game Canvas -->
+    <div class="game-area" id="game-wrapper">
+        <canvas id="mainCanvas"></canvas>
+        
+        <!-- Mobile HUD -->
+        <div id="mob-hud">
+            <div class="mob-stat">
+                <div class="mob-label">HOLD</div>
+                <canvas id="mobHoldCanvas" width="30" height="30"></canvas>
+            </div>
+            <div class="mob-stat">
+                <div class="mob-label">SCORE</div>
+                <div class="mob-val" id="mob-score">0</div>
+            </div>
+        </div>
+
+        <!-- Overlay -->
+        <div id="overlay">
+            <h2 style="font-family: var(--font-head); color: var(--border); font-size: 3rem; margin:0;">READY?</h2>
+            <div style="font-family: var(--font-mono); color: #888; margin: 20px 0; max-width: 300px; line-height: 1.5;">
+                Match 3 to clear.<br>
+                Match 4 clears rows.<br>
+                Match 5 clears color.
+            </div>
+            <button class="start-btn" id="start-btn">INITIATE</button>
+        </div>
+    </div>
+
+    <!-- Right Sidebar: Stats -->
+    <div class="sidebar right">
+        <div>
+            <div class="panel-section">
+                <div class="label">Score</div>
+                <div class="value" id="score-display">0</div>
+            </div>
+            <div class="panel-section">
+                <div class="label">Next Incoming</div>
+                <canvas id="nextCanvas" width="100" height="250"></canvas>
+            </div>
+        </div>
+        <div class="panel-section">
+            <div class="label">Holding</div>
+            <canvas id="holdCanvas" width="80" height="80"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+/**
+ * ACCESSIBILITY & AUDIO ENGINE
+ */
+const Accessibility = (() => {
+    const synth = window.speechSynthesis;
+    let blindMode = false;
+    let colorblindMode = false;
+    let rate = 1.5;
+
+    // Unicode Braille Patterns for 1-10 (A-J)
+    // 1:⠁ 2:⠃ 3:⠉ 4:⠙ 5:⠑ 6:⠋ 7:⠛ 8:⠓ 9:⠊ 10:⠚
+    const BRAILLE = [null, '⠁', '⠃', '⠉', '⠙', '⠑', '⠋', '⠛', '⠓', '⠊', '⠚'];
+    const COLOR_NAMES = [null, 'Red', 'Green', 'Blue', 'Yellow', 'Purple', 'Orange', 'Pink', 'Cyan', 'Lime', 'White'];
+
+    function speak(text, priority = false) {
+        if (!blindMode) return;
+        if (priority) synth.cancel(); // Interrupt for important events
+        const u = new SpeechSynthesisUtterance(text);
+        u.rate = rate;
+        synth.speak(u);
+    }
+
+    return {
+        isBlind: () => blindMode,
+        isColorblind: () => colorblindMode,
+        setBlind: (v) => { 
+            blindMode = v; 
+            if(v) speak("Blind mode enabled. Use plus and minus to change game speed.");
+        },
+        setColorblind: (v) => colorblindMode = v,
+        setRate: (v) => rate = v,
+        getSymbol: (idx) => BRAILLE[idx] || '',
+        getColorName: (idx) => COLOR_NAMES[idx] || 'Empty',
+        announce: speak
+    };
+})();
+
+// Web Audio API for SFX
+const SFX = (() => {
+    let ctx = null;
+    function init() { if(!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)(); }
+    function play(type) {
+        if(!ctx) return;
+        const t = ctx.currentTime;
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+        
+        if (type === 'move') {
+            o.frequency.setValueAtTime(200, t);
+            o.type = 'triangle';
+            g.gain.setValueAtTime(0.05, t);
+            g.gain.linearRampToValueAtTime(0, t+0.05);
+            o.start(t); o.stop(t+0.05);
+        } else if (type === 'drop') {
+            o.frequency.setValueAtTime(100, t);
+            o.type = 'sawtooth';
+            g.gain.setValueAtTime(0.1, t);
+            g.gain.exponentialRampToValueAtTime(0.001, t+0.1);
+            o.start(t); o.stop(t+0.1);
+        } else if (type === 'clear') {
+            o.frequency.setValueAtTime(400, t);
+            o.frequency.linearRampToValueAtTime(800, t+0.15);
+            o.type = 'sine';
+            g.gain.setValueAtTime(0.1, t);
+            g.gain.linearRampToValueAtTime(0, t+0.2);
+            o.start(t); o.stop(t+0.2);
+        } else if (type === 'hold') {
+            o.frequency.setValueAtTime(600, t);
+            o.type = 'square';
+            g.gain.setValueAtTime(0.05, t);
+            g.gain.linearRampToValueAtTime(0, t+0.1);
+            o.start(t); o.stop(t+0.1);
+        }
+    }
+    return { init, play };
+})();
+
+/**
+ * GAME CONFIG
+ */
+const COLS = 10;
+const ROWS = 20;
+const PALETTE = [
+    null,
+    '#FF0055', // Red
+    '#00FF88', // Green
+    '#0077FF', // Blue
+    '#FFDD00', // Yellow
+    '#9900FF', // Purple
+    '#FF5500', // Orange
+    '#FF0099', // Pink
+    '#00FFFF', // Cyan
+    '#AAFF00', // Lime
+    '#FFFFFF'  // White
+];
+
+// Contexts
+const ctxMain = document.getElementById('mainCanvas').getContext('2d');
+const ctxNext = document.getElementById('nextCanvas').getContext('2d');
+const ctxHold = document.getElementById('holdCanvas').getContext('2d');
+const ctxMobHold = document.getElementById('mobHoldCanvas').getContext('2d');
+
+let cellSize = 30;
+
+// Game State
+const State = {
+    grid: [],
+    piece: { x: 0, y: 0, color: 0 },
+    next: [],
+    hold: null,
+    canHold: true,
+    score: 0,
+    gameOver: false,
+    paused: false,
+    cascading: false,
+    dropTimer: 0,
+    dropInterval: 800,
+    speedMult: 1.0,
+    lastTime: 0,
+    particles: []
+};
+
+/**
+ * CORE LOGIC
+ */
+function resetGame() {
+    State.grid = Array.from({length: ROWS}, () => Array(COLS).fill(0));
+    State.score = 0;
+    State.gameOver = false;
+    State.cascading = false;
+    State.hold = null;
+    State.canHold = true;
+    State.next = [];
+    State.particles = [];
+    State.dropInterval = 800;
+    
+    // Seed Next
+    for(let i=0; i<6; i++) State.next.push(randColor());
+    
+    updateScore();
+    spawnPiece();
+    Accessibility.announce("Game started. First piece " + Accessibility.getColorName(State.piece.color));
+}
+
+function randColor() { return Math.floor(Math.random() * (PALETTE.length - 1)) + 1; }
+
+function spawnPiece() {
+    State.piece.x = Math.floor(COLS/2)-1;
+    State.piece.y = 0;
+    State.piece.color = State.next.shift();
+    State.next.push(randColor());
+    State.canHold = true;
+    
+    if (collide(State.piece.x, State.piece.y)) {
+        State.gameOver = true;
+        document.getElementById('overlay').style.display = 'flex';
+        document.querySelector('#overlay h2').innerText = "GAME OVER";
+        Accessibility.announce("Game Over. Final Score " + State.score);
+    } else {
+        Accessibility.announce("New piece " + Accessibility.getColorName(State.piece.color) + ", column " + (State.piece.x+1));
+    }
+    
+    drawUI();
+}
+
+function collide(x, y) {
+    if (x < 0 || x >= COLS || y >= ROWS) return true;
+    if (y < 0) return false;
+    return State.grid[y][x] !== 0;
+}
+
+function move(dx, dy) {
+    if (State.gameOver || State.cascading) return;
+    
+    if (!collide(State.piece.x + dx, State.piece.y + dy)) {
+        State.piece.x += dx;
+        State.piece.y += dy;
+        SFX.play('move');
+        
+        // Announce horizontal move for blind mode
+        if (dx !== 0) Accessibility.announce("Column " + (State.piece.x + 1));
+        
+        return true;
+    }
+    return false;
+}
+
+function rotate() {
+    // No rotation in this specific match-3 style (colors drop), 
+    // but requested to keep logic interesting.
+    // If we wanted to swap colors, we could, but let's stick to the prompt's drop style.
+}
+
+function hardDrop() {
+    if(State.gameOver || State.cascading) return;
+    let drops = 0;
+    while(!collide(State.piece.x, State.piece.y+1)){
+        State.piece.y++;
+        drops++;
+    }
+    State.score += drops*2;
+    Accessibility.announce("Dropped");
+    lock();
+}
+
+function hold() {
+    if(!State.canHold || State.gameOver || State.cascading) return;
+    SFX.play('hold');
+    
+    const curr = State.piece.color;
+    if(State.hold === null) {
+        State.hold = curr;
+        spawnPiece();
+    } else {
+        const tmp = State.hold;
+        State.hold = curr;
+        State.piece.color = tmp;
+        State.piece.x = Math.floor(COLS/2)-1;
+        State.piece.y = 0;
+    }
+    State.canHold = false;
+    Accessibility.announce("Holding " + Accessibility.getColorName(State.hold));
+    drawUI();
+}
+
+function lock() {
+    const {x, y, color} = State.piece;
+    State.grid[y][x] = color;
+    SFX.play('drop');
+    createParticles(x, y, color, 5);
+    checkMatches();
+}
+
+/**
+ * MATCH LOGIC
+ */
+function checkMatches() {
+    State.cascading = true;
+    const g = State.grid;
+    let matches = new Set();
+    let events = []; // {color, count}
+
+    // Helper: Directional scan
+    const scan = (r, c, dr, dc) => {
+        if(g[r][c] === 0) return;
+        let line = [{r,c}];
+        let k = 1;
+        while(true){
+            let nr = r + dr*k, nc = c + dc*k;
+            if(nr<0||nr>=ROWS||nc<0||nc>=COLS) break;
+            if(g[nr][nc] === g[r][c]) { line.push({r:nr, c:nc}); k++; }
+            else break;
+        }
+        if(line.length >= 3) {
+            events.push({color: g[r][c], count: line.length});
+            line.forEach(p => matches.add(`${p.r},${p.c}`));
+        }
+    };
+
+    for(let r=0; r<ROWS; r++){
+        for(let c=0; c<COLS; c++){
+            scan(r,c, 0,1); // Horz
+            scan(r,c, 1,0); // Vert
+            scan(r,c, 1,1); // Diag R
+            scan(r,c, 1,-1);// Diag L
+        }
+    }
+
+    if(matches.size > 0) resolveMatches(matches, events);
+    else {
+        State.cascading = false;
+        spawnPiece();
+    }
+}
+
+function resolveMatches(matchSet, events) {
+    let toClear = new Set(matchSet);
+    let special = false;
+    let points = 0;
+
+    events.forEach(e => {
+        if(e.count >= 5) {
+            special = true;
+            points += 1000;
+            // Clear all of color
+            for(let r=0; r<ROWS; r++) for(let c=0; c<COLS; c++) {
+                if(State.grid[r][c] === e.color) toClear.add(`${r},${c}`);
+            }
+            Accessibility.announce("Match 5! Clearing all " + Accessibility.getColorName(e.color), true);
+        } else if (e.count === 4) {
+            special = true;
+            points += 500;
+            // Clear bottom 2 rows of color
+            let rows = [];
+            for(let r=0; r<ROWS; r++) {
+                if(State.grid[r].includes(e.color)) rows.push(r);
+            }
+            rows.sort((a,b)=>b-a).slice(0,2).forEach(r => {
+                for(let c=0; c<COLS; c++) if(State.grid[r][c] === e.color) toClear.add(`${r},${c}`);
+            });
+            Accessibility.announce("Match 4! Clearing rows.", true);
+        }
+    });
+    
+    if(!special) {
+        points += matchSet.size * 50;
+        Accessibility.announce(`Matched ${matchSet.size}`, true);
+    }
+    
+    State.score += points;
+    SFX.play('clear');
+    updateScore();
+
+    toClear.forEach(k => {
+        const [r,c] = k.split(',').map(Number);
+        if(State.grid[r][c] !== 0) {
+            createParticles(c, r, State.grid[r][c], 4);
+            State.grid[r][c] = 0;
+        }
+    });
+
+    setTimeout(gravity, 400);
+}
+
+function gravity() {
+    let moved = false;
+    for(let c=0; c<COLS; c++){
+        for(let r=ROWS-1; r>=0; r--){
+            if(State.grid[r][c] === 0){
+                for(let k=r-1; k>=0; k--){
+                    if(State.grid[k][c] !== 0){
+                        State.grid[r][c] = State.grid[k][c];
+                        State.grid[k][c] = 0;
+                        moved = true;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    if(moved) setTimeout(checkMatches, 250);
+    else {
+        State.cascading = false;
+        spawnPiece();
+    }
+}
+
+/**
+ * RENDER
+ */
+function resize() {
+    const wrap = document.getElementById('game-wrapper');
+    const w = wrap.clientWidth;
+    const h = wrap.clientHeight;
+    
+    // Fit Aspect Ratio
+    cellSize = Math.floor(Math.min(w/COLS, h/ROWS));
+    
+    const cvs = document.getElementById('mainCanvas');
+    cvs.width = cellSize * COLS;
+    cvs.height = cellSize * ROWS;
+    
+    // Center logic
+    cvs.style.marginLeft = (w - cvs.width)/2 + 'px';
+    cvs.style.marginTop = (h - cvs.height)/2 + 'px';
+    
+    drawUI();
+}
+
+function drawTile(ctx, x, y, colorIdx, size, ghost=false) {
+    if(!colorIdx) return;
+    const color = PALETTE[colorIdx];
+    const px = x*size;
+    const py = y*size;
+    
+    ctx.save();
+    
+    if(ghost) {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 2]);
+        ctx.strokeRect(px+1, py+1, size-2, size-2);
+        ctx.setLineDash([]);
+    } else {
+        // Neon Block
+        ctx.fillStyle = color;
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 10;
+        ctx.fillRect(px+2, py+2, size-4, size-4);
+        
+        // Inner detail
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = 'rgba(255,255,255,0.3)';
+        ctx.fillRect(px+2, py+2, size-4, size/4);
+
+        // Braille / Colorblind Symbol
+        if (Accessibility.isColorblind()) {
+            ctx.fillStyle = '#000'; // High contrast
+            ctx.font = `bold ${size*0.6}px sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(Accessibility.getSymbol(colorIdx), px + size/2, py + size/2);
+        }
+    }
+    ctx.restore();
+}
+
+function drawMain() {
+    const cvs = document.getElementById('mainCanvas');
+    ctxMain.clearRect(0, 0, cvs.width, cvs.height);
+
+    // Grid
+    ctxMain.strokeStyle = '#222';
+    ctxMain.lineWidth = 1;
+    ctxMain.beginPath();
+    for(let i=0; i<=COLS; i++) { ctxMain.moveTo(i*cellSize,0); ctxMain.lineTo(i*cellSize, cvs.height); }
+    for(let i=0; i<=ROWS; i++) { ctxMain.moveTo(0,i*cellSize); ctxMain.lineTo(cvs.width, i*cellSize); }
+    ctxMain.stroke();
+
+    // Board
+    for(let r=0; r<ROWS; r++) {
+        for(let c=0; c<COLS; c++) {
+            if(State.grid[r][c] !== 0) drawTile(ctxMain, c, r, State.grid[r][c], cellSize);
+        }
+    }
+
+    // Active
+    if(!State.gameOver && !State.cascading) {
+        // Ghost
+        let gy = State.piece.y;
+        while(!collide(State.piece.x, gy+1)) gy++;
+        drawTile(ctxMain, State.piece.x, gy, State.piece.color, cellSize, true);
+        // Piece
+        drawTile(ctxMain, State.piece.x, State.piece.y, State.piece.color, cellSize);
+    }
+
+    // Particles
+    State.particles.forEach((p, i) => {
+        p.life -= 0.05;
+        p.x += p.vx; p.y += p.vy;
+        if(p.life <= 0) State.particles.splice(i,1);
+        else {
+            ctxMain.fillStyle = p.color;
+            ctxMain.globalAlpha = p.life;
+            ctxMain.beginPath();
+            ctxMain.arc(p.x, p.y, 3, 0, Math.PI*2);
+            ctxMain.fill();
+            ctxMain.globalAlpha = 1.0;
+        }
+    });
+}
+
+function drawUI() {
+    // Next
+    ctxNext.clearRect(0,0,100,250);
+    State.next.slice(0,5).forEach((c, i) => {
+        drawTile(ctxNext, 1, i, c, 30);
+    });
+
+    // Hold
+    ctxHold.clearRect(0,0,80,80);
+    if(State.hold) drawTile(ctxHold, 0.3, 0.3, State.hold, 40);
+    
+    // Mobile Hold
+    ctxMobHold.clearRect(0,0,30,30);
+    if(State.hold) drawTile(ctxMobHold, 0, 0, State.hold, 30);
+}
+
+function updateScore() {
+    document.getElementById('score-display').innerText = State.score;
+    document.getElementById('mob-score').innerText = State.score;
+}
+
+function createParticles(gx, gy, c, n) {
+    const color = PALETTE[c];
+    for(let i=0; i<n; i++) {
+        State.particles.push({
+            x: gx*cellSize + cellSize/2,
+            y: gy*cellSize + cellSize/2,
+            vx: (Math.random()-0.5)*5, vy: (Math.random()-0.5)*5,
+            life: 1.0, color
+        });
+    }
+}
+
+/**
+ * INPUT & LOOP
+ */
+function changeSpeed(delta) {
+    let newInterval = State.dropInterval + delta;
+    if (newInterval < 100) newInterval = 100;
+    if (newInterval > 1500) newInterval = 1500;
+    State.dropInterval = newInterval;
+    
+    const speedName = delta < 0 ? "Faster" : "Slower";
+    Accessibility.announce("Speed " + speedName);
+}
+
+window.addEventListener('keydown', e => {
+    if(State.gameOver) return;
+    
+    // Controls: WASD, Arrows, H
+    switch(e.code) {
+        case 'ArrowLeft':
+        case 'KeyA':
+            move(-1, 0); break;
+        case 'ArrowRight':
+        case 'KeyD':
+            move(1, 0); break;
+        case 'ArrowDown':
+        case 'KeyS':
+            if(move(0, 1)) { State.score++; State.dropTimer = 0; }
+            break;
+        case 'ArrowUp': 
+        case 'KeyW':
+        case 'KeyH':
+            hold(); break;
+        case 'Space':
+            hardDrop(); break;
+        case 'NumpadAdd':
+        case 'Equal':
+            if(e.shiftKey || e.code === 'NumpadAdd') changeSpeed(-100);
+            break;
+        case 'Minus':
+        case 'NumpadSubtract':
+            changeSpeed(100);
+            break;
+    }
+});
+
+// UI Event Listeners
+document.getElementById('cb-mode-toggle').addEventListener('change', (e) => {
+    Accessibility.setColorblind(e.target.checked);
+});
+document.getElementById('blind-mode-toggle').addEventListener('change', (e) => {
+    Accessibility.setBlind(e.target.checked);
+});
+document.getElementById('tts-speed').addEventListener('input', (e) => {
+    Accessibility.setRate(parseFloat(e.target.value));
+});
+
+// Touch Logic (Copied from previous robust implementation)
+const Touch = { startX:0, startY:0, isHold:false, holdTime:null, fastInt:null };
+const area = document.getElementById('game-wrapper');
+
+area.addEventListener('touchstart', e => {
+    e.preventDefault();
+    if(State.gameOver) return;
+    const t = e.touches[0];
+    Touch.startX = t.clientX; Touch.startY = t.clientY;
+    Touch.isHold = true;
+    
+    // Joystick Drop
+    Touch.holdTime = setTimeout(() => {
+        if(Touch.isHold && Math.abs(t.clientY - Touch.startY) < 30) {
+            Touch.fastInt = setInterval(() => {
+                if(move(0,1)) State.score++;
+            }, 50);
+        }
+    }, 200);
+}, {passive:false});
+
+area.addEventListener('touchmove', e => {
+    e.preventDefault();
+    if(!Touch.isHold) return;
+    const t = e.touches[0];
+    const dx = t.clientX - Touch.startX;
+    const dy = t.clientY - Touch.startY;
+    
+    if(dy < -50) { // Swipe Up Hold
+        hold(); resetTouch();
+    } else if (Math.abs(dx) > 30) {
+        move(dx>0?1:-1, 0);
+        Touch.startX = t.clientX; // Reset for continuous
+        clearTimeout(Touch.holdTime);
+        clearInterval(Touch.fastInt);
+    }
+}, {passive:false});
+
+const resetTouch = () => {
+    Touch.isHold = false; clearTimeout(Touch.holdTime); clearInterval(Touch.fastInt);
+};
+area.addEventListener('touchend', resetTouch);
+
+// Loop
+function loop(time) {
+    const dt = time - State.lastTime;
+    State.lastTime = time;
+    
+    if(!State.gameOver && !State.paused && !State.cascading) {
+        State.dropTimer += dt;
+        if(State.dropTimer > State.dropInterval) {
+            if(!move(0, 1)) lock();
+            State.dropTimer = 0;
+        }
+    }
+    drawMain();
+    requestAnimationFrame(loop);
+}
+
+document.getElementById('start-btn').addEventListener('click', () => {
+    SFX.init();
+    document.getElementById('overlay').style.display = 'none';
+    resize();
+    resetGame();
+    loop(0);
+});
+window.addEventListener('resize', resize);
+
+</script>
+</body>
+</html>

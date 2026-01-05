@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>COLOR/BLIND - Digital Gallery</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-wall: #fdfbf7;
+            --text-dark: #2c2c2c;
+            --text-light: #777;
+            --gold-light: #f3e5ab;
+            --gold-dark: #8a6e2f;
+            --ui-font: 'Lato', sans-serif;
+            --header-font: 'Playfair Display', serif;
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--bg-wall);
+            color: var(--text-dark);
+            font-family: var(--ui-font);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        #gallery-space {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .wall-placard {
+            width: 200px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            transition: opacity 0.3s;
+        }
+        .wall-placard.right { text-align: right; align-items: flex-end; }
+        
+        .stat-group h3 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #999;
+            margin: 0 0 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 5px;
+            display: inline-block;
+        }
+
+        .stat-val {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 2.5rem;
+            color: #111;
+        }
+
+        .frame-wrapper {
+            position: relative;
+            background: #fff;
+            border: 16px solid #d4af37;
+            border-image: linear-gradient(to bottom right, #fceabb, #d4af37, #9c7e30, #fceabb) 1;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 0 0 2px #554212, 0 20px 50px rgba(0,0,0,0.3);
+            transition: filter 0.3s;
+        }
+        .frame-wrapper.paused { filter: blur(8px) grayscale(50%); }
+
+        .canvas-container { background: #f0f0f0; display: block; }
+        canvas { display: block; }
+
+        /* Overlays */
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(253, 251, 247, 0.96);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            backdrop-filter: blur(5px);
+        }
+        .hidden { display: none !important; }
+
+        h1 { font-family: var(--header-font); font-size: 4rem; margin: 0; color: #111; line-height: 1; }
+        h1 span { font-style: italic; font-weight: 400; color: #555; }
+        h2 { font-family: var(--ui-font); text-transform: uppercase; letter-spacing: 4px; font-size: 1rem; margin-top: 10px; color: #888; }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 40px;
+            text-align: left;
+            max-width: 700px;
+        }
+        .menu-col { display: flex; flex-direction: column; gap: 15px; }
+
+        .setting-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; color: #444; }
+        
+        button.action-btn {
+            background: #111; color: #fff; border: none; padding: 15px 40px;
+            font-family: var(--ui-font); font-size: 1rem; text-transform: uppercase; letter-spacing: 3px;
+            cursor: pointer; transition: transform 0.2s, background 0.2s; margin-top: 30px;
+        }
+        button.action-btn:hover { background: #000; transform: scale(1.05); }
+        button.secondary-btn { background: transparent; color: #555; border: 1px solid #ccc; margin-top: 10px; padding: 10px 30px; cursor: pointer;}
+        button.secondary-btn:hover { border-color: #000; color: #000; }
+
+        /* Game Modes Cards */
+        .game-modes { display: flex; gap: 10px; }
+        .mode-card {
+            border: 1px solid #ddd; padding: 10px; cursor: pointer;
+            transition: all 0.2s; text-align: center; flex: 1; min-width: 80px;
+        }
+        .mode-card:hover, .mode-card.selected { border-color: #111; background: #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .mode-card h4 { margin: 0 0 5px 0; font-family: var(--header-font); font-size: 0.9rem;}
+        .mode-card p { margin: 0; font-size: 0.7rem; color: #666; }
+
+        .controls-hint { position: fixed; bottom: 20px; font-size: 0.8rem; color: #aaa; text-align: center; width: 100%; pointer-events: none; }
+
+        @media (max-width: 900px) {
+            #gallery-space { flex-direction: column; gap: 10px; padding: 10px; }
+            .wall-placard { flex-direction: row; width: 100%; justify-content: space-between; align-items: center; }
+            .wall-placard.left { order: 2; }
+            .wall-placard.right { order: 3; }
+            .frame-wrapper { order: 1; border-width: 8px; max-width: 100%; }
+            .menu-grid { grid-template-columns: 1fr; gap: 20px; }
+            #nextCanvas, #holdCanvas { display: none; }
+            .mob-hud { display: block; font-size: 0.9rem; font-weight: bold; }
+        }
+        @media (min-width: 901px) { .mob-hud { display: none; } }
+    </style>
+</head>
+<body>
+
+<!-- Title Screen -->
+<div id="title-screen" class="overlay">
+    <h1>COLOR<span>/BLIND</span></h1>
+    <h2>Interactive Gallery</h2>
+    
+    <div class="menu-grid">
+        <div class="menu-col">
+            <h3 style="margin:0; border-bottom:1px solid #ccc; padding-bottom:5px;">Mode</h3>
+            <div class="game-modes">
+                <div class="mode-card" onclick="selectMode('blank', this)">
+                    <h4>Blank</h4>
+                    <p>Empty</p>
+                </div>
+                <div class="mode-card selected" onclick="selectMode('standard', this)">
+                    <h4>Standard</h4>
+                    <p>Medium</p>
+                </div>
+                <div class="mode-card" onclick="selectMode('hard', this)">
+                    <h4>Hard</h4>
+                    <p>Fast + Full</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu-col">
+            <h3 style="margin:0; border-bottom:1px solid #ccc; padding-bottom:5px;">Accessibility</h3>
+            <div class="setting-row">
+                <label for="start-cb">Colorblind Safe</label>
+                <input type="checkbox" id="start-cb">
+            </div>
+            <div class="setting-row">
+                <label for="start-hc">High Contrast</label>
+                <input type="checkbox" id="start-hc">
+            </div>
+            <div class="setting-row">
+                <label for="start-blind">Blind Mode (TTS)</label>
+                <input type="checkbox" id="start-blind">
+            </div>
+            <div class="setting-row hidden" id="start-tts-row">
+                <label>Voice Speed</label>
+                <input type="range" id="start-tts-rate" min="0.5" max="3" step="0.1" value="1.2">
+            </div>
+            <div class="setting-row">
+                <label>Game Speed</label>
+                <input type="range" id="start-game-speed" min="100" max="1000" step="50" value="500" style="direction: rtl">
+            </div>
+        </div>
+    </div>
+
+    <button class="action-btn" id="init-btn">PAINT</button>
+</div>
+
+<!-- Pause Overlay -->
+<div id="pause-screen" class="overlay hidden">
+    <h1>PAUSED</h1>
+    <div class="menu-grid">
+        <div class="menu-col">
+            <div class="setting-row">
+                <label>Game Speed</label>
+                <input type="range" id="pause-game-speed" min="100" max="1000" step="50" value="500" style="direction: rtl">
+            </div>
+             <div class="setting-row">
+                <label>High Contrast</label>
+                <input type="checkbox" id="pause-hc">
+            </div>
+            <div style="margin-top: 20px; font-size: 0.85rem; line-height: 1.5; color: #666;">
+                <strong>CONTROLS</strong><br>
+                WASD / Arrows to Move<br>
+                UP / W to Hold<br>
+                Double-Tap DOWN to Drop<br>
+                TAB to Resume
+            </div>
+        </div>
+    </div>
+    <button class="action-btn" id="resume-btn">RESUME</button>
+    <button class="secondary-btn" id="quit-btn">END EXHIBITION</button>
+</div>
+
+<!-- Main Game View -->
+<div id="gallery-space">
+    <div class="wall-placard left">
+        <div class="stat-group">
+            <h3>Artist</h3>
+            <div style="font-family: var(--header-font); font-style: italic;">You</div>
+        </div>
+        <div class="stat-group">
+            <h3>Upcoming</h3>
+            <canvas id="nextCanvas" width="100" height="200"></canvas>
+            <div class="mob-hud">Next: <span id="mob-next-txt"></span></div>
+        </div>
+    </div>
+
+    <div class="frame-wrapper" id="frame-wrap">
+        <div class="canvas-container">
+            <canvas id="mainCanvas"></canvas>
+        </div>
+    </div>
+
+    <div class="wall-placard right">
+        <div class="stat-group">
+            <h3>Value</h3>
+            <div class="stat-val" id="score-display">0</div>
+        </div>
+        <div class="stat-group">
+            <h3>Holding</h3>
+            <canvas id="holdCanvas" width="80" height="80"></canvas>
+            <div class="mob-hud">Hold: <span id="mob-hold-txt">Empty</span></div>
+        </div>
+    </div>
+</div>
+
+<div class="controls-hint">Press TAB to Pause / Configure</div>
+
+<script>
+/**
+ * AUDIO / TTS SYSTEM
+ */
+const AudioSys = (() => {
+    const synth = window.speechSynthesis;
+    let ctx = null;
+    let blindMode = false;
+    let ttsRate = 1.2;
+
+    function init() {
+        if(!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if(ctx.state === 'suspended') ctx.resume();
+    }
+
+    function speak(text, priority = false) {
+        if (!blindMode) return;
+        if (priority) synth.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.rate = ttsRate;
+        synth.speak(u);
+    }
+
+    function playTone(type) {
+        if (!ctx) return;
+        const t = ctx.currentTime;
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+
+        if (type === 'move') {
+            o.frequency.setValueAtTime(180, t);
+            o.type = 'sine';
+            g.gain.setValueAtTime(0.05, t);
+            g.gain.linearRampToValueAtTime(0, t+0.05);
+            o.start(t); o.stop(t+0.05);
+        } else if (type === 'lock') {
+            o.frequency.setValueAtTime(80, t);
+            o.type = 'triangle';
+            g.gain.setValueAtTime(0.15, t);
+            g.gain.exponentialRampToValueAtTime(0.001, t+0.15);
+            o.start(t); o.stop(t+0.15);
+        } else if (type === 'hold') {
+            o.frequency.setValueAtTime(400, t);
+            o.frequency.linearRampToValueAtTime(800, t+0.1);
+            o.type = 'sine';
+            g.gain.setValueAtTime(0.1, t);
+            g.gain.linearRampToValueAtTime(0, t+0.2);
+            o.start(t); o.stop(t+0.2);
+        } else if (type === 'clear') {
+            [300, 450, 600].forEach((freq, i) => {
+                const osc = ctx.createOscillator();
+                const gn = ctx.createGain();
+                osc.connect(gn); gn.connect(ctx.destination);
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+                gn.gain.setValueAtTime(0.05, t + i*0.05);
+                gn.gain.exponentialRampToValueAtTime(0.001, t + i*0.05 + 0.4);
+                osc.start(t + i*0.05); osc.stop(t + i*0.05 + 0.4);
+            });
+        }
+    }
+
+    return {
+        init, play: playTone, announce: speak,
+        setBlind: (v) => blindMode = v,
+        setRate: (v) => ttsRate = v
+    };
+})();
+
+/**
+ * ASSETS & CONFIG
+ */
+const LETTERS = [null, 'A','B','C','D','E','F','G','H','I','J'];
+const BRAILLE = [null, '⠁','⠃','⠉','⠙','⠑','⠋','⠛','⠓','⠊','⠚'];
+
+// Colors (1-10): Red, Blue, Green, Yellow, Purple, Orange, Cyan, Pink, Lime, Brown/White
+const PALETTES = {
+    STD: [null, '#D32F2F', '#1976D2', '#388E3C', '#FBC02D', '#7B1FA2', '#E64A19', '#0097A7', '#C2185B', '#AFB42B', '#795548'],
+    CB:  [null, '#E69F00', '#56B4E9', '#009E73', '#F0E442', '#0072B2', '#D55E00', '#CC79A7', '#000000', '#999999', '#FFFFFF'],
+    HC:  [null, '#800000', '#000080', '#004d00', '#b38600', '#4b0082', '#8b4500', '#005f6b', '#800033', '#556b2f', '#3e2723']
+};
+
+const TEXT_COLORS = {
+    // Indices that should have black text (Yellow, Lime, White/LightGrey in CB)
+    STD: [4, 9], 
+    CB: [3, 10],
+    HC: [] // High contrast mode is all dark bg -> white text
+};
+
+const State = {
+    grid: [], // Stores { color: int, face: 'print'|'braille' } or null
+    piece: null, 
+    next: [],
+    hold: null,
+    canHold: true,
+    score: 0,
+    gameOver: false,
+    paused: false,
+    started: false,
+    dropTimer: 0,
+    dropInterval: 500,
+    lastTime: 0,
+    isCB: false,
+    isHC: false,
+    gameMode: 'standard',
+    dropping: false, // Hard drop state
+    particles: []
+};
+
+const COLS = 10;
+const ROWS = 20;
+let CELL = 30;
+
+const cvs = document.getElementById('mainCanvas');
+const ctx = cvs.getContext('2d');
+const nextCtx = document.getElementById('nextCanvas').getContext('2d');
+const holdCtx = document.getElementById('holdCanvas').getContext('2d');
+
+/**
+ * GAME ENGINE
+ */
+function initGame() {
+    State.grid = Array.from({length: ROWS}, () => Array(COLS).fill(null));
+    State.score = 0;
+    State.next = [];
+    State.hold = null;
+    State.canHold = true;
+    State.gameOver = false;
+    State.paused = false;
+    State.started = true;
+    State.dropping = false;
+    State.particles = [];
+    
+    // Fill Queue
+    for(let i=0; i<5; i++) addToNext();
+
+    // Mode Fill
+    let fillHeight = 0;
+    if (State.gameMode === 'standard') fillHeight = 5;
+    if (State.gameMode === 'hard') fillHeight = 9;
+
+    for(let r = ROWS - fillHeight; r < ROWS; r++) {
+        for(let c = 0; c < COLS; c++) {
+            if(Math.random() > 0.3) {
+                State.grid[r][c] = {
+                    color: Math.floor(Math.random() * 10) + 1,
+                    face: Math.random() > 0.5 ? 'print' : 'braille'
+                };
+            }
+        }
+    }
+
+    spawn();
+    AudioSys.announce(State.gameMode + " mode started.");
+    updateUI();
+    togglePauseUI(false);
+}
+
+function addToNext() {
+    State.next.push({
+        color: Math.floor(Math.random()*10)+1
+        // Face is decided when it lands or based on generic preview
+    });
+}
+
+function spawn() {
+    const nextItem = State.next.shift();
+    addToNext();
+    
+    State.piece = {
+        x: 4, y: 0,
+        visualY: 0, // For smooth drop animation
+        color: nextItem.color,
+        moveAnim: 0, // Horizontal flip
+        moveDir: 0,
+        holdAnim: 0
+    };
+    State.canHold = true;
+    State.dropping = false;
+
+    if (collide(4, 0)) endGame();
+    else AudioSys.announce("New " + LETTERS[State.piece.color]);
+    updateUI();
+}
+
+function collide(x, y) {
+    if (x<0 || x>=COLS || y>=ROWS) return true;
+    if (y<0) return false;
+    return State.grid[y][x] !== null;
+}
+
+function move(dx, dy) {
+    if(State.gameOver || State.paused || State.dropping) return false;
+    const p = State.piece;
+    
+    if (!collide(p.x+dx, p.y+dy)) {
+        p.x += dx; 
+        p.y += dy;
+        // Don't update visualY here if moving Y, let the loop lerp it or snap it
+        // If moving horizontal
+        if (dx !== 0) {
+            p.moveAnim = 1.0; 
+            p.moveDir = dx;
+            AudioSys.play('move');
+        }
+        return true;
+    }
+    return false;
+}
+
+function triggerHardDrop() {
+    if(State.gameOver || State.paused || State.dropping) return;
+    State.dropping = true;
+    // Calculate final position
+    while(!collide(State.piece.x, State.piece.y+1)) {
+        State.piece.y++;
+    }
+    // Note: We don't lock immediately. We wait for visualY to catch up in the loop.
+}
+
+function holdPiece() {
+    if(!State.canHold || State.gameOver || State.paused || State.dropping) return;
+    
+    AudioSys.play('hold');
+    State.piece.holdAnim = 1.0; // Trigger teleport anim
+    
+    setTimeout(() => {
+        if(!State.hold) { 
+            State.hold = State.piece.color; 
+            spawn(); 
+        } else {
+            let tmp = State.hold; 
+            State.hold = State.piece.color; 
+            State.piece = {
+                x: 4, y: 0, visualY: 0,
+                color: tmp, moveAnim: 0, moveDir: 0
+            };
+        }
+        State.canHold = false; 
+        AudioSys.announce("Hold"); 
+        updateUI();
+    }, 150);
+}
+
+function lock() {
+    const p = State.piece;
+    State.grid[p.y][p.x] = {
+        color: p.color,
+        face: Math.random() > 0.5 ? 'print' : 'braille'
+    };
+    AudioSys.play('lock');
+    State.dropping = false;
+    
+    // Add landing impact particles
+    createParticles(p.x, p.y, p.color, 4);
+    
+    checkMatches();
+}
+
+function checkMatches() {
+    let matches = new Set();
+    const g = State.grid;
+    const scan = (r, c, dr, dc) => {
+        if(g[r][c]===null) return;
+        let line = [{r,c}];
+        let cr = r+dr, cc = c+dc;
+        while(cr>=0 && cr<ROWS && cc>=0 && cc<COLS && g[cr][cc]!==null && g[cr][cc].color===g[r][c].color) {
+            line.push({r:cr, c:cc}); cr+=dr; cc+=dc;
+        }
+        if(line.length >= 3) line.forEach(pt => matches.add(`${pt.r},${pt.c}`));
+    };
+
+    for(let r=0; r<ROWS; r++) {
+        for(let c=0; c<COLS; c++) {
+            scan(r,c, 0,1); scan(r,c, 1,0); scan(r,c, 1,1); scan(r,c, 1,-1);
+        }
+    }
+
+    if(matches.size > 0) {
+        AudioSys.play('clear');
+        State.score += matches.size * 100;
+        AudioSys.announce(`Cleared ${matches.size}`);
+        matches.forEach(k => {
+            const [r,c] = k.split(',').map(Number);
+            createParticles(c, r, State.grid[r][c].color, 6);
+            State.grid[r][c] = null;
+        });
+        setTimeout(gravity, 300);
+    } else {
+        spawn();
+    }
+    updateUI();
+}
+
+function gravity() {
+    for(let c=0; c<COLS; c++) {
+        for(let r=ROWS-1; r>=0; r--) {
+            if(State.grid[r][c] === null) {
+                for(let k=r-1; k>=0; k--) {
+                    if(State.grid[k][c] !== null) {
+                        State.grid[r][c] = State.grid[k][c];
+                        State.grid[k][c] = null;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    checkMatches(); 
+}
+
+function endGame() {
+    State.gameOver = true;
+    AudioSys.announce("Gallery Closed.");
+    document.getElementById('title-screen').classList.remove('hidden');
+    document.querySelector('#title-screen h2').innerText = "Final Value: " + State.score;
+    document.getElementById('init-btn').innerText = "Paint Again";
+}
+
+function togglePause() {
+    if(!State.started || State.gameOver) return;
+    State.paused = !State.paused;
+    togglePauseUI(State.paused);
+}
+
+function togglePauseUI(show) {
+    const screen = document.getElementById('pause-screen');
+    const frame = document.getElementById('frame-wrap');
+    if(show) {
+        screen.classList.remove('hidden');
+        frame.classList.add('paused');
+        document.getElementById('pause-game-speed').value = 1100 - State.dropInterval;
+        document.getElementById('pause-hc').checked = State.isHC;
+    } else {
+        screen.classList.add('hidden');
+        frame.classList.remove('paused');
+    }
+}
+
+/**
+ * RENDERING (3D CUBE LOGIC)
+ */
+function resize() {
+    const wrap = document.querySelector('.canvas-container');
+    const w = wrap.parentElement.clientWidth - 32; 
+    const h = window.innerHeight * 0.7; 
+    
+    const aspectW = w / COLS;
+    const aspectH = h / ROWS;
+    CELL = Math.floor(Math.min(aspectW, aspectH));
+    
+    cvs.width = CELL * COLS;
+    cvs.height = CELL * ROWS;
+    
+    if(!State.started) drawFiller();
+}
+
+function getPalette() {
+    if (State.isHC) return PALETTES.HC;
+    if (State.isCB) return PALETTES.CB;
+    return PALETTES.STD;
+}
+
+function getTextColor(colorId) {
+    let list = TEXT_COLORS.STD;
+    if (State.isHC) list = TEXT_COLORS.HC;
+    else if (State.isCB) list = TEXT_COLORS.CB;
+    return list.includes(colorId) ? '#111' : '#fff';
+}
+
+function drawCube(targetCtx, x, y, visualY, colorId, rotX, rotY, forceFace) {
+    if(!colorId) return;
+    const colors = getPalette();
+    const cx = x * CELL + CELL/2;
+    const cy = visualY * CELL + CELL/2;
+    const size = CELL - 2;
+
+    // rotX: Tumble forward (falling). 0 = flat. 
+    // rotY: Barrel roll (moving). 0 = flat.
+    
+    // Calculate projected height/width
+    const scaleY = Math.cos(rotX);
+    const scaleX = Math.cos(rotY);
+    
+    const h = size * Math.abs(scaleY);
+    const w = size * Math.abs(scaleX);
+    
+    // Depth (thickness) based on angle
+    // If rotX is ~0, thickness is 0 (front view). If rotX is 90 (PI/2), thickness is max (top/bottom view).
+    const depthY = size * Math.sin(rotX); 
+    const depthX = size * Math.sin(rotY);
+
+    const isTopVisible = depthY < 0; // Tumble forward = top comes down
+    const isRightVisible = depthX > 0;
+
+    targetCtx.save();
+    targetCtx.translate(cx, cy);
+
+    // Draw Shadow
+    targetCtx.fillStyle = 'rgba(0,0,0,0.2)';
+    targetCtx.fillRect(-size/2 + 4, -size/2 + 4, size, size);
+
+    // --- Draw Thickness (The "Cube" Sides) ---
+    // Vertical Thickness (Top or Bottom face)
+    if (Math.abs(depthY) > 1) {
+        targetCtx.fillStyle = '#000'; 
+        targetCtx.globalAlpha = 0.3; // Darken for side
+        // If tumbling forward (rotX increasing), we see Top first, then Bottom?
+        // Let's simplify: Draw a rect offset by H/2
+        const yOff = isTopVisible ? -h/2 : h/2;
+        // height of the thickness face is roughly abs(depthY)
+        targetCtx.fillRect(-w/2, yOff, w, -depthY); 
+        targetCtx.globalAlpha = 1.0;
+    }
+    
+    // Horizontal Thickness
+    if (Math.abs(depthX) > 1) {
+        targetCtx.fillStyle = '#000';
+        targetCtx.globalAlpha = 0.3;
+        const xOff = isRightVisible ? -w/2 : w/2; // Draw on left or right
+        targetCtx.fillRect(xOff, -h/2, -depthX, h);
+        targetCtx.globalAlpha = 1.0;
+    }
+
+    // --- Draw Main Face ---
+    targetCtx.fillStyle = colors[colorId];
+    targetCtx.fillRect(-w/2, -h/2, w, h);
+
+    // Pattern (Colorblind)
+    if(State.isCB) {
+        targetCtx.strokeStyle = 'rgba(255,255,255,0.5)';
+        targetCtx.lineWidth = 2;
+        targetCtx.strokeRect(-w/2+2, -h/2+2, w-4, h-4);
+        if(colorId%2===0) { targetCtx.beginPath(); targetCtx.moveTo(-w/2,-h/2); targetCtx.lineTo(w/2,h/2); targetCtx.stroke(); }
+        else if(colorId%3===0) { targetCtx.beginPath(); targetCtx.arc(0,0,w/4,0,Math.PI*2); targetCtx.stroke(); }
+    }
+
+    // Text (Only if face is substantially visible)
+    if (w > 10 && h > 10) {
+        // Determine Face Type
+        let showBraille = false;
+        
+        if (forceFace) {
+            showBraille = (forceFace === 'braille');
+        } else {
+            // "Die Flip": Front face (0deg) = Print. Back face (180deg) = Braille.
+            // rotX moves continuously. 
+            // Normalized cycle 0..1. 0.25..0.75 is Back Face.
+            const normX = (Math.abs(rotX) / (Math.PI*2)) % 1;
+            const normY = (Math.abs(rotY) / (Math.PI*2)) % 1;
+            showBraille = (normX > 0.25 && normX < 0.75) || (normY > 0.25 && normY < 0.75);
+        }
+
+        targetCtx.fillStyle = getTextColor(colorId);
+        targetCtx.textAlign = 'center';
+        targetCtx.textBaseline = 'middle';
+        
+        let char = showBraille ? BRAILLE[colorId] : LETTERS[colorId];
+        // Dynamic font size based on current 3D projection dimensions
+        let fontSize = Math.min(w,h) * (showBraille ? 0.6 : 0.7);
+        targetCtx.font = (showBraille ? '' : 'bold ') + fontSize + 'px ' + (showBraille ? 'sans-serif' : '"Playfair Display", serif');
+        
+        targetCtx.fillText(char, 0, 0);
+    }
+
+    targetCtx.restore();
+}
+
+function draw() {
+    ctx.clearRect(0,0,cvs.width,cvs.height);
+    
+    // Grid Lines
+    ctx.strokeStyle = State.isHC ? '#333' : '#e0e0e0'; 
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for(let i=0; i<=COLS; i++) { ctx.moveTo(i*CELL, 0); ctx.lineTo(i*CELL, cvs.height); }
+    for(let i=0; i<=ROWS; i++) { ctx.moveTo(0, i*CELL); ctx.lineTo(cvs.width, i*CELL); }
+    ctx.stroke();
+
+    // Static Grid
+    for(let r=0; r<ROWS; r++) {
+        for(let c=0; c<COLS; c++) {
+            if (State.grid[r][c] !== null) {
+                drawCube(ctx, c, r, r, State.grid[r][c].color, 0, 0, State.grid[r][c].face);
+            }
+        }
+    }
+
+    // Active Piece
+    if(State.piece && !State.paused) {
+        if (State.piece.holdAnim > 0) {
+            // Hold Animation (Beam up)
+            ctx.save();
+            ctx.globalAlpha = 1.0 - State.piece.holdAnim;
+            ctx.translate(0, -50 * State.piece.holdAnim);
+             drawCube(ctx, State.piece.x, State.piece.y, State.piece.visualY, State.piece.color, 0, 0, 'print');
+            ctx.restore();
+            State.piece.holdAnim -= 0.1;
+        } else {
+            // Normal / Drop
+            let time = performance.now() / 1000;
+            // RotX: Falling tumble. If dropping, spin fast. Else spin slow.
+            let tumbleSpeed = State.dropping ? 15 : 1.5;
+            let rotX = time * tumbleSpeed;
+            
+            // RotY: Horizontal move roll. Eases out.
+            let rotY = 0;
+            if(State.piece.moveAnim > 0) {
+                // Map 1.0 -> 0.0 to 0 -> PI (One flip)
+                rotY = (1.0 - State.piece.moveAnim) * Math.PI * State.piece.moveDir;
+                State.piece.moveAnim -= 0.1;
+            }
+
+            drawCube(ctx, State.piece.x, State.piece.y, State.piece.visualY, State.piece.color, rotX, rotY, null);
+        }
+    }
+
+    drawParticles();
+}
+
+function drawFiller() {
+    ctx.clearRect(0,0,cvs.width,cvs.height);
+    ctx.globalAlpha = 0.3;
+    for(let r=0; r<ROWS; r++) for(let c=0; c<COLS; c++) 
+        if(Math.random()>0.8) {
+            let col = Math.floor(Math.random()*10)+1;
+            drawCube(ctx, c, r, r, col, 0, 0, 'print');
+        }
+    ctx.globalAlpha = 1.0;
+}
+
+function createParticles(gx, gy, cid, count) {
+    const cx = gx*CELL + CELL/2;
+    const cy = gy*CELL + CELL/2;
+    const color = getPalette()[cid];
+    for(let i=0; i<count; i++) {
+        State.particles.push({
+            x: cx, y: cy, vx:(Math.random()-0.5)*10, vy:(Math.random()-0.5)*10, life:1.0, color
+        });
+    }
+}
+
+function drawParticles() {
+    for(let i=State.particles.length-1; i>=0; i--) {
+        let p = State.particles[i];
+        p.x += p.vx; p.y += p.vy; p.life -= 0.05;
+        if(p.life <= 0) State.particles.splice(i,1);
+        else {
+            ctx.globalAlpha = p.life; ctx.fillStyle = p.color;
+            ctx.beginPath(); ctx.arc(p.x, p.y, CELL/6, 0, Math.PI*2); ctx.fill();
+            ctx.globalAlpha = 1.0;
+        }
+    }
+}
+
+function updateUI() {
+    document.getElementById('score-display').innerText = State.score;
+    if(State.next[0]) document.getElementById('mob-next-txt').innerText = LETTERS[State.next[0].color];
+    if(State.hold) document.getElementById('mob-hold-txt').innerText = LETTERS[State.hold];
+
+    nextCtx.clearRect(0,0,100,200);
+    State.next.slice(0,4).forEach((item, i) => {
+        // Preview: slowly rotating
+        let time = performance.now() / 2000;
+        drawCube(nextCtx, 1, i, i, item.color, time + i, 0, null);
+    });
+
+    holdCtx.clearRect(0,0,80,80);
+    if(State.hold) drawCube(holdCtx, 0.5, 0.5, 0.5, State.hold, 0, 0, 'print');
+}
+
+/**
+ * LOOP & INPUT
+ */
+function loop(time) {
+    const dt = time - State.lastTime;
+    State.lastTime = time;
+
+    if(State.started && !State.gameOver && !State.paused) {
+        
+        // --- Smooth Visual Drop Logic ---
+        if (State.piece) {
+            const targetY = State.piece.y;
+            // If dropping (Hard Drop), move visualY very fast
+            // If normal falling, move visualY smoothly to targetY
+            const speed = State.dropping ? 0.8 : 0.2; 
+            
+            // Simple Lerp
+            if (State.piece.visualY < targetY) {
+                State.piece.visualY += speed;
+                if (State.piece.visualY > targetY) State.piece.visualY = targetY;
+            }
+            
+            // If dropping and we hit bottom visually, Lock it.
+            if (State.dropping && Math.abs(State.piece.visualY - targetY) < 0.1) {
+                lock();
+            }
+        }
+
+        // --- Logic Drop Timer ---
+        if (!State.dropping) {
+            State.dropTimer += dt;
+            let currentInterval = State.dropInterval;
+            if(State.gameMode === 'hard') currentInterval *= 0.6; // Faster in hard mode
+            
+            if(State.dropTimer > currentInterval) {
+                if(!move(0,1)) {
+                    // Lock delay or immediate lock? 
+                    // To keep animations smooth, we just set dropping to ensure visual catchup
+                    // But for this match-3 style, standard lock is fine
+                    lock(); 
+                }
+                State.dropTimer = 0;
+            }
+        }
+    }
+    
+    if(State.started && !State.paused) draw();
+    requestAnimationFrame(loop);
+}
+
+let lastDown = 0;
+window.addEventListener('keydown', e => {
+    if (e.key === 'Tab') { e.preventDefault(); togglePause(); return; }
+    if(!State.started || State.paused) return;
+
+    switch(e.key) {
+        case 'ArrowLeft': case 'a': move(-1,0); break;
+        case 'ArrowRight': case 'd': move(1,0); break;
+        case 'ArrowUp': case 'w': holdPiece(); break;
+        case 'ArrowDown': case 's':
+            const now = Date.now();
+            if(now - lastDown < 300) triggerHardDrop();
+            else if(move(0,1)) { State.score++; State.dropTimer=0; }
+            lastDown = now;
+            break;
+    }
+});
+
+function bindSettings() {
+    window.selectMode = (mode, el) => {
+        State.gameMode = mode;
+        document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+    };
+
+    document.getElementById('init-btn').addEventListener('click', () => {
+        AudioSys.init();
+        document.getElementById('title-screen').classList.add('hidden');
+        State.isCB = document.getElementById('start-cb').checked;
+        State.isHC = document.getElementById('start-hc').checked;
+        AudioSys.setBlind(document.getElementById('start-blind').checked);
+        AudioSys.setRate(parseFloat(document.getElementById('start-tts-rate').value));
+        State.dropInterval = 1100 - parseInt(document.getElementById('start-game-speed').value);
+        initGame();
+    });
+
+    document.getElementById('resume-btn').addEventListener('click', togglePause);
+    document.getElementById('quit-btn').addEventListener('click', () => { togglePause(); endGame(); });
+    
+    // Sync Paused Settings
+    document.getElementById('pause-game-speed').addEventListener('input', (e) => State.dropInterval = 1100 - parseInt(e.target.value));
+    document.getElementById('pause-hc').addEventListener('change', (e) => { State.isHC = e.target.checked; draw(); });
+    document.getElementById('start-blind').addEventListener('change', (e) => {
+        if(e.target.checked) document.getElementById('start-tts-row').classList.remove('hidden');
+        else document.getElementById('start-tts-row').classList.add('hidden');
+    });
+}
+
+bindSettings();
+window.addEventListener('resize', resize);
+resize();
+requestAnimationFrame(loop);
+
+</script>
+</body>
+</html>

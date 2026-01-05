@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>COLOR/BLIND</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-wall: #f4f1ea;
+            --text-dark: #111;
+            --gold: #d4af37;
+            --ui-font: 'Lato', sans-serif;
+            --header-font: 'Playfair Display', serif;
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--bg-wall);
+            color: var(--text-dark);
+            font-family: var(--ui-font);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            touch-action: none;
+            user-select: none;
+        }
+
+        /* --- Layout --- */
+        #gallery-space {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+            box-sizing: border-box;
+            opacity: 1;
+            transition: opacity 0.5s;
+        }
+
+        .wall-placard {
+            width: 200px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        .wall-placard.right { text-align: right; align-items: flex-end; }
+
+        .stat-group h3 {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #999;
+            margin: 0 0 6px 0;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 4px;
+        }
+
+        .stat-val { font-family: 'Roboto Mono', monospace; font-size: 2rem; color: #000; }
+        .pool-list { 
+            font-family: var(--header-font); font-size: 1.5rem; color: #444; letter-spacing: 0.2em; line-height: 1.4;
+        }
+
+        /* --- The Art Frame --- */
+        .frame-wrapper {
+            position: relative;
+            background: #fff;
+            border: 16px solid var(--gold);
+            border-image: linear-gradient(135deg, #fceabb 0%, #d4af37 50%, #9c7e30 100%) 1;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+            transition: all 0.5s ease;
+        }
+        .frame-wrapper.paused {
+            transform: scale(0.98);
+            filter: blur(5px) grayscale(100%);
+            opacity: 0.6;
+        }
+
+        .canvas-container {
+            background: #eef2f5;
+            display: block;
+        }
+        canvas { display: block; }
+
+        /* --- Overlays --- */
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(244, 241, 234, 0.98);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+        h1 { font-family: var(--header-font); font-size: 4.5rem; margin: 0; color: #000; letter-spacing: -2px; line-height: 1; }
+        h1 span { font-style: italic; font-weight: 400; color: #888; }
+        h2 { font-family: var(--ui-font); font-size: 0.9rem; letter-spacing: 4px; color: #888; margin-bottom: 40px; text-transform: uppercase; }
+
+        /* --- Button Hierarchy --- */
+        .primary-btn {
+            background: #000;
+            color: #fff;
+            border: none;
+            padding: 22px 70px;
+            font-family: var(--ui-font);
+            font-size: 1.2rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+        .primary-btn:hover {
+            background: var(--gold);
+            color: #000;
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+
+        .secondary-link {
+            background: transparent;
+            border: none;
+            color: #666;
+            font-family: var(--ui-font);
+            font-size: 0.9rem;
+            text-decoration: underline;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            padding: 10px;
+            margin: 5px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .secondary-link:hover { opacity: 1; color: #000; }
+
+        /* --- Settings Grid --- */
+        .settings-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+            text-align: left;
+            width: 100%;
+            max-width: 600px;
+            border-top: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+            padding: 30px 0;
+        }
+        .setting-col h4 { margin: 0 0 15px 0; font-size: 0.8rem; text-transform: uppercase; color: #aaa; }
+        .setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 0.95rem; }
+        
+        input[type="checkbox"] { accent-color: #000; transform: scale(1.2); cursor: pointer; }
+        input[type="range"] { accent-color: #000; cursor: pointer; }
+
+        /* Rules */
+        .rules-content { max-width: 650px; text-align: left; line-height: 1.6; padding: 0 20px; }
+        .rules-content h3 { font-family: var(--header-font); font-size: 1.4rem; border-bottom: 2px solid var(--gold); margin-top: 25px; margin-bottom: 10px; color: #000; }
+        .rules-content p { color: #444; margin-bottom: 10px; }
+        
+        @media (max-width: 900px) {
+            #gallery-space { flex-direction: column; gap: 15px; padding: 10px; }
+            .wall-placard { flex-direction: row; width: 100%; justify-content: space-between; order: 2; }
+            .frame-wrapper { order: 1; border-width: 8px; max-width: 100%; }
+            .settings-box { grid-template-columns: 1fr; gap: 20px; }
+            #nextCanvas, #holdCanvas { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Title Screen -->
+<div id="title-screen" class="overlay">
+    <h1>COLOR<span>/BLIND</span></h1>
+    <h2>Adaptive Gallery</h2>
+
+    <button class="primary-btn" id="start-btn">PAINT</button>
+
+    <div class="settings-box">
+        <div class="setting-col">
+            <h4>Accessibility</h4>
+            <div class="setting-row">
+                <label>High Contrast</label>
+                <input type="checkbox" id="hc-toggle">
+            </div>
+            <div class="setting-row">
+                <label>Blind Mode (TTS)</label>
+                <input type="checkbox" id="blind-toggle">
+            </div>
+            <div class="setting-row" id="tts-row" style="display:none; opacity:0.6">
+                <label>Voice Speed</label>
+                <input type="range" id="tts-slider" min="0.5" max="3" step="0.1" value="1.2">
+            </div>
+        </div>
+        <div class="setting-col">
+            <h4>Exhibition</h4>
+            <div class="setting-row">
+                <label>Pacing</label>
+                <input type="range" id="speed-slider" min="100" max="1000" step="50" value="500" style="direction:rtl">
+            </div>
+            <button class="secondary-link" onclick="toggleRules(true)" style="margin:0; padding-left:0;">How To Interact</button>
+        </div>
+    </div>
+</div>
+
+<!-- Rules Overlay -->
+<div id="rules-screen" class="overlay hidden">
+    <h1>GUIDE</h1>
+    <div class="rules-content">
+        <h3>Forms</h3>
+        <p><strong>Cubes (Consonants):</strong> Standard tiles. Only 5 consonants are available at a time. The palette rotates every 30 drops.</p>
+        <p><strong>Spheres (Vowels A, E, I):</strong> Wildcards. They can bridge any connection.</p>
+        
+        <h3>Harmony</h3>
+        <p><strong>Standard Match:</strong> Align 3+ matching items. A match group may contain <strong>maximum 1 sphere</strong>.</p>
+        <p><strong>Vowel Flush:</strong> Connect <strong>A + E + I</strong> in a single group to clear <strong>ALL</strong> spheres from the board.</p>
+        
+        <h3>Erosion</h3>
+        <p>As you clear a letter repeatedly, it desaturates. Once fully grayscale, it will begin to show <strong>Braille</strong> instead of Print.</p>
+    </div>
+    <button class="secondary-link" style="margin-top:30px; font-size:1.1rem;" onclick="toggleRules(false)">Close Guide</button>
+</div>
+
+<!-- Pause Overlay -->
+<div id="pause-screen" class="overlay hidden">
+    <h1>PAUSED</h1>
+    <button class="primary-btn" id="resume-btn">RESUME</button>
+    <div style="margin-top:20px;">
+        <button class="secondary-link" onclick="toggleRules(true)">Rules</button>
+        <button class="secondary-link" id="quit-btn">End Exhibition</button>
+    </div>
+</div>
+
+<!-- Main Game Area -->
+<div id="gallery-space">
+    <!-- Left Placard -->
+    <div class="wall-placard left">
+        <div class="stat-group">
+            <h3>Active Palette</h3>
+            <div class="pool-list" id="pool-display"></div>
+        </div>
+        <div class="stat-group">
+            <h3>Upcoming</h3>
+            <canvas id="nextCanvas" width="100" height="250"></canvas>
+        </div>
+    </div>
+
+    <!-- The Art -->
+    <div class="frame-wrapper" id="frame-wrap">
+        <div class="canvas-container">
+            <canvas id="mainCanvas"></canvas>
+        </div>
+    </div>
+
+    <!-- Right Placard -->
+    <div class="wall-placard right">
+        <div class="stat-group">
+            <h3>Collection</h3>
+            <div class="stat-val" id="score-display">0</div>
+        </div>
+        <div class="stat-group">
+            <h3>Holding</h3>
+            <canvas id="holdCanvas" width="80" height="80"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+/* -------------------------------------------------------------------------- */
+/*                                DATA & CONFIG                               */
+/* -------------------------------------------------------------------------- */
+const VOWELS = ['A', 'E', 'I'];
+const CONSONANTS = ['B','C','D','F','G','H','J','K','L','M','N','P','Q','R','S','T','U','V','W','X','Y','Z'];
+const BRAILLE = {
+    'A': '⠁', 'B': '⠃', 'C': '⠉', 'D': '⠙', 'E': '⠑', 'F': '⠋', 'G': '⠛', 'H': '⠓', 'I': '⠊', 'J': '⠚',
+    'K': '⠅', 'L': '⠇', 'M': '⠍', 'N': '⠝', 'O': '⠕', 'P': '⠏', 'Q': '⠟', 'R': '⠗', 'S': '⠎', 'T': '⠞',
+    'U': '⠥', 'V': '⠧', 'W': '⠺', 'X': '⠭', 'Y': '⠽', 'Z': '⠵'
+};
+
+const COLS = 10;
+const ROWS = 20;
+let CELL = 30;
+
+// Mastery tracking
+const Mastery = {};
+[...VOWELS, ...CONSONANTS].forEach(l => Mastery[l] = 0);
+
+/* -------------------------------------------------------------------------- */
+/*                                AUDIO SYSTEM                                */
+/* -------------------------------------------------------------------------- */
+const AudioSys = (() => {
+    let ctx = null;
+    const synth = window.speechSynthesis;
+    let blindMode = false;
+    let ttsRate = 1.2;
+
+    function init() {
+        if(!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if(ctx.state === 'suspended') ctx.resume();
+    }
+
+    function speak(txt) {
+        if(!blindMode) return;
+        synth.cancel();
+        const u = new SpeechSynthesisUtterance(txt);
+        u.rate = ttsRate;
+        synth.speak(u);
+    }
+
+    function playTone(type) {
+        if(!ctx) return;
+        const t = ctx.currentTime;
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+
+        if(type === 'move') {
+            o.frequency.setValueAtTime(150, t);
+            g.gain.setValueAtTime(0.05, t); g.gain.linearRampToValueAtTime(0, t+0.05);
+            o.start(t); o.stop(t+0.05);
+        } else if(type === 'flush') {
+            o.type = 'triangle';
+            o.frequency.setValueAtTime(200, t); o.frequency.linearRampToValueAtTime(800, t+0.6);
+            g.gain.setValueAtTime(0.2, t); g.gain.linearRampToValueAtTime(0, t+0.6);
+            o.start(t); o.stop(t+0.6);
+        }
+    }
+
+    return { 
+        init, speak, playTone, 
+        setBlind: (v) => blindMode = v,
+        setRate: (v) => ttsRate = v
+    };
+})();
+
+/* -------------------------------------------------------------------------- */
+/*                                GAME STATE                                  */
+/* -------------------------------------------------------------------------- */
+const State = {
+    // CRITICAL: Initialize grid immediately to prevent render crash
+    grid: Array.from({length: ROWS}, () => Array(COLS).fill(null)),
+    piece: null,
+    next: [],
+    hold: null,
+    canHold: true,
+    score: 0,
+    dropsCount: 0,
+    pool: [],
+    
+    active: false,
+    paused: false,
+    dropping: false,
+    
+    dropTimer: 0,
+    dropInterval: 500,
+    lastTime: 0,
+    
+    isHC: false,
+    particles: []
+};
+
+/* -------------------------------------------------------------------------- */
+/*                                LOGIC CORE                                  */
+/* -------------------------------------------------------------------------- */
+function initGame() {
+    // Reset Grid safely
+    for(let r=0; r<ROWS; r++) {
+        for(let c=0; c<COLS; c++) State.grid[r][c] = null;
+    }
+    
+    State.score = 0;
+    State.dropsCount = 0;
+    State.next = [];
+    State.hold = null;
+    State.canHold = true;
+    State.particles = [];
+    State.active = true;
+    State.paused = false;
+    
+    // Setup Pool
+    State.pool = CONSONANTS.slice(0, 5);
+    
+    // Fill Queue
+    for(let i=0; i<5; i++) State.next.push(genTile());
+    
+    // Spawn first
+    spawn();
+    resize();
+}
+
+function genTile() {
+    let char;
+    // 20% Vowel, 80% Consonant from pool
+    if(Math.random() < 0.2) char = VOWELS[Math.floor(Math.random() * 3)];
+    else char = State.pool[Math.floor(Math.random() * State.pool.length)];
+
+    const m = Mastery[char];
+    let isBraille = false;
+    if(m > 15) {
+        let chance = (m - 15) * 0.05;
+        if(Math.random() < chance) isBraille = true;
+    }
+    return { char, isBraille };
+}
+
+function rotatePool() {
+    const keep = State.pool.slice(0, 2);
+    const lastChar = State.pool[4];
+    const lastIdx = CONSONANTS.indexOf(lastChar);
+    const newChars = [];
+    for(let i=1; i<=3; i++) {
+        newChars.push(CONSONANTS[(lastIdx + i) % CONSONANTS.length]);
+    }
+    State.pool = [...keep, ...newChars];
+    AudioSys.speak("Palette Shift");
+}
+
+function spawn() {
+    if(State.dropsCount > 0 && State.dropsCount % 30 === 0) rotatePool();
+
+    const next = State.next.shift();
+    State.next.push(genTile());
+    
+    State.piece = {
+        x: 4, y: 0, visualY: 0,
+        char: next.char,
+        isBraille: next.isBraille,
+        moveAnim: 0, moveDir: 0, holdAnim: 0
+    };
+    State.canHold = true;
+    State.dropping = false;
+
+    if(collide(4, 0)) {
+        State.active = false;
+        showTitle("COLLECTION: " + State.score);
+    } else {
+        AudioSys.speak(next.char);
+    }
+    updateUI();
+}
+
+function collide(x, y) {
+    if(x < 0 || x >= COLS || y >= ROWS) return true;
+    if(y < 0) return false;
+    return State.grid[y][x] !== null;
+}
+
+function move(dx, dy) {
+    if(!State.active || State.paused || State.dropping) return false;
+    const p = State.piece;
+    if(!collide(p.x + dx, p.y + dy)) {
+        p.x += dx;
+        p.y += dy;
+        if(dx !== 0) {
+            p.moveAnim = 1.0; p.moveDir = dx;
+            AudioSys.playTone('move');
+        }
+        return true;
+    }
+    return false;
+}
+
+function hold() {
+    if(!State.canHold || State.dropping) return;
+    State.piece.holdAnim = 1.0;
+    setTimeout(() => {
+        const current = { char: State.piece.char, isBraille: State.piece.isBraille };
+        if(!State.hold) {
+            State.hold = current;
+            spawn();
+        } else {
+            const temp = State.hold;
+            State.hold = current;
+            State.piece = { x:4, y:0, visualY:0, char:temp.char, isBraille:temp.isBraille, moveAnim:0, holdAnim:0 };
+        }
+        State.canHold = false;
+        updateUI();
+    }, 200);
+}
+
+function lock() {
+    const p = State.piece;
+    State.grid[p.y][p.x] = { char: p.char, isBraille: p.isBraille };
+    State.dropsCount++;
+    State.dropping = false;
+    createParticles(p.x, p.y, p.char);
+    checkMatches();
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                MATCHING                                    */
+/* -------------------------------------------------------------------------- */
+function checkMatches() {
+    let toClear = new Set();
+    let flush = false;
+    const isV = (c) => VOWELS.includes(c);
+
+    // 1. Vowel Flush
+    let visited = Array.from({length:ROWS}, () => Array(COLS).fill(false));
+    for(let r=0; r<ROWS; r++) {
+        for(let c=0; c<COLS; c++) {
+            if(State.grid[r][c] && isV(State.grid[r][c].char) && !visited[r][c]) {
+                let stack = [{r,c}];
+                visited[r][c] = true;
+                let hasA=0, hasE=0, hasI=0;
+                while(stack.length) {
+                    let curr = stack.pop();
+                    let ch = State.grid[curr.r][curr.c].char;
+                    if(ch === 'A') hasA=1; if(ch === 'E') hasE=1; if(ch === 'I') hasI=1;
+                    [[0,1],[0,-1],[1,0],[-1,0]].forEach(([dr,dc]) => {
+                        let nr=curr.r+dr, nc=curr.c+dc;
+                        if(nr>=0 && nr<ROWS && nc>=0 && nc<COLS && State.grid[nr][nc] && !visited[nr][nc]) {
+                            if(isV(State.grid[nr][nc].char)) {
+                                visited[nr][nc] = true;
+                                stack.push({r:nr, c:nc});
+                            }
+                        }
+                    });
+                }
+                if(hasA && hasE && hasI) flush = true;
+            }
+        }
+    }
+
+    if(flush) {
+        AudioSys.playTone('flush');
+        AudioSys.speak("Vowel Flush");
+        for(let r=0; r<ROWS; r++) for(let c=0; c<COLS; c++) {
+            if(State.grid[r][c] && isV(State.grid[r][c].char)) toClear.add(`${r},${c}`);
+        }
+    }
+
+    // 2. Linear Matches
+    const dirs = [[0,1], [1,0], [1,1], [1,-1]];
+    for(let r=0; r<ROWS; r++) {
+        for(let c=0; c<COLS; c++) {
+            if(!State.grid[r][c]) continue;
+            dirs.forEach(([dr, dc]) => {
+                let line = [];
+                let k = 0;
+                while(true) {
+                    let nr = r + dr*k, nc = c + dc*k;
+                    if(nr>=0 && nr<ROWS && nc>=0 && nc<COLS && State.grid[nr][nc]) {
+                        line.push({r:nr, c:nc, item: State.grid[nr][nc]});
+                        k++;
+                    } else break;
+                }
+                if(line.length >= 3) {
+                    for(let len=line.length; len>=3; len--) {
+                        for(let i=0; i<=line.length-len; i++) {
+                            let sub = line.slice(i, i+len);
+                            let wCount = sub.filter(x => isV(x.item.char)).length;
+                            if(wCount > 1) continue;
+                            let bases = sub.filter(x => !isV(x.item.char)).map(x => x.item.char);
+                            if(bases.length === 0) continue;
+                            let primary = bases[0];
+                            if(bases.every(b => b === primary)) {
+                                sub.forEach(pt => toClear.add(`${pt.r},${pt.c}`));
+                                Mastery[primary]++;
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    if(toClear.size > 0) {
+        State.score += toClear.size * 100;
+        toClear.forEach(k => {
+            const [r,c] = k.split(',').map(Number);
+            if(State.grid[r][c]) createParticles(c, r, State.grid[r][c].char);
+            State.grid[r][c] = null;
+        });
+        setTimeout(gravity, 300);
+    } else {
+        spawn();
+    }
+}
+
+function gravity() {
+    for(let c=0; c<COLS; c++) {
+        for(let r=ROWS-1; r>=0; r--) {
+            if(!State.grid[r][c]) {
+                for(let k=r-1; k>=0; k--) {
+                    if(State.grid[k][c]) {
+                        State.grid[r][c] = State.grid[k][c];
+                        State.grid[k][c] = null;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    checkMatches();
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                VISUALS                                     */
+/* -------------------------------------------------------------------------- */
+const cvs = document.getElementById('mainCanvas');
+const ctx = cvs.getContext('2d');
+const nextCtx = document.getElementById('nextCanvas').getContext('2d');
+const holdCtx = document.getElementById('holdCanvas').getContext('2d');
+
+function getColor(char) {
+    if(State.isHC) {
+        const h = (char.charCodeAt(0) * 47) % 360;
+        return `hsl(${h}, 70%, 30%)`;
+    }
+    const m = Mastery[char] || 0;
+    const baseH = ((char.charCodeAt(0)-65) * 13.8) % 360;
+    const s = Math.max(0, 80 - m*4);
+    return `hsl(${baseH}, ${s}%, 50%)`;
+}
+
+function resize() {
+    const wrap = document.getElementById('frame-wrap');
+    if(!wrap) return;
+    const w = wrap.clientWidth;
+    const h = window.innerHeight * 0.7; 
+    CELL = Math.floor(Math.min(w/COLS, h/ROWS)) || 30; 
+    cvs.width = CELL * COLS;
+    cvs.height = CELL * ROWS;
+}
+
+function drawGrid() {
+    // Fill background prevents "Blank blue" if CSS is visible but JS not drawing
+    ctx.fillStyle = '#eef2f5'; 
+    ctx.fillRect(0,0,cvs.width,cvs.height);
+
+    // Static
+    if(State.grid && State.grid.length > 0) {
+        for(let r=0; r<ROWS; r++) {
+            for(let c=0; c<COLS; c++) {
+                if(State.grid[r][c]) drawItem(ctx, c, r, r, State.grid[r][c]);
+            }
+        }
+    }
+
+    // Active
+    if(State.piece && State.active) {
+        const targetY = State.piece.y;
+        if(State.piece.visualY < targetY) {
+            let speed = State.dropping ? 0.8 : 0.2;
+            State.piece.visualY += speed;
+            if(State.piece.visualY > targetY) State.piece.visualY = targetY;
+        }
+
+        let time = performance.now() / 1000;
+        let rotX = State.dropping ? time*15 : time*2;
+        let rotY = 0;
+        if(State.piece.moveAnim > 0) {
+            rotY = (1.0 - State.piece.moveAnim) * Math.PI * State.piece.moveDir;
+            State.piece.moveAnim -= 0.1;
+        }
+
+        if(State.piece.holdAnim > 0) {
+            ctx.save();
+            ctx.globalAlpha = 1 - State.piece.holdAnim;
+            ctx.translate(0, -50 * State.piece.holdAnim);
+            drawItem(ctx, State.piece.x, State.piece.y, State.piece.visualY, State.piece, 0, 0);
+            ctx.restore();
+            State.piece.holdAnim -= 0.1;
+        } else {
+            drawItem(ctx, State.piece.x, State.piece.y, State.piece.visualY, State.piece, rotX, rotY);
+        }
+    }
+
+    // Particles
+    State.particles.forEach((p,i) => {
+        p.life -= 0.05; p.x+=p.vx; p.y+=p.vy;
+        if(p.life > 0) {
+            ctx.globalAlpha = p.life; ctx.fillStyle = p.c;
+            ctx.beginPath(); ctx.arc(p.x, p.y, CELL/5, 0, Math.PI*2); ctx.fill();
+            ctx.globalAlpha = 1;
+        } else State.particles.splice(i,1);
+    });
+}
+
+function drawItem(tCtx, x, y, vy, obj, rx=0, ry=0) {
+    const isVowel = VOWELS.includes(obj.char);
+    const cx = x * CELL + CELL/2;
+    const cy = vy * CELL + CELL/2;
+    const size = CELL - 2;
+    const color = getColor(obj.char);
+
+    tCtx.save();
+    tCtx.translate(cx, cy);
+
+    if(isVowel) {
+        tCtx.beginPath(); tCtx.arc(0, 0, size/2, 0, Math.PI*2);
+        tCtx.fillStyle = color; tCtx.fill();
+        tCtx.beginPath(); tCtx.arc(-size/4, -size/4, size/6, 0, Math.PI*2);
+        tCtx.fillStyle = 'rgba(255,255,255,0.4)'; tCtx.fill();
+        tCtx.fillStyle = '#fff';
+        tCtx.font = `bold ${size*0.6}px sans-serif`;
+        tCtx.textAlign='center'; tCtx.textBaseline='middle';
+        tCtx.fillText(obj.char, 0, 0);
+    } else {
+        const sy = Math.cos(rx);
+        const sx = Math.cos(ry);
+        const h = size * Math.abs(sy);
+        const w = size * Math.abs(sx);
+        const dy = size * Math.sin(rx);
+
+        tCtx.fillStyle = 'rgba(0,0,0,0.2)';
+        tCtx.fillRect(-size/2+2, -size/2+2, size, size);
+
+        if(Math.abs(dy) > 1) {
+            tCtx.fillStyle = '#000'; tCtx.globalAlpha = 0.3;
+            tCtx.fillRect(-w/2, (dy < 0 ? -h/2 : h/2), w, -dy);
+            tCtx.globalAlpha = 1.0;
+        }
+
+        tCtx.fillStyle = color;
+        tCtx.fillRect(-w/2, -h/2, w, h);
+
+        if(w > 8 && h > 8) {
+            const normX = (Math.abs(rx)/(Math.PI*2)) % 1;
+            const isBack = normX > 0.25 && normX < 0.75;
+            const useBraille = obj.isBraille || isBack;
+            
+            tCtx.fillStyle = '#fff';
+            tCtx.textAlign = 'center'; tCtx.textBaseline='middle';
+            const txt = useBraille ? BRAILLE[obj.char] : obj.char;
+            const fSize = Math.min(w,h) * (useBraille ? 0.6 : 0.7);
+            tCtx.font = `${fSize}px ${useBraille ? 'sans-serif' : '"Playfair Display"'}`;
+            tCtx.fillText(txt, 0, 0);
+        }
+    }
+    tCtx.restore();
+}
+
+function createParticles(gx, gy, char) {
+    const c = getColor(char);
+    const cx = gx*CELL+CELL/2; const cy = gy*CELL+CELL/2;
+    for(let i=0; i<6; i++) {
+        State.particles.push({
+            x:cx, y:cy, vx:(Math.random()-0.5)*10, vy:(Math.random()-0.5)*10, life:1.0, c:c
+        });
+    }
+}
+
+function updateUI() {
+    document.getElementById('score-display').innerText = State.score;
+    document.getElementById('pool-display').innerText = State.pool.join(" ");
+
+    nextCtx.clearRect(0,0,100,250);
+    State.next.slice(0,3).forEach((item, i) => {
+        let size=30; let y=i*60+30; let x=50;
+        nextCtx.fillStyle = getColor(item.char);
+        if(VOWELS.includes(item.char)) {
+            nextCtx.beginPath(); nextCtx.arc(x,y,size/2,0,Math.PI*2); nextCtx.fill();
+        } else {
+            nextCtx.fillRect(x-size/2, y-size/2, size, size);
+        }
+        nextCtx.fillStyle='#fff'; nextCtx.textAlign='center'; nextCtx.textBaseline='middle';
+        nextCtx.font = '16px sans-serif';
+        nextCtx.fillText(item.char, x, y);
+    });
+
+    holdCtx.clearRect(0,0,80,80);
+    if(State.hold) {
+        let size=40; let x=40; let y=40;
+        holdCtx.fillStyle = getColor(State.hold.char);
+        if(VOWELS.includes(State.hold.char)) {
+            holdCtx.beginPath(); holdCtx.arc(x,y,size/2,0,Math.PI*2); holdCtx.fill();
+        } else {
+            holdCtx.fillRect(x-size/2, y-size/2, size, size);
+        }
+        holdCtx.fillStyle='#fff'; holdCtx.textAlign='center'; holdCtx.textBaseline='middle';
+        holdCtx.font='20px sans-serif';
+        holdCtx.fillText(State.hold.char, x, y);
+    }
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                LOOP & CONTROL                              */
+/* -------------------------------------------------------------------------- */
+function loop(time) {
+    const dt = time - State.lastTime;
+    State.lastTime = time;
+
+    if(State.active && !State.paused) {
+        if(!State.dropping) {
+            State.dropTimer += dt;
+            if(State.dropTimer > State.dropInterval) {
+                if(!move(0,1)) lock();
+                State.dropTimer = 0;
+            }
+        }
+    }
+    
+    drawGrid();
+    requestAnimationFrame(loop);
+}
+
+// Controls
+window.addEventListener('keydown', e => {
+    if(!State.active) return;
+    if(e.key === 'Tab') { e.preventDefault(); togglePause(); return; }
+    if(State.paused) return;
+
+    switch(e.key) {
+        case 'ArrowLeft': case 'a': move(-1,0); break;
+        case 'ArrowRight': case 'd': move(1,0); break;
+        case 'ArrowUp': case 'w': hold(); break;
+        case 'ArrowDown': case 's': 
+            if(move(0,1)) { State.score++; State.dropTimer=0; }
+            break;
+        case ' ': 
+            if(!State.dropping) State.dropping=true; 
+            break;
+    }
+});
+
+function togglePause() {
+    State.paused = !State.paused;
+    const screen = document.getElementById('pause-screen');
+    const wrap = document.getElementById('frame-wrap');
+    if(State.paused) {
+        screen.classList.remove('hidden');
+        wrap.classList.add('paused');
+    } else {
+        screen.classList.add('hidden');
+        wrap.classList.remove('paused');
+    }
+}
+
+function toggleRules(show) {
+    const el = document.getElementById('rules-screen');
+    if(show) el.classList.remove('hidden');
+    else el.classList.add('hidden');
+}
+
+function showTitle(msg) {
+    const el = document.getElementById('title-screen');
+    el.classList.remove('hidden');
+    if(msg) document.querySelector('#title-screen h2').innerText = msg;
+}
+
+// Initial Button Bindings
+document.getElementById('start-btn').addEventListener('click', () => {
+    AudioSys.init();
+    State.isHC = document.getElementById('hc-toggle').checked;
+    const blind = document.getElementById('blind-toggle').checked;
+    AudioSys.setBlind(blind);
+    if(blind) AudioSys.setRate(parseFloat(document.getElementById('tts-slider').value));
+    State.dropInterval = 1100 - parseInt(document.getElementById('speed-slider').value);
+    
+    document.getElementById('title-screen').classList.add('hidden');
+    initGame();
+});
+
+document.getElementById('resume-btn').addEventListener('click', togglePause);
+document.getElementById('quit-btn').addEventListener('click', () => location.reload());
+document.getElementById('blind-toggle').addEventListener('change', (e) => {
+    document.getElementById('tts-row').style.display = e.target.checked ? 'flex' : 'none';
+});
+
+// Boot
+resize();
+window.addEventListener('resize', resize);
+// IMPORTANT: Start loop immediately so screen is not blank while waiting for "Paint"
+requestAnimationFrame(loop);
+
+</script>
+</body>
+</html>

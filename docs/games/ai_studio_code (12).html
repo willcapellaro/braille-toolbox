@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Stream // Tactical Mode</title>
+    <style>
+        :root {
+            --bg-color: #050505;
+            --panel-bg: #111;
+            --neon-green: #0f0;
+            --neon-pink: #f0f;
+            --neon-blue: #0ff;
+            --neon-yellow: #ff0;
+            --text-color: #eee;
+            --card-w: 60px;
+            --card-h: 84px;
+            --danger-color: #f00;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* Scanline Effect */
+        body::after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        #game-container {
+            width: 800px;
+            height: 650px; /* Slightly taller for the new button */
+            background: var(--panel-bg);
+            border: 2px solid var(--neon-blue);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+            position: relative;
+            display: grid;
+            grid-template-rows: 60px 140px 1fr 60px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* --- Header --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--neon-blue);
+            padding-bottom: 10px;
+            text-shadow: 0 0 5px var(--neon-blue);
+        }
+        h1 { margin: 0; font-size: 24px; letter-spacing: 2px; }
+        .score-box { font-size: 20px; }
+        #score-val { color: var(--neon-pink); font-weight: bold; }
+
+        /* --- Active Rack (The Stream) --- */
+        #active-rack-section {
+            display: flex;
+            flex-direction: row; /* Changed to row to fit button */
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px dashed #333;
+            padding-right: 20px;
+        }
+        
+        #rack-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex-grow: 1;
+        }
+
+        .section-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        #active-rack {
+            display: flex;
+            gap: 10px;
+            height: var(--card-h);
+            align-items: center;
+        }
+
+        /* The New Turn Button */
+        #btn-inject {
+            background: #222;
+            border: 2px solid var(--neon-yellow);
+            color: var(--neon-yellow);
+            width: 100px;
+            height: 60px;
+            font-family: inherit;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            text-shadow: 0 0 5px var(--neon-yellow);
+            box-shadow: 0 0 10px rgba(255, 255, 0, 0.2);
+            transition: all 0.1s;
+            margin-left: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            line-height: 1.2;
+        }
+        #btn-inject:hover {
+            background: var(--neon-yellow);
+            color: #000;
+        }
+        #btn-inject:active {
+            transform: scale(0.95);
+        }
+        #btn-inject span { font-size: 10px; opacity: 0.8; }
+
+        /* --- Middle Section: Hand & Reserve --- */
+        #workspace {
+            display: grid;
+            grid-template-columns: 1fr 150px;
+            gap: 20px;
+            padding-top: 20px;
+        }
+
+        /* Hand Table */
+        #hand-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        #hand-slots {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            height: var(--card-h);
+        }
+        .slot {
+            width: var(--card-w);
+            height: var(--card-h);
+            border: 2px dashed #444;
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        #btn-commit {
+            background: transparent;
+            border: 2px solid var(--neon-pink);
+            color: var(--neon-pink);
+            padding: 15px 40px;
+            font-family: inherit;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            text-shadow: 0 0 5px var(--neon-pink);
+            box-shadow: 0 0 10px rgba(255, 0, 255, 0.2);
+            transition: all 0.2s;
+        }
+        #btn-commit:hover {
+            background: var(--neon-pink);
+            color: #000;
+        }
+        #btn-commit:active { transform: translateY(2px); }
+
+        /* Reserve Tank */
+        #reserve-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-left: 1px solid #333;
+            padding-left: 10px;
+        }
+        #reserve-meter-container {
+            width: 20px;
+            height: 150px;
+            background: #222;
+            border: 1px solid #555;
+            margin-bottom: 10px;
+            position: relative;
+            display: flex;
+            flex-direction: column-reverse; /* Fill from bottom */
+        }
+        #reserve-meter-fill {
+            width: 100%;
+            height: 0%;
+            background-color: var(--neon-green);
+            transition: height 0.3s, background-color 0.3s;
+        }
+        #reserve-stack {
+            position: relative;
+            width: var(--card-w);
+            height: var(--card-h);
+        }
+        
+        /* --- Footer/Status --- */
+        #status-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            font-size: 14px;
+            border-top: 1px solid #333;
+        }
+        .flash-text { animation: flash 0.2s ease-in-out 3; color: var(--danger-color); }
+
+        /* --- Card Styles --- */
+        .card {
+            width: var(--card-w);
+            height: var(--card-h);
+            background: #fff;
+            border-radius: 6px;
+            color: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 4px;
+            box-sizing: border-box;
+            position: relative;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 2px 2px 0 #000;
+            transition: transform 0.1s;
+        }
+        .card:hover { transform: translateY(-4px); border: 2px solid var(--neon-blue); }
+        .card.red { color: #d00; }
+        .card.black { color: #000; }
+        
+        .card-corner-top { align-self: flex-start; line-height: 1; }
+        .card-suit-center { 
+            position: absolute; 
+            top: 50%; left: 50%; 
+            transform: translate(-50%, -50%); 
+            font-size: 32px; 
+        }
+        .card-corner-bot { align-self: flex-end; transform: rotate(180deg); line-height: 1; }
+
+        /* --- Overlays --- */
+        #overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+        .hidden { display: none !important; }
+        
+        h2.glitch {
+            font-size: 48px;
+            color: var(--danger-color);
+            text-shadow: 2px 2px var(--neon-blue);
+            animation: shake 0.5s infinite;
+        }
+        
+        #btn-start, #btn-restart {
+            margin-top: 20px;
+            padding: 10px 30px;
+            background: var(--neon-blue);
+            border: none;
+            font-family: inherit;
+            font-weight: bold;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 0 15px var(--neon-blue);
+        }
+
+        /* --- Animations --- */
+        @keyframes flash { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        @keyframes shake { 
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+        
+        .dissolving { animation: dissolve 0.5s forwards; }
+        @keyframes dissolve {
+            0% { opacity: 1; transform: scale(1); filter: blur(0); }
+            100% { opacity: 0; transform: scale(1.5); filter: blur(4px); }
+        }
+
+        .screen-shake { animation: shake 0.3s; }
+
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <header>
+        <h1>CARD_STREAM // TACTICAL</h1>
+        <div class="score-box">SCORE: <span id="score-val">0</span></div>
+    </header>
+
+    <div id="active-rack-section">
+        <div id="rack-container">
+            <div class="section-label">Active Stream [Max 8]</div>
+            <div id="active-rack">
+                <!-- Cards injected here -->
+            </div>
+        </div>
+        <button id="btn-inject">INJECT<br><span>DATA</span></button>
+    </div>
+
+    <div id="workspace">
+        <div id="hand-area">
+            <div class="section-label">Hand Table [Select 5]</div>
+            <div id="hand-slots">
+                <div class="slot" data-index="0"></div>
+                <div class="slot" data-index="1"></div>
+                <div class="slot" data-index="2"></div>
+                <div class="slot" data-index="3"></div>
+                <div class="slot" data-index="4"></div>
+            </div>
+            <button id="btn-commit">COMMIT HAND</button>
+            <div id="status-msg" style="margin-top: 10px; height: 20px;"></div>
+        </div>
+
+        <div id="reserve-area">
+            <div class="section-label">Reserve</div>
+            <div id="reserve-meter-container">
+                <div id="reserve-meter-fill"></div>
+            </div>
+            <div id="reserve-count" style="margin-bottom: 5px; font-size: 12px;">0 / 30</div>
+            <div id="reserve-stack">
+                <!-- Top card of reserve -->
+            </div>
+        </div>
+    </div>
+
+    <div id="status-bar">
+        WAITING FOR COMMAND. PRESS 'INJECT' TO DRAW.
+    </div>
+
+    <!-- Start Screen -->
+    <div id="overlay">
+        <h1 style="color:var(--neon-blue); font-size: 40px; margin-bottom: 10px;">CARD STREAM</h1>
+        <h3 style="color:#fff; margin-top:0;">TACTICAL MODE</h3>
+        <p>1. INJECT DATA to get cards.</p>
+        <p>2. MANAGE OVERFLOW to avoid crash.</p>
+        <p>3. COMPILE POKER HANDS to score.</p>
+        <button id="btn-start">INITIATE</button>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="game-over" class="hidden" style="position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:20; flex-direction:column; justify-content:center; align-items:center;">
+        <h2 class="glitch">SYSTEM FAILURE</h2>
+        <p style="color: #fff;">RESERVE BUFFER OVERFLOW</p>
+        <p>FINAL SCORE: <span id="final-score">0</span></p>
+        <button id="btn-restart">REBOOT SYSTEM</button>
+    </div>
+
+</div>
+
+<script>
+    // --- Configuration ---
+    const RACK_LIMIT = 8;
+    const RESERVE_LIMIT = 30;
+    
+    // --- State ---
+    let activeRack = [];
+    let reserveTank = [];
+    let handTable = [null, null, null, null, null];
+    let score = 0;
+    let isGameRunning = false;
+    let cardIdCounter = 0;
+
+    // --- DOM Elements ---
+    const elActiveRack = document.getElementById('active-rack');
+    const elHandSlots = document.querySelectorAll('.slot');
+    const elReserveStack = document.getElementById('reserve-stack');
+    const elReserveFill = document.getElementById('reserve-meter-fill');
+    const elReserveCount = document.getElementById('reserve-count');
+    const elScore = document.getElementById('score-val');
+    const elStatusMsg = document.getElementById('status-msg');
+    const elContainer = document.getElementById('game-container');
+    const elStatusBar = document.getElementById('status-bar');
+    
+    // --- Audio / Visual Helpers ---
+    function setStatus(msg, type='normal') {
+        elStatusMsg.textContent = msg;
+        elStatusMsg.className = type === 'error' ? 'flash-text' : '';
+        if(type === 'error') {
+            elContainer.classList.add('screen-shake');
+            setTimeout(() => elContainer.classList.remove('screen-shake'), 300);
+        }
+    }
+
+    // --- Card Logic ---
+    const SUITS = ['♥', '♦', '♣', '♠'];
+    const RANKS = [
+        { l: '2', v: 2 }, { l: '3', v: 3 }, { l: '4', v: 4 }, { l: '5', v: 5 },
+        { l: '6', v: 6 }, { l: '7', v: 7 }, { l: '8', v: 8 }, { l: '9', v: 9 },
+        { l: '10', v: 10 }, { l: 'J', v: 11 }, { l: 'Q', v: 12 }, { l: 'K', v: 13 }, { l: 'A', v: 14 }
+    ];
+
+    function createCardData() {
+        const s = SUITS[Math.floor(Math.random() * SUITS.length)];
+        const r = RANKS[Math.floor(Math.random() * RANKS.length)];
+        const color = (s === '♥' || s === '♦') ? 'red' : 'black';
+        return {
+            id: ++cardIdCounter,
+            suit: s,
+            rankLabel: r.l,
+            value: r.v,
+            color: color
+        };
+    }
+
+    function renderCard(cardData, locationType, index) {
+        if (!cardData) return null;
+        const el = document.createElement('div');
+        el.className = `card ${cardData.color}`;
+        el.innerHTML = `
+            <div class="card-corner-top">${cardData.rankLabel}${cardData.suit}</div>
+            <div class="card-suit-center">${cardData.suit}</div>
+            <div class="card-corner-bot">${cardData.rankLabel}${cardData.suit}</div>
+        `;
+        el.onclick = () => handleCardClick(locationType, index);
+        return el;
+    }
+
+    // --- Core Game Mechanics ---
+
+    function spawnCard() {
+        if(!isGameRunning) return;
+
+        const newCard = createCardData();
+        
+        if (activeRack.length < RACK_LIMIT) {
+            activeRack.push(newCard);
+            elStatusBar.innerText = "DATA INJECTED. STREAM STABLE.";
+        } else {
+            // Overflow Logic
+            const overflowCard = activeRack.shift(); // Remove oldest
+            activeRack.push(newCard); // Add new
+            reserveTank.push(overflowCard); // Push oldest to reserve
+            elStatusBar.innerText = "WARNING: STREAM OVERFLOW -> RESERVE TANK.";
+            checkLoseCondition();
+        }
+        updateUI();
+    }
+
+    function checkLoseCondition() {
+        if (reserveTank.length >= RESERVE_LIMIT) {
+            gameOver();
+        }
+    }
+
+    function handleCardClick(locType, index) {
+        if (!isGameRunning) return;
+
+        if (locType === 'rack') {
+            const emptySlot = handTable.indexOf(null);
+            if (emptySlot !== -1) {
+                const card = activeRack[index];
+                activeRack.splice(index, 1);
+                handTable[emptySlot] = card;
+                updateUI();
+            } else {
+                setStatus('HAND FULL', 'error');
+            }
+        } else if (locType === 'reserve') {
+            if (reserveTank.length === 0) return;
+            const emptySlot = handTable.indexOf(null);
+            if (emptySlot !== -1) {
+                const card = reserveTank.pop();
+                handTable[emptySlot] = card;
+                updateUI();
+            } else {
+                setStatus('HAND FULL', 'error');
+            }
+        } else if (locType === 'hand') {
+            const card = handTable[index];
+            if (!card) return;
+
+            // Return to Rack. If Rack full, overflow oldest to Reserve.
+            if (activeRack.length < RACK_LIMIT) {
+                activeRack.push(card);
+            } else {
+                const overflow = activeRack.shift();
+                activeRack.push(card);
+                reserveTank.push(overflow);
+                checkLoseCondition();
+            }
+            handTable[index] = null;
+            updateUI();
+        }
+    }
+
+    // --- Scoring Logic ---
+    function evaluateHand(cards) {
+        if (cards.some(c => c === null)) return { valid: false, reason: "Incomplete Hand" };
+
+        const sorted = [...cards].sort((a, b) => b.value - a.value);
+        const values = sorted.map(c => c.value);
+        const suits = sorted.map(c => c.suit);
+
+        const isFlush = suits.every(s => s === suits[0]);
+        
+        let isStraight = true;
+        for(let i=0; i<4; i++) {
+            if (values[i] - values[i+1] !== 1) { isStraight = false; break; }
+        }
+        if (!isStraight && values[0] === 14 && values[1] === 5 && values[2] === 4 && values[3] === 3 && values[4] === 2) {
+            isStraight = true;
+        }
+
+        const counts = {};
+        values.forEach(v => counts[v] = (counts[v] || 0) + 1);
+        const countValues = Object.values(counts).sort((a, b) => b - a);
+
+        if (isFlush && isStraight) {
+            if (values[0] === 14 && values[1] === 13) return { valid: true, name: "Royal Flush", points: 1000 };
+            return { valid: true, name: "Straight Flush", points: 500 };
+        }
+        if (countValues[0] === 4) return { valid: true, name: "4 of a Kind", points: 400 };
+        if (countValues[0] === 3 && countValues[1] === 2) return { valid: true, name: "Full House", points: 300 };
+        if (isFlush) return { valid: true, name: "Flush", points: 200 };
+        if (isStraight) return { valid: true, name: "Straight", points: 150 };
+        if (countValues[0] === 3) return { valid: true, name: "3 of a Kind", points: 100 };
+        if (countValues[0] === 2 && countValues[1] === 2) return { valid: true, name: "Two Pair", points: 50 };
+        if (countValues[0] === 2) return { valid: true, name: "Pair", points: 20 };
+
+        return { valid: false, reason: "High Card (Invalid)" };
+    }
+
+    function commitHand() {
+        if (!isGameRunning) return;
+        
+        const currentCards = handTable;
+        if (currentCards.includes(null)) {
+            setStatus("NEED 5 CARDS", 'error');
+            return;
+        }
+
+        const result = evaluateHand(currentCards);
+
+        if (result.valid) {
+            score += result.points;
+            setStatus(`${result.name} +${result.points}`, 'normal');
+            
+            const slots = document.querySelectorAll('#hand-slots .slot');
+            slots.forEach(slot => {
+                const cardEl = slot.firstElementChild;
+                if(cardEl) cardEl.classList.add('dissolving');
+            });
+
+            setTimeout(() => {
+                handTable = [null, null, null, null, null];
+                updateUI();
+                elStatusBar.innerText = "HAND UPLOADED. DATA CLEARED.";
+            }, 500);
+
+        } else {
+            setStatus(result.reason, 'error');
+        }
+    }
+
+    // --- UI Update Loop ---
+    function updateUI() {
+        elScore.innerText = score;
+
+        // Render Active Rack
+        elActiveRack.innerHTML = '';
+        activeRack.forEach((card, idx) => {
+            elActiveRack.appendChild(renderCard(card, 'rack', idx));
+        });
+
+        // Render Hand
+        elHandSlots.forEach((slot, idx) => {
+            slot.innerHTML = '';
+            if (handTable[idx]) {
+                const c = renderCard(handTable[idx], 'hand', idx);
+                if(slot.querySelector('.dissolving')) return; 
+                slot.appendChild(c);
+            }
+        });
+
+        // Render Reserve
+        elReserveStack.innerHTML = '';
+        if (reserveTank.length > 0) {
+            const topCard = reserveTank[reserveTank.length - 1];
+            elReserveStack.appendChild(renderCard(topCard, 'reserve', 0));
+        }
+
+        // Reserve Meter
+        const pct = (reserveTank.length / RESERVE_LIMIT) * 100;
+        elReserveFill.style.height = `${pct}%`;
+        elReserveCount.innerText = `${reserveTank.length} / ${RESERVE_LIMIT}`;
+        
+        if (pct < 50) elReserveFill.style.backgroundColor = 'var(--neon-green)';
+        else if (pct < 80) elReserveFill.style.backgroundColor = '#ffaa00';
+        else elReserveFill.style.backgroundColor = 'var(--danger-color)';
+    }
+
+    // --- Game Lifecycle ---
+    function initGame() {
+        score = 0;
+        cardIdCounter = 0;
+        activeRack = [];
+        reserveTank = [];
+        handTable = [null, null, null, null, null];
+        isGameRunning = true;
+        
+        document.getElementById('overlay').classList.add('hidden');
+        document.getElementById('game-over').style.display = 'none'; 
+        document.getElementById('game-over').classList.add('hidden');
+
+        // Initial seed of cards
+        activeRack.push(createCardData());
+        activeRack.push(createCardData());
+        activeRack.push(createCardData());
+
+        updateUI();
+        elStatusBar.innerText = "TACTICAL SYSTEM READY. AWAITING INJECTION.";
+    }
+
+    function gameOver() {
+        isGameRunning = false;
+        document.getElementById('final-score').innerText = score;
+        const goScreen = document.getElementById('game-over');
+        goScreen.classList.remove('hidden');
+        goScreen.style.display = 'flex';
+    }
+
+    // --- Event Listeners ---
+    document.getElementById('btn-start').addEventListener('click', initGame);
+    document.getElementById('btn-restart').addEventListener('click', initGame);
+    document.getElementById('btn-commit').addEventListener('click', commitHand);
+    document.getElementById('btn-inject').addEventListener('click', spawnCard);
+
+</script>
+</body>
+</html>

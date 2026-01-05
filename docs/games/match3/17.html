@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>COLOR/BLIND - Digital Gallery</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-wall: #fdfbf7;
+            --text-dark: #2c2c2c;
+            --text-light: #777;
+            --gold-light: #f3e5ab;
+            --gold-dark: #8a6e2f;
+            --ui-font: 'Lato', sans-serif;
+            --header-font: 'Playfair Display', serif;
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--bg-wall);
+            color: var(--text-dark);
+            font-family: var(--ui-font);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden; /* Prevent scroll on mobile during play */
+        }
+
+        /* --- Layout Grid --- */
+        #gallery-space {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* --- Side Info Panels (Museum Placards) --- */
+        .wall-placard {
+            width: 200px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            opacity: 1;
+            transition: opacity 0.3s;
+        }
+        
+        .wall-placard.right { text-align: right; align-items: flex-end; }
+        .wall-placard.left { text-align: left; align-items: flex-start; }
+
+        .stat-group h3 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #999;
+            margin: 0 0 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 5px;
+            display: inline-block;
+        }
+
+        .stat-val {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 2.5rem;
+            color: #111;
+        }
+
+        /* --- The Gilt Frame (Game Field) --- */
+        .frame-wrapper {
+            position: relative;
+            background: #fff;
+            /* The Gold Frame */
+            border: 16px solid #d4af37;
+            border-image: linear-gradient(to bottom right, #fceabb, #d4af37, #9c7e30, #fceabb) 1;
+            box-shadow: 
+                inset 0 0 20px rgba(0,0,0,0.5), /* Inner depth */
+                0 0 0 2px #554212, /* Outer rim */
+                0 20px 50px rgba(0,0,0,0.3); /* Wall shadow */
+            transition: filter 0.3s;
+        }
+
+        .frame-wrapper.paused {
+            filter: blur(8px) grayscale(50%);
+        }
+
+        .canvas-container {
+            background: #f0f0f0;
+            display: block;
+        }
+        
+        canvas { display: block; }
+
+        /* --- Overlays (Title & Pause) --- */
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(253, 251, 247, 0.95);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .hidden { display: none !important; }
+
+        h1 {
+            font-family: var(--header-font);
+            font-size: 4rem;
+            margin: 0;
+            color: #111;
+            line-height: 1;
+        }
+        h1 span { font-style: italic; font-weight: 400; color: #555; }
+        
+        h2 {
+            font-family: var(--ui-font);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-size: 1rem;
+            margin-top: 10px;
+            color: #888;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 40px;
+            text-align: left;
+            max-width: 600px;
+        }
+        
+        .menu-col { display: flex; flex-direction: column; gap: 20px; }
+
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1rem;
+            color: #444;
+        }
+        
+        .setting-row label { cursor: pointer; }
+        
+        button.action-btn {
+            background: #111;
+            color: #fff;
+            border: none;
+            padding: 15px 40px;
+            font-family: var(--ui-font);
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            margin-top: 20px;
+        }
+        button.action-btn:hover {
+            background: #000;
+            transform: scale(1.05);
+        }
+        button.secondary-btn {
+            background: transparent;
+            color: #555;
+            border: 1px solid #ccc;
+            margin-top: 10px;
+            padding: 10px 30px;
+        }
+        button.secondary-btn:hover { border-color: #000; color: #000; }
+
+        input[type="range"] { accent-color: #444; cursor: pointer; }
+        input[type="checkbox"] { width: 20px; height: 20px; accent-color: #111; cursor: pointer; }
+
+        .game-modes {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .mode-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            flex: 1;
+        }
+        .mode-card:hover, .mode-card.selected {
+            border-color: #111;
+            background: #fff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .mode-card h4 { margin: 0 0 5px 0; font-family: var(--header-font); }
+        .mode-card p { margin: 0; font-size: 0.8rem; color: #666; }
+
+        /* --- Controls Hint --- */
+        .controls-hint {
+            position: fixed;
+            bottom: 20px;
+            font-size: 0.8rem;
+            color: #aaa;
+            text-align: center;
+            width: 100%;
+            pointer-events: none;
+        }
+
+        /* --- Responsive Mobile --- */
+        @media (max-width: 900px) {
+            #gallery-space { flex-direction: column; gap: 10px; padding: 10px; }
+            .wall-placard { 
+                flex-direction: row; 
+                width: 100%; 
+                justify-content: space-between; 
+                align-items: center;
+            }
+            .wall-placard.left { order: 2; } /* Move info below frame */
+            .wall-placard.right { order: 3; }
+            .frame-wrapper { order: 1; border-width: 8px; max-width: 100%; }
+            .menu-grid { grid-template-columns: 1fr; gap: 20px; }
+            
+            /* Hide big canvas sidebars on mobile, simplified view handled in draw */
+            #nextCanvas, #holdCanvas { display: none; }
+            
+            /* Mobile specific HUD overrides */
+            .mob-hud { display: block; font-size: 0.9rem; font-weight: bold; }
+        }
+        @media (min-width: 901px) { .mob-hud { display: none; } }
+
+    </style>
+</head>
+<body>
+
+<!-- Title Screen -->
+<div id="title-screen" class="overlay">
+    <h1>COLOR<span>/BLIND</span></h1>
+    <h2>Interactive Gallery</h2>
+    
+    <div class="menu-grid">
+        <div class="menu-col">
+            <h3 style="margin:0; border-bottom:1px solid #ccc; padding-bottom:5px;">Accessibility</h3>
+            <div class="setting-row">
+                <label for="start-cb">Colorblind Mode</label>
+                <input type="checkbox" id="start-cb">
+            </div>
+            <div class="setting-row">
+                <label for="start-blind">Blind Mode (TTS)</label>
+                <input type="checkbox" id="start-blind">
+            </div>
+            <div class="setting-row hidden" id="start-tts-row">
+                <label>Voice Speed</label>
+                <input type="range" id="start-tts-rate" min="0.5" max="3" step="0.1" value="1.2">
+            </div>
+            <div class="setting-row">
+                <label>Game Speed</label>
+                <input type="range" id="start-game-speed" min="100" max="1000" step="50" value="500" style="direction: rtl">
+            </div>
+        </div>
+
+        <div class="menu-col">
+            <h3 style="margin:0; border-bottom:1px solid #ccc; padding-bottom:5px;">Game Mode</h3>
+            <div class="game-modes">
+                <div class="mode-card selected" onclick="selectMode('standard', this)">
+                    <h4>Standard</h4>
+                    <p>Empty Canvas</p>
+                </div>
+                <div class="mode-card" onclick="selectMode('exhibition', this)">
+                    <h4>Exhibition</h4>
+                    <p>Start with tiles</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="action-btn" id="init-btn">PAINT</button>
+</div>
+
+<!-- Pause Overlay -->
+<div id="pause-screen" class="overlay hidden">
+    <h1>PAUSED</h1>
+    <div class="menu-grid">
+        <div class="menu-col">
+            <div class="setting-row">
+                <label>Game Speed</label>
+                <input type="range" id="pause-game-speed" min="100" max="1000" step="50" value="500" style="direction: rtl">
+            </div>
+             <div class="setting-row">
+                <label>Colorblind Mode</label>
+                <input type="checkbox" id="pause-cb">
+            </div>
+            <div style="margin-top: 20px; font-size: 0.85rem; line-height: 1.5; color: #666;">
+                <strong>CONTROLS:</strong><br>
+                WASD / Arrows to Move<br>
+                UP / W to Hold<br>
+                Double-Tap DOWN to Drop<br>
+                TAB to Resume
+            </div>
+        </div>
+    </div>
+    <button class="action-btn" id="resume-btn">RESUME</button>
+    <button class="secondary-btn" id="quit-btn">END EXHIBITION</button>
+</div>
+
+<!-- Main Game View -->
+<div id="gallery-space">
+    <!-- Left Wall: Info -->
+    <div class="wall-placard left">
+        <div class="stat-group">
+            <h3>Artist</h3>
+            <div style="font-family: var(--header-font); font-style: italic;">You</div>
+        </div>
+        <div class="stat-group">
+            <h3>Upcoming</h3>
+            <canvas id="nextCanvas" width="100" height="200"></canvas>
+            <div class="mob-hud">Next: <span id="mob-next-txt"></span></div>
+        </div>
+    </div>
+
+    <!-- The Art (Game Frame) -->
+    <div class="frame-wrapper" id="frame-wrap">
+        <div class="canvas-container">
+            <canvas id="mainCanvas"></canvas>
+        </div>
+    </div>
+
+    <!-- Right Wall: Stats -->
+    <div class="wall-placard right">
+        <div class="stat-group">
+            <h3>Collection Value</h3>
+            <div class="stat-val" id="score-display">0</div>
+        </div>
+        <div class="stat-group">
+            <h3>Holding</h3>
+            <canvas id="holdCanvas" width="80" height="80"></canvas>
+            <div class="mob-hud">Hold: <span id="mob-hold-txt">Empty</span></div>
+        </div>
+    </div>
+</div>
+
+<div class="controls-hint">Press TAB to Pause / Configure</div>
+
+<script>
+/**
+ * AUDIO / TTS SYSTEM
+ */
+const AudioSys = (() => {
+    const synth = window.speechSynthesis;
+    let ctx = null;
+    let blindMode = false;
+    let ttsRate = 1.2;
+
+    function init() {
+        if(!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if(ctx.state === 'suspended') ctx.resume();
+    }
+
+    function speak(text, priority = false) {
+        if (!blindMode) return;
+        if (priority) synth.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.rate = ttsRate;
+        synth.speak(u);
+    }
+
+    function playTone(type) {
+        if (!ctx) return;
+        const t = ctx.currentTime;
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+
+        if (type === 'move') {
+            o.frequency.setValueAtTime(180, t);
+            o.type = 'sine';
+            g.gain.setValueAtTime(0.05, t);
+            g.gain.linearRampToValueAtTime(0, t+0.05);
+            o.start(t); o.stop(t+0.05);
+        } else if (type === 'lock') {
+            o.frequency.setValueAtTime(100, t);
+            o.type = 'triangle';
+            g.gain.setValueAtTime(0.1, t);
+            g.gain.exponentialRampToValueAtTime(0.001, t+0.2);
+            o.start(t); o.stop(t+0.2);
+        } else if (type === 'clear') {
+            [300, 400, 500].forEach((freq, i) => {
+                const osc = ctx.createOscillator();
+                const gn = ctx.createGain();
+                osc.connect(gn); gn.connect(ctx.destination);
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+                gn.gain.setValueAtTime(0.05, t + i*0.05);
+                gn.gain.exponentialRampToValueAtTime(0.001, t + i*0.05 + 0.4);
+                osc.start(t + i*0.05); osc.stop(t + i*0.05 + 0.4);
+            });
+        }
+    }
+
+    return {
+        init, play: playTone, announce: speak,
+        setBlind: (v) => blindMode = v,
+        setRate: (v) => ttsRate = v
+    };
+})();
+
+/**
+ * ASSETS & CONFIG
+ */
+const LETTERS = [null, 'A','B','C','D','E','F','G','H','I','J'];
+const BRAILLE = [null, '⠁','⠃','⠉','⠙','⠑','⠋','⠛','⠓','⠊','⠚'];
+const COLORS_STD = [null, '#D32F2F', '#1976D2', '#388E3C', '#FBC02D', '#7B1FA2', '#E64A19', '#0097A7', '#C2185B', '#AFB42B', '#5D4037'];
+const COLORS_CB = [null, '#E69F00', '#56B4E9', '#009E73', '#F0E442', '#0072B2', '#D55E00', '#CC79A7', '#000000', '#999999', '#FFFFFF'];
+
+const State = {
+    grid: [],
+    piece: null, 
+    next: [], // Objects: { color: int, face: 'print'|'braille' }
+    hold: null,
+    canHold: true,
+    score: 0,
+    gameOver: false,
+    paused: false,
+    started: false,
+    dropTimer: 0,
+    dropInterval: 500,
+    lastTime: 0,
+    isCB: false,
+    particles: [],
+    gameMode: 'standard'
+};
+
+const COLS = 10;
+const ROWS = 20;
+let CELL = 30;
+
+const cvs = document.getElementById('mainCanvas');
+const ctx = cvs.getContext('2d');
+const nextCtx = document.getElementById('nextCanvas').getContext('2d');
+const holdCtx = document.getElementById('holdCanvas').getContext('2d');
+
+/**
+ * GAME ENGINE
+ */
+function initGame() {
+    State.grid = Array.from({length: ROWS}, () => Array(COLS).fill(0));
+    State.score = 0;
+    State.next = [];
+    State.hold = null;
+    State.canHold = true;
+    State.gameOver = false;
+    State.paused = false;
+    State.started = true;
+    State.particles = [];
+    
+    // Fill Next Queue
+    for(let i=0; i<5; i++) addToNext();
+
+    // Mode: Exhibition (Pre-fill)
+    if(State.gameMode === 'exhibition') {
+        const fillHeight = 6;
+        for(let r = ROWS - fillHeight; r < ROWS; r++) {
+            for(let c = 0; c < COLS; c++) {
+                if(Math.random() > 0.3) {
+                    // Random color, no guarantee of matches (chaos)
+                    State.grid[r][c] = Math.floor(Math.random() * 10) + 1;
+                }
+            }
+        }
+    }
+
+    spawn();
+    AudioSys.announce("Gallery Open.");
+    updateUI();
+    togglePauseUI(false);
+}
+
+function addToNext() {
+    State.next.push({
+        color: Math.floor(Math.random()*10)+1,
+        face: Math.random() > 0.5 ? 'braille' : 'print'
+    });
+}
+
+function spawn() {
+    const nextItem = State.next.shift();
+    addToNext();
+    
+    State.piece = {
+        x: 4, y: 0,
+        color: nextItem.color,
+        moveAnim: 0, 
+        moveDir: 0
+    };
+    State.canHold = true;
+
+    if (collide(4, 0)) endGame();
+    else AudioSys.announce("Next " + LETTERS[State.piece.color]);
+    updateUI();
+}
+
+function collide(x, y) {
+    if (x<0 || x>=COLS || y>=ROWS) return true;
+    if (y<0) return false;
+    return State.grid[y][x] !== 0;
+}
+
+function move(dx, dy) {
+    if(State.gameOver || State.paused) return false;
+    const p = State.piece;
+    if (!collide(p.x+dx, p.y+dy)) {
+        p.x += dx; p.y += dy;
+        if (dx !== 0) {
+            p.moveAnim = 1.0; 
+            p.moveDir = dx;
+            AudioSys.play('move');
+        }
+        return true;
+    }
+    return false;
+}
+
+function hardDrop() {
+    if(State.gameOver || State.paused) return;
+    let drops = 0;
+    while(!collide(State.piece.x, State.piece.y+1)) {
+        State.piece.y++; drops++;
+    }
+    State.score += drops * 2;
+    lock();
+}
+
+function lock() {
+    const p = State.piece;
+    State.grid[p.y][p.x] = p.color;
+    AudioSys.play('lock');
+    checkMatches();
+}
+
+function checkMatches() {
+    let matches = new Set();
+    const g = State.grid;
+    const scan = (r, c, dr, dc) => {
+        if(g[r][c]===0) return;
+        let line = [{r,c}];
+        let cr = r+dr, cc = c+dc;
+        while(cr>=0 && cr<ROWS && cc>=0 && cc<COLS && g[cr][cc]===g[r][c]) {
+            line.push({r:cr, c:cc}); cr+=dr; cc+=dc;
+        }
+        if(line.length >= 3) line.forEach(pt => matches.add(`${pt.r},${pt.c}`));
+    };
+
+    for(let r=0; r<ROWS; r++) {
+        for(let c=0; c<COLS; c++) {
+            scan(r,c, 0,1); scan(r,c, 1,0); scan(r,c, 1,1); scan(r,c, 1,-1);
+        }
+    }
+
+    if(matches.size > 0) {
+        AudioSys.play('clear');
+        State.score += matches.size * 100;
+        AudioSys.announce(`Cleared ${matches.size}`);
+        matches.forEach(k => {
+            const [r,c] = k.split(',').map(Number);
+            createParticles(c, r, State.grid[r][c]);
+            State.grid[r][c] = 0;
+        });
+        setTimeout(gravity, 300);
+    } else {
+        spawn();
+    }
+    updateUI();
+}
+
+function gravity() {
+    for(let c=0; c<COLS; c++) {
+        for(let r=ROWS-1; r>=0; r--) {
+            if(State.grid[r][c] === 0) {
+                for(let k=r-1; k>=0; k--) {
+                    if(State.grid[k][c] !== 0) {
+                        State.grid[r][c] = State.grid[k][c];
+                        State.grid[k][c] = 0;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    checkMatches(); // Cascade check (simplified recursion)
+}
+
+function endGame() {
+    State.gameOver = true;
+    AudioSys.announce("Exhibition closed.");
+    // Return to title behavior logic could go here, 
+    // but for now we just show title screen again
+    document.getElementById('title-screen').classList.remove('hidden');
+    document.querySelector('#title-screen h2').innerText = "Exhibition Complete";
+    document.getElementById('init-btn').innerText = "Paint Again";
+}
+
+function togglePause() {
+    if(!State.started || State.gameOver) return;
+    State.paused = !State.paused;
+    togglePauseUI(State.paused);
+    if(State.paused) AudioSys.announce("Paused.");
+    else AudioSys.announce("Resumed.");
+}
+
+function togglePauseUI(show) {
+    const screen = document.getElementById('pause-screen');
+    const frame = document.getElementById('frame-wrap');
+    if(show) {
+        screen.classList.remove('hidden');
+        frame.classList.add('paused');
+        // Sync pause sliders
+        document.getElementById('pause-game-speed').value = 1100 - State.dropInterval;
+        document.getElementById('pause-cb').checked = State.isCB;
+    } else {
+        screen.classList.add('hidden');
+        frame.classList.remove('paused');
+    }
+}
+
+/**
+ * RENDERING
+ */
+function resize() {
+    const wrap = document.querySelector('.canvas-container');
+    const w = wrap.parentElement.clientWidth - 32; // -32 for border width
+    const h = window.innerHeight * 0.7; // Limit height
+    
+    // Determine cell size
+    const aspectW = w / COLS;
+    const aspectH = h / ROWS;
+    CELL = Math.floor(Math.min(aspectW, aspectH));
+    
+    cvs.width = CELL * COLS;
+    cvs.height = CELL * ROWS;
+    
+    // Redraw
+    if(!State.started) drawFiller();
+}
+
+function drawTile3D(targetCtx, x, y, colorId, flipYVal, flipXVal, forceFace) {
+    if(!colorId) return;
+    const colors = State.isCB ? COLORS_CB : COLORS_STD;
+    const cx = x * CELL + CELL/2;
+    const cy = y * CELL + CELL/2;
+    
+    let w = CELL * Math.abs(Math.cos(flipXVal * Math.PI)); 
+    let h = CELL * Math.abs(Math.cos(flipYVal * Math.PI));
+    
+    const isBackY = (flipYVal % 1) > 0.5;
+    const showBraille = forceFace === 'braille' ? true : (forceFace === 'print' ? false : isBackY);
+
+    targetCtx.save();
+    targetCtx.translate(cx, cy);
+    
+    // Shadow
+    targetCtx.fillStyle = 'rgba(0,0,0,0.2)';
+    targetCtx.fillRect(-w/2 + 2, -h/2 + 4, w, h);
+
+    // Body
+    targetCtx.fillStyle = colors[colorId];
+    targetCtx.fillRect(-w/2, -h/2, w, h);
+    
+    // Depth edge
+    if(h < CELL*0.8) {
+        targetCtx.fillStyle = 'rgba(0,0,0,0.2)';
+        targetCtx.fillRect(-w/2, h/2, w, 4);
+    }
+
+    // Pattern (Colorblind)
+    if(State.isCB) {
+        targetCtx.strokeStyle = 'rgba(255,255,255,0.6)';
+        targetCtx.lineWidth = 2;
+        targetCtx.strokeRect(-w/2 + 2, -h/2 + 2, w-4, h-4);
+        if(colorId%2===0) { targetCtx.beginPath(); targetCtx.moveTo(-w/2,-h/2); targetCtx.lineTo(w/2,h/2); targetCtx.stroke(); }
+        else if(colorId%3===0) { targetCtx.beginPath(); targetCtx.arc(0,0,w/4,0,Math.PI*2); targetCtx.stroke(); }
+    }
+
+    // Face
+    if (w > 5 && h > 5) {
+        targetCtx.fillStyle = State.isCB && colorId === 10 ? '#000' : '#fff';
+        targetCtx.textAlign = 'center';
+        targetCtx.textBaseline = 'middle';
+        let char = showBraille ? BRAILLE[colorId] : LETTERS[colorId];
+        targetCtx.font = showBraille ? `${Math.min(w,h)*0.6}px sans-serif` : `bold ${Math.min(w,h)*0.7}px "Playfair Display", serif`;
+        targetCtx.fillText(char, 0, 0);
+    }
+    targetCtx.restore();
+}
+
+function draw() {
+    ctx.clearRect(0,0,cvs.width,cvs.height);
+    // Grid Lines
+    ctx.strokeStyle = '#e0e0e0'; ctx.lineWidth = 1;
+    ctx.beginPath();
+    for(let i=0; i<=COLS; i++) { ctx.moveTo(i*CELL, 0); ctx.lineTo(i*CELL, cvs.height); }
+    for(let i=0; i<=ROWS; i++) { ctx.moveTo(0, i*CELL); ctx.lineTo(cvs.width, i*CELL); }
+    ctx.stroke();
+
+    // Locked
+    for(let r=0; r<ROWS; r++) {
+        for(let c=0; c<COLS; c++) {
+            drawTile3D(ctx, c, r, State.grid[r][c], 0, 0);
+        }
+    }
+    // Active
+    if(State.piece && !State.paused) {
+        let time = performance.now() / 1000;
+        let fallPhase = time * 0.8;
+        let horzFlip = Math.sin(State.piece.moveAnim * Math.PI); 
+        drawTile3D(ctx, State.piece.x, State.piece.y, State.piece.color, fallPhase, horzFlip);
+    }
+    // Particles
+    drawParticles();
+}
+
+function drawFiller() {
+    ctx.clearRect(0,0,cvs.width,cvs.height);
+    ctx.globalAlpha = 0.3;
+    for(let r=0; r<ROWS; r++) for(let c=0; c<COLS; c++) 
+        if(Math.random()>0.8) drawTile3D(ctx, c, r, Math.floor(Math.random()*10)+1, 0, 0);
+    ctx.globalAlpha = 1.0;
+}
+
+function createParticles(gx, gy, cid) {
+    const cx = gx*CELL + CELL/2;
+    const cy = gy*CELL + CELL/2;
+    const color = (State.isCB ? COLORS_CB : COLORS_STD)[cid];
+    for(let i=0; i<8; i++) {
+        State.particles.push({
+            x: cx, y: cy, vx:(Math.random()-0.5)*8, vy:(Math.random()-0.5)*8, life:1.0, color
+        });
+    }
+}
+
+function drawParticles() {
+    for(let i=State.particles.length-1; i>=0; i--) {
+        let p = State.particles[i];
+        p.x += p.vx; p.y += p.vy; p.life -= 0.05;
+        if(p.life <= 0) State.particles.splice(i,1);
+        else {
+            ctx.globalAlpha = p.life; ctx.fillStyle = p.color;
+            ctx.beginPath(); ctx.arc(p.x, p.y, CELL/6, 0, Math.PI*2); ctx.fill();
+            ctx.globalAlpha = 1.0;
+        }
+    }
+}
+
+function updateUI() {
+    document.getElementById('score-display').innerText = State.score;
+    // Mobile text updates
+    if(State.next[0]) document.getElementById('mob-next-txt').innerText = LETTERS[State.next[0].color];
+    if(State.hold) document.getElementById('mob-hold-txt').innerText = LETTERS[State.hold];
+
+    // Side Canvases (Desktop)
+    nextCtx.clearRect(0,0,100,200);
+    State.next.slice(0,4).forEach((item, i) => {
+        // Randomly flip print/braille logic handled in object generation now
+        drawTile3D(nextCtx, 1, i, item.color, 0, 0, item.face);
+    });
+
+    holdCtx.clearRect(0,0,80,80);
+    if(State.hold) drawTile3D(holdCtx, 0.5, 0.5, State.hold, 0, 0);
+}
+
+/**
+ * INPUT & LOOP
+ */
+function loop(time) {
+    const dt = time - State.lastTime;
+    State.lastTime = time;
+
+    if(State.started && !State.gameOver && !State.paused) {
+        State.dropTimer += dt;
+        if(State.dropTimer > State.dropInterval) {
+            if(!move(0,1)) lock();
+            State.dropTimer = 0;
+        }
+    }
+    
+    if(State.started && !State.paused) draw();
+    requestAnimationFrame(loop);
+}
+
+// Input
+let lastDown = 0;
+window.addEventListener('keydown', e => {
+    if (e.key === 'Tab') {
+        e.preventDefault();
+        togglePause();
+        return;
+    }
+
+    if(!State.started || State.paused) return;
+
+    switch(e.key) {
+        case 'ArrowLeft': case 'a': move(-1,0); break;
+        case 'ArrowRight': case 'd': move(1,0); break;
+        case 'ArrowUp': case 'w': 
+            if(State.canHold) {
+                if(!State.hold) { State.hold = State.piece.color; spawn(); }
+                else {
+                    let tmp = State.hold; State.hold = State.piece.color; State.piece.color = tmp;
+                    State.piece.x=4; State.piece.y=0;
+                }
+                State.canHold = false; AudioSys.announce("Hold"); updateUI();
+            }
+            break;
+        case 'ArrowDown': case 's':
+            const now = Date.now();
+            if(now - lastDown < 300) hardDrop();
+            else if(move(0,1)) { State.score++; State.dropTimer=0; }
+            lastDown = now;
+            break;
+    }
+});
+
+// UI Event Binding
+function bindSettings() {
+    // Mode Select
+    window.selectMode = (mode, el) => {
+        State.gameMode = mode;
+        document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+    };
+
+    // Init Game
+    document.getElementById('init-btn').addEventListener('click', () => {
+        AudioSys.init();
+        document.getElementById('title-screen').classList.add('hidden');
+        
+        // Apply Title Settings
+        State.isCB = document.getElementById('start-cb').checked;
+        AudioSys.setBlind(document.getElementById('start-blind').checked);
+        AudioSys.setRate(parseFloat(document.getElementById('start-tts-rate').value));
+        State.dropInterval = 1100 - parseInt(document.getElementById('start-game-speed').value);
+        
+        initGame();
+    });
+
+    // Pause Resume
+    document.getElementById('resume-btn').addEventListener('click', togglePause);
+    document.getElementById('quit-btn').addEventListener('click', () => {
+        togglePause();
+        endGame();
+    });
+
+    // Pause Setting Sync
+    document.getElementById('pause-game-speed').addEventListener('input', (e) => {
+         State.dropInterval = 1100 - parseInt(e.target.value);
+    });
+    document.getElementById('pause-cb').addEventListener('change', (e) => {
+        State.isCB = e.target.checked;
+        draw();
+    });
+    
+    // Blind toggle visibility in title
+    document.getElementById('start-blind').addEventListener('change', (e) => {
+        if(e.target.checked) document.getElementById('start-tts-row').classList.remove('hidden');
+        else document.getElementById('start-tts-row').classList.add('hidden');
+    });
+}
+
+bindSettings();
+window.addEventListener('resize', resize);
+resize();
+requestAnimationFrame(loop);
+
+</script>
+</body>
+</html>
