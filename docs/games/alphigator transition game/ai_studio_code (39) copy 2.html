@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Alphagator Scrub-Link Tester</title>
+    <style>
+        body { margin: 0; background: #050505; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; color: #0f0; font-family: monospace; }
+        #stage { position: relative; width: 1280px; height: 720px; background: #000; outline: 2px solid #222; }
+        video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; display: none; }
+        video.active { display: block; }
+        #overlay { position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.8); padding: 15px; border: 1px solid #333; pointer-events: none; line-height: 1.5; }
+        .key { color: #fff; font-weight: bold; background: #333; padding: 2px 6px; border-radius: 3px; }
+        .active-key { background: #0f0; color: #000; }
+    </style>
+</head>
+<body>
+
+<div id="stage">
+    <video id="vid-i2r" src="transition_idle_to_ready.mp4" muted playsinline preload="auto"></video>
+    <video id="vid-r2o" src="transition_ready_to_open.mp4" muted playsinline preload="auto"></video>
+    <video id="vid-o2c" src="transition_open_to_chomp.mp4" muted playsinline preload="auto"></video>
+
+    <div id="overlay">
+        STATE: <span id="state-text">IDLE</span><br>
+        <hr>
+        <span id="key-space" class="key">SPACE</span> Toggle Idle/Ready<br>
+        <span id="key-a" class="key">A</span> Hold to Open (Release to Close)<br>
+        <span id="key-b" class="key">B</span> Press (while holding A) to Chomp<br>
+        <span id="key-fj" class="key">F+J</span> Quick Chomp (500ms Total)
+    </div>
+</div>
+
+<script>
+    const TRANSITION_TIME = 500; // ms
+    const vids = {
+        i2r: document.getElementById('vid-i2r'),
+        r2o: document.getElementById('vid-r2o'),
+        o2c: document.getElementById('vid-o2c')
+    };
+
+    let state = "IDLE"; 
+    let keys = {};
+    let spaceToggled = false;
+
+    // Transition tracking
+    let activeVid = vids.i2r;
+    let progress = 0; // 0 to 1
+    let targetProgress = 0;
+
+    function update() {
+        // 1. INPUT LOGIC
+        if (keys['f'] && keys['j']) {
+            // Quick Chomp override
+            state = "QUICK_CHOMP";
+        } else if (state !== "QUICK_CHOMP") {
+            if (keys['a']) {
+                if (keys['b']) {
+                    state = "CHOMP";
+                    activeVid = vids.o2c;
+                    targetProgress = 1;
+                } else {
+                    state = "OPENING";
+                    activeVid = vids.r2o;
+                    targetProgress = 1;
+                }
+            } else {
+                // A is released
+                if (state === "CHOMP" || state === "OPENING") {
+                    state = "READY";
+                    activeVid = vids.r2o;
+                    targetProgress = 0; // Scrub back to ready
+                } else {
+                    // Idle/Ready toggle logic
+                    activeVid = vids.i2r;
+                    targetProgress = spaceToggled ? 1 : 0;
+                    state = spaceToggled ? "READY" : "IDLE";
+                }
+            }
+        }
+
+        // Handle Quick Chomp Sequence (F+J)
+        if (state === "QUICK_CHOMP") {
+            // Logic: Spend 250ms on R2O, then 250ms on O2C
+            // This is handled by a separate timer or simplified here:
+            runQuickChomp();
+            return; 
+        }
+
+        scrubToTarget();
+        updateUI();
+        requestAnimationFrame(update);
+    }
+
+    function scrubToTarget() {
+        // Calculate how much progress to move based on 500ms duration
+        // 16.6ms is roughly one frame at 60fps
+        const step = 16.6 / TRANSITION_TIME;
+        
+        if (progress < targetProgress) progress = Math.min(progress + step, targetProgress);
+        else if (progress > targetProgress) progress = Math.max(progress - step, targetProgress);
+
+        // Apply to video
+        Object.values(vids).forEach(v => v.classList.remove('active'));
+        activeVid.classList.add('active');
+        
+        if (activeVid.duration) {
+            activeVid.currentTime = progress * activeVid.duration;
+        }
+    }
+
+    let qcStartTime = 0;
+    function runQuickChomp() {
+        if (qcStartTime === 0) qcStartTime = performance.now();
+        let elapsed = performance.now() - qcStartTime;
+        
+        Object.values(vids).forEach(v => v.classList.remove('active'));
+
+        if (elapsed < 250) {
+            // First half: Ready to Open
+            let p = elapsed / 250;
+            vids.r2o.classList.add('active');
+            vids.r2o.currentTime = p * vids.r2o.duration;
+        } else if (elapsed < 500) {
+            // Second half: Open to Chomp
+            let p = (elapsed - 250) / 250;
+            vids.o2c.classList.add('active');
+            vids.o2c.currentTime = p * vids.o2c.duration;
+        } else {
+            // Hold Chomp end
+            vids.o2c.classList.add('active');
+            vids.o2c.currentTime = vids.o2c.duration;
+            if (!keys['f'] && !keys['j']) {
+                state = "READY"; // Reset after release
+                qcStartTime = 0;
+            }
+        }
+        updateUI();
+        requestAnimationFrame(update);
+    }
+
+    function updateUI() {
+        document.getElementById('state-text').innerText = state;
+        document.getElementById('key-space').className = spaceToggled ? 'key active-key' : 'key';
+        document.getElementById('key-a').className = keys['a'] ? 'key active-key' : 'key';
+        document.getElementById('key-b').className = keys['b'] ? 'key active-key' : 'key';
+        document.getElementById('key-fj').className = (keys['f'] && keys['j']) ? 'key active-key' : 'key';
+    }
+
+    window.addEventListener('keydown', e => {
+        const k = e.key.toLowerCase();
+        keys[k] = true;
+        if (k === ' ') spaceToggled = !spaceToggled;
+    });
+
+    window.addEventListener('keyup', e => {
+        keys[e.key.toLowerCase()] = false;
+    });
+
+    // Start loop
+    update();
+</script>
+</body>
+</html>

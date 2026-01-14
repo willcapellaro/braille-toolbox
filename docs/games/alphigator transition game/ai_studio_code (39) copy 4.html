@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Alphagator Scrub Tester</title>
+    <style>
+        body { margin: 0; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; overflow: hidden; color: #fff; font-family: sans-serif; }
+        #stage { position: relative; width: 960px; height: 540px; background: #111; border: 2px solid #333; }
+        video { position: absolute; width: 100%; height: 100%; object-fit: contain; display: none; }
+        video.active { display: block; }
+        
+        /* UI Elements */
+        #controls { margin-top: 20px; display: flex; gap: 20px; align-items: center; }
+        .key-sq { width: 50px; height: 50px; border: 3px solid #666; display: flex; justify-content: center; align-items: center; font-weight: bold; border-radius: 8px; }
+        .key-rect { width: 120px; height: 40px; border: 3px solid #666; display: flex; justify-content: center; align-items: center; font-weight: bold; border-radius: 4px; }
+        .active-key { border-color: #00ff00; color: #00ff00; box-shadow: 0 0 10px #00ff00; }
+        #status { position: absolute; top: 10px; left: 10px; color: #444; font-family: monospace; }
+    </style>
+</head>
+<body>
+
+<div id="stage">
+    <div id="status">INIT...</div>
+    <video id="vid_i2r" src="transition_idle_to_ready.mp4" muted playsinline preload="auto"></video>
+    <video id="vid_r2o" src="transition_ready_to_open.mp4" muted playsinline preload="auto"></video>
+    <video id="vid_o2c" src="transition_open_to_chomp.mp4" muted playsinline preload="auto"></video>
+</div>
+
+<div id="controls">
+    <div id="ui-space" class="key-rect">SPACE</div>
+    <div id="ui-f" class="key-sq">F</div>
+    <div id="ui-j" class="key-sq">J</div>
+</div>
+
+<script>
+    const vids = {
+        i2r: document.getElementById('vid_i2r'),
+        r2o: document.getElementById('vid_r2o'),
+        o2c: document.getElementById('vid_o2c')
+    };
+
+    const TARGET_SEQ_TIME = 500; // Total ms for full chain
+    const CLIP_TIME = TARGET_SEQ_TIME / 2; // 250ms per clip
+    
+    let keys = { f: false, j: false, space: false };
+    let isReady = false;
+    let scrubInterval = null;
+
+    // 1. Initialize speeds to match your 500ms requirement
+    Object.values(vids).forEach(v => {
+        v.addEventListener('loadedmetadata', () => {
+            // Adjust playback speed so clip duration equals CLIP_TIME
+            v.playbackRate = (v.duration * 1000) / CLIP_TIME;
+        });
+    });
+
+    function showVid(id) {
+        Object.values(vids).forEach(v => { v.classList.remove('active'); v.pause(); });
+        vids[id].classList.add('active');
+        return vids[id];
+    }
+
+    function stopScrub() {
+        clearInterval(scrubInterval);
+        scrubInterval = null;
+    }
+
+    // Logic for "Release to Reverse"
+    function reverseScrub(vid) {
+        stopScrub();
+        vid.pause();
+        scrubInterval = setInterval(() => {
+            vid.currentTime -= 0.03; // Manual step back
+            if (vid.currentTime <= 0) {
+                vid.currentTime = 0;
+                stopScrub();
+            }
+        }, 16); // ~60fps scrub
+    }
+
+    function update() {
+        const status = document.getElementById('status');
+        
+        // F + J (CHOMP)
+        if (keys.f && keys.j) {
+            status.innerText = "STATE: CHOMP";
+            let v = showVid('o2c');
+            stopScrub();
+            v.play();
+        } 
+        // F (OPEN WIDE)
+        else if (keys.f) {
+            status.innerText = "STATE: OPEN";
+            let v = showVid('r2o');
+            stopScrub();
+            v.play();
+        }
+        // DEFAULT / READY / IDLE
+        else {
+            if (isReady) {
+                status.innerText = "STATE: READY";
+                let v = showVid('r2o');
+                // If we just released F, scrub back to start
+                if (v.currentTime > 0 && !scrubInterval) reverseScrub(v);
+            } else {
+                status.innerText = "STATE: IDLE";
+                let v = showVid('i2r');
+                if (v.currentTime > 0 && !scrubInterval) reverseScrub(v);
+            }
+        }
+    }
+
+    // Input Handling
+    window.addEventListener('keydown', (e) => {
+        const k = e.key.toLowerCase();
+        if (k === ' ') {
+            keys.space = true;
+            isReady = !isReady;
+            document.getElementById('ui-space').classList.toggle('active-key', isReady);
+            // Toggle i2r forward
+            if (isReady) {
+                let v = showVid('i2r');
+                stopScrub();
+                v.play();
+            }
+        }
+        if (k === 'f') { keys.f = true; document.getElementById('ui-f').classList.add('active-key'); }
+        if (k === 'j') { keys.j = true; document.getElementById('ui-j').classList.add('active-key'); }
+        update();
+    });
+
+    window.addEventListener('keyup', (e) => {
+        const k = e.key.toLowerCase();
+        if (k === 'f') { keys.f = false; document.getElementById('ui-f').classList.remove('active-key'); }
+        if (k === 'j') { keys.j = false; document.getElementById('ui-j').classList.remove('active-key'); }
+        update();
+    });
+
+</script>
+</body>
+</html>

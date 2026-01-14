@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chomp Chain: Braille Bite Me</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@900&display=swap');
+        
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            overflow: hidden; background: #1a050a; font-family: 'Nunito', sans-serif;
+            touch-action: none;
+            user-select: none; -webkit-user-select: none;
+        }
+
+        /* Mouth Chamber with breathing animation */
+        .mouth-chamber {
+            width: 100vw; height: 100vh;
+            background: #a4133c;
+            display: flex; flex-direction: column; justify-content: space-between;
+            align-items: center; position: relative; overflow: hidden;
+        }
+
+        /* Hard Cartoon Throat Rings */
+        .throat-tunnel {
+            position: absolute; inset: 0;
+            display: flex; justify-content: center; align-items: center;
+            z-index: 1; pointer-events: none;
+        }
+        .throat-ring {
+            position: absolute; border-radius: 50%;
+            border: 15px solid #590d22;
+        }
+        .r1 { width: 250px; height: 250px; background: #000; border: none; }
+        .r2 { width: 450px; height: 450px; border-width: 40px; }
+        .r3 { width: 750px; height: 750px; border-width: 80px; opacity: 0.6; }
+
+        /* Uvula Pendulum in Background */
+        .uvula-system {
+            position: absolute; top: 0; left: 50%; height: 180px;
+            transform-origin: top center; z-index: 5; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .uvula-stalk { width: 8px; height: 100px; background: #ff4d6d; margin: 0 auto; }
+        .uvula-bulb {
+            width: 70px; height: 90px; background: #ff758f; border: 6px solid #ff4d6d;
+            border-radius: 35px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: inset -8px -8px 0 rgba(0,0,0,0.1);
+        }
+
+        /* Teeth & Gums */
+        .gums {
+            width: 100%; height: 60px; background: #590d22; 
+            z-index: 100; position: relative; border-bottom: 6px solid #4d0a1b;
+        }
+        .gums-bottom { border-bottom: none; border-top: 6px solid #4d0a1b; }
+
+        .teeth-row { 
+            display: flex; gap: 6px; z-index: 90; 
+            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        .tooth {
+            width: 75px; height: 90px; background: #fffcf2;
+            border: 5px solid #333; border-top: none; border-radius: 0 0 15px 15px;
+            display: flex; align-items: flex-end; justify-content: center;
+            padding-bottom: 10px; font-weight: 900; color: #ddd; font-size: 1.2rem;
+            box-shadow: inset 0 -10px 0 #eee;
+        }
+        .tooth.bottom { border-radius: 15px 15px 0 0; border-top: 5px solid #333; border-bottom: none; align-items: flex-start; padding-top: 10px; }
+        
+        /* Interactive Press States */
+        .pressed { transform: translateY(35px) !important; background: #ffb703 !important; color: white; }
+        .bottom.pressed { transform: translateY(-35px) !important; }
+
+        /* Extruded Sponge Cube Food */
+        .food-stack {
+            display: flex; gap: 8px; z-index: 50; align-items: center; 
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .sponge {
+            width: 80px; height: 130px; border: 5px solid #333; border-radius: 12px;
+            position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: 6px 8px 0 #333; /* 3D Edge */
+            background-image: radial-gradient(rgba(0,0,0,0.1) 20%, transparent 20%);
+            background-size: 15px 15px;
+        }
+        .sponge-letter { font-size: 3.5rem; color: #333; line-height: 1; margin-bottom: 8px; }
+        .sponge-braille { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+        .s-dot { width: 10px; height: 10px; background: rgba(0,0,0,0.1); border-radius: 50%; }
+        .s-dot.active { background: #333; }
+
+        /* Tongue: Anchored to bottom, behind food */
+        .tongue-wrap {
+            position: absolute; bottom: -50px; width: 100%; display: flex; justify-content: center;
+            z-index: 20; pointer-events: none;
+        }
+        .tongue-muscle {
+            width: 380px; height: 400px; background: #ff85a1; border: 10px solid #ff4d6d;
+            border-radius: 180px 180px 0 0; position: relative;
+            transform-origin: bottom center; transition: transform 0.1s ease-out;
+            box-shadow: inset 0 40px 0 rgba(255,255,255,0.2);
+        }
+
+        /* UI */
+        .kb-status { position: fixed; top: 15px; right: 15px; display: flex; align-items: center; gap: 8px; color: white; font-size: 0.7rem; z-index: 200; pointer-events: none; }
+        .kb-status > * { pointer-events: auto; }
+        .status-light { width: 10px; height: 10px; border-radius: 50%; background: #ef4444; }
+        .status-light.on { background: #22c55e; box-shadow: 0 0 10px #22c55e; }
+        .skip-btn { 
+            background: rgba(255, 255, 255, 0.2); 
+            border: 1px solid rgba(255, 255, 255, 0.4); 
+            padding: 4px 8px; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-size: 0.6rem; 
+            text-transform: uppercase; 
+            color: #fff;
+            margin-right: 12px;
+            transition: background 0.2s;
+        }
+        .skip-btn:hover { background: rgba(255, 255, 255, 0.4); }
+        .hint-pill {
+            background: #facc15;
+            color: black;
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-weight: 900;
+            font-size: 0.7rem;
+            cursor: pointer;
+            margin-right: 12px;
+            box-shadow: 0 2px 0 #b45309;
+            transition: transform 0.1s;
+        }
+        .hint-pill:active { transform: translateY(2px); box-shadow: none; }
+        .chain-select:focus { outline: none; border-color: #fff; }
+        .cursor-toggle {
+            display: flex; align-items: center; gap: 6px; cursor: pointer;
+            margin-left: 12px; font-size: 0.7rem; color: #aaa;
+        }
+        .cursor-toggle input { cursor: pointer; }
+        body.hide-cursor { cursor: none !important; }
+        body.hide-cursor * { cursor: none !important; }
+
+        #saliva-layer { position: absolute; inset: 0; z-index: 200; pointer-events: none; }
+        
+        /* Transitions */
+        .mouth-retracted .teeth-top { transform: translateY(-150px); }
+        .mouth-retracted .teeth-bottom { transform: translateY(150px); }
+
+        .shake { animation: shake-kb 0.3s; }
+        @keyframes shake-kb {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(-10px, 5px); }
+            75% { transform: translate(10px, -5px); }
+        }
+
+        /* Strikes */
+        .strikes-container {
+            position: fixed; top: 15px; left: 15px; z-index: 200;
+            display: flex; gap: 8px;
+        }
+        .strike-group { position: relative; width: 30px; height: 30px; }
+        .mark {
+            position: absolute; width: 4px; height: 100%;
+            background: rgba(255,255,255,0.8); border-radius: 2px;
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        .m1 { left: 4px; transform: rotate(2deg); }
+        .m2 { left: 10px; transform: rotate(-1deg); }
+        .m3 { left: 16px; transform: rotate(1deg); }
+        .m4 { left: 22px; transform: rotate(-2deg); }
+        .m5 { 
+            left: 0; top: 12px; width: 32px; height: 4px; 
+            transform: rotate(-15deg); 
+            background: #ff4d6d;
+        }
+    </style>
+</head>
+<body onclick="focusApp()">
+    
+    <div class="strikes-container" id="strikes-display"></div>
+    
+    <div id="game-over-overlay" class="fixed inset-0 bg-black/80 z-[2000] hidden flex-col items-center justify-center text-white backdrop-blur-sm">
+        <h2 class="text-6xl font-black text-rose-500 mb-8 italic">FULL BELLY</h2>
+        <div onclick="location.reload()" class="w-32 h-32 rounded-full bg-rose-600 border-4 border-white flex items-center justify-center cursor-pointer hover:scale-110 transition-transform shadow-[0_0_30px_rgba(255,0,0,0.4)]">
+             <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.5 2v6h-6M21.34 5.5A10 10 0 1 1 11.26 2.5"/>
+             </svg>
+        </div>
+        <p class="mt-4 font-bold text-xl uppercase tracking-widest">Restart</p>
+    </div>
+
+    <div id="overlay" class="fixed inset-0 bg-black z-[1000] flex flex-col items-center justify-center text-white text-center p-10" onclick="startGame()">
+        <h1 class="text-7xl font-black italic text-rose-500 leading-tight">CHOMP CHAIN</h1>
+        <h2 class="text-4xl font-extrabold text-pink-300 italic mb-8 tracking-wider -rotate-2">BRAILLE BITE ME</h2>
+        <div class="bg-rose-600 px-12 py-6 rounded-3xl text-3xl font-black shadow-[0_10px_0_#800f2f] cursor-pointer active:translate-y-2 uppercase">Open Wide</div>
+        <p class="mt-8 opacity-50 font-bold tracking-tighter uppercase">Keyboard Required: SDF JKL</p>
+    </div>
+
+    <!-- INTRO SEQUENCE OVERLAY -->
+    <div id="intro-overlay" class="fixed inset-0 bg-black/95 z-[1500] flex flex-col items-center justify-center text-white text-center p-10 hidden" onclick="nextIntroStep()">
+        <div id="intro-content" class="max-w-2xl flex flex-col items-center gap-6"></div>
+        <p class="mt-12 text-gray-500 font-mono text-sm">[ SPACE TO CONTINUE ]</p>
+    </div>
+
+    <div class="kb-status">
+        <select id="level-select" class="chain-select" onchange="changeChain(this.value)"></select>
+        <div class="hint-pill" onclick="autoBite()">HINT: <span id="hint-text">...</span></div>
+        <button class="skip-btn" onclick="scrambleStrike()">Swallow Word</button>
+        <button class="skip-btn" onclick="skipWord()">Skip</button>
+        <label class="cursor-toggle">
+            <input type="checkbox" onchange="toggleCursor(this)"> NO CURSOR
+        </label>
+        <div style="width: 20px"></div>
+        KEYBOARD LISTENING <div id="kb-light" class="status-light"></div>
+    </div>
+
+    <div class="mouth-chamber mouth-retracted" id="chamber">
+        
+        <!-- Throat Hole Background -->
+        <div class="throat-tunnel">
+            <div class="throat-ring r3"></div>
+            <div class="throat-ring r2"></div>
+            <div class="throat-ring r1"></div>
+            <div class="uvula-system" id="uvula">
+                <div class="uvula-stalk"></div>
+                <div class="uvula-bulb">
+                    <div class="grid grid-cols-2 gap-2" id="preview-grid">
+                        <div class="w-2 h-2 rounded-full bg-rose-900/30"></div><div class="w-2 h-2 rounded-full bg-rose-900/30"></div>
+                        <div class="w-2 h-2 rounded-full bg-rose-900/30"></div><div class="w-2 h-2 rounded-full bg-rose-900/30"></div>
+                        <div class="w-2 h-2 rounded-full bg-rose-900/30"></div><div class="w-2 h-2 rounded-full bg-rose-900/30"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <svg id="saliva-layer" width="100%" height="100%"></svg>
+
+        <!-- Tongue (Behind Food) -->
+        <div class="tongue-wrap">
+            <div class="tongue-muscle" id="tongue"></div>
+        </div>
+        <style>
+            .tongue-muscle {
+                height: 1500px !important; /* Extremely tall so bottom never shows */
+                bottom: -1100px; /* Push it down so tip is visible at bottom */
+            }
+        </style>
+
+        <!-- Upper Teeth -->
+        <div class="w-full flex flex-col items-center">
+            <div class="gums"></div>
+            <div class="teeth-row teeth-top" id="teeth-top">
+                <div id="t-s" class="tooth">S</div><div id="t-d" class="tooth">D</div><div id="t-f" class="tooth">F</div>
+                <div class="w-10"></div>
+                <div id="t-j" class="tooth">J</div><div id="t-k" class="tooth">K</div><div id="t-l" class="tooth">L</div>
+            </div>
+        </div>
+
+        <!-- The Food Stack -->
+        <div class="food-stack" id="foodStack"></div>
+
+        <!-- Lower Teeth -->
+        <div class="w-full flex flex-col items-center relative">
+            <div class="teeth-row teeth-bottom" id="teeth-bottom">
+                <div id="b-s" class="tooth bottom">S</div><div id="b-d" class="tooth bottom">D</div><div id="b-f" class="tooth bottom">F</div>
+                <div class="w-10"></div>
+                <div id="b-j" class="tooth bottom">J</div><div id="b-k" class="tooth bottom">K</div><div id="b-l" class="tooth bottom">L</div>
+            </div>
+            <div class="gums gums-bottom"></div>
+        </div>
+    </div>
+
+    <script src="game-data.js"></script>
+<script>
+    let currentChainIndex = 0;
+    let currentWordText = "";
+    let keysActive = new Set();
+    let currentChord = new Set();
+    let salivaLines = []; // Now stores { anchor: Element, id: string, sag: number, maxLength: number }
+    let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+    let prevMouseX = mouseX, prevMouseY = mouseY;
+    let shakeIntensity = 0; // New physics variable for jostling
+    
+    // Game State
+    let introStep = 0;
+    let inIntro = false;
+    let gameActive = false;
+
+    let wordGraph = {}; // "WORD" -> ["TARGET1", "TARGET2"]
+    let allKnownWords = new Set();
+    let strikes = 0;
+
+    const INTRO_SLIDES = [
+        `
+        <h2 class="text-4xl font-bold text-rose-400 mb-4">Learning Braille...</h2>
+        <p class="text-2xl italic">One bite at a time.</p>
+        `,
+        `
+        <h2 class="text-4xl font-bold text-rose-400 mb-4">You're Hungry.</h2>
+        <p class="text-2xl">Big words are too much to swallow.</p>
+        <p class="text-2xl mt-4">They need to be <span class="text-rose-500 font-black italic">BITTEN DOWN</span>.</p>
+        `,
+        `
+        <h2 class="text-4xl font-bold text-rose-400 mb-4">Use Your Teeth</h2>
+        <p class="text-xl mb-6">Chorded keys <span class="bg-gray-800 px-2 py-1 rounded border border-gray-600 font-mono">S D F</span> and <span class="bg-gray-800 px-2 py-1 rounded border border-gray-600 font-mono">J K L</span></p>
+        <div class="grid grid-cols-2 gap-4 bg-rose-900/20 p-6 rounded-xl border border-rose-900/50">
+           <div class="flex gap-2">
+                <div class="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center font-bold">1</div>
+                <div class="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center font-bold">2</div>
+                <div class="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center font-bold">3</div>
+           </div>
+           <div class="flex gap-2">
+                <div class="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center font-bold">4</div>
+                <div class="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center font-bold">5</div>
+                <div class="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center font-bold">6</div>
+           </div>
+           <div class="col-span-2 text-center text-sm opacity-70 mt-2 font-mono">Use keys to form Braille dots</div>
+        </div>
+        `,
+        `
+        <h2 class="text-4xl font-bold text-rose-400 mb-4">Watch The Uvula</h2>
+        <p class="text-2xl">It previews what you're typing in real-time.</p>
+        <div class="w-20 h-24 mt-6 bg-pink-400 rounded-b-full border-4 border-rose-600 animate-pulse"></div>
+        `,
+        `
+        <h2 class="text-4xl font-bold text-rose-400 mb-4">The Goal</h2>
+        <p class="text-2xl">Bite letters out of words completely.</p>
+        <p class="text-xl mt-4 text-gray-300">Make valid smaller words until nothing is left.</p>
+        `,
+        `
+        <h2 class="text-4xl font-bold text-rose-400 mb-4">In Emergency...</h2>
+        <p class="text-2xl">If you get stuck, press <span class="bg-white text-black px-2 font-bold">[ SPACE ]</span></p>
+        <p class="text-xl mt-4 text-rose-500 font-bold">It will force a SWALLOW.</p>
+        <p class="text-sm mt-2 opacity-70">(But you will get a strike!)</p>
+        `
+    ];
+
+
+    function initGraph() {
+        wordGraph = {};
+        allKnownWords = new Set();
+        
+        // Populate Select Dropdown
+        const select = document.getElementById('level-select');
+        select.innerHTML = '';
+        CHAINS.forEach((chain, idx) => {
+            const opt = document.createElement('option');
+            opt.value = idx;
+            opt.innerText = chain[0] + " → ...";
+            select.appendChild(opt);
+        });
+        select.value = currentChainIndex;
+
+        // 1. Ingest Main Chains
+        CHAINS.forEach(chain => {
+            chain.forEach(w => { if(w) allKnownWords.add(w); });
+
+            for (let i = 0; i < chain.length - 1; i++) {
+                const w = chain[i];
+                const next = chain[i+1];
+                if (!wordGraph[w]) wordGraph[w] = [];
+                // Ensure unique
+                if (!wordGraph[w].includes(next)) {
+                    wordGraph[w].push(next);
+                }
+            }
+        });
+
+        // 2. Ingest Alternates
+        Object.keys(ALTERNATES).forEach(key => {
+            allKnownWords.add(key);
+            if (!wordGraph[key]) wordGraph[key] = [];
+            ALTERNATES[key].forEach(alt => {
+                allKnownWords.add(alt);
+                if (!wordGraph[key].includes(alt)) {
+                    wordGraph[key].push(alt);
+                }
+            });
+        });
+    }
+
+    function renderStrikes() {
+        const container = document.getElementById('strikes-display');
+        container.innerHTML = '';
+        
+        let s = strikes;
+        while(s > 0) {
+            const groupVal = Math.min(5, s);
+            const g = document.createElement('div');
+            g.className = 'strike-group';
+            
+            // Add lines
+            for(let i=1; i<=Math.min(4, groupVal); i++) {
+                const m = document.createElement('div');
+                m.className = `mark m${i}`;
+                g.appendChild(m);
+            }
+            if(groupVal === 5) {
+                const m = document.createElement('div');
+                m.className = `mark m5`;
+                g.appendChild(m);
+            }
+
+            container.appendChild(g);
+            s -= groupVal;
+        }
+
+        if(strikes >= 5) {
+             // Game Over visual
+             container.style.opacity = '1';
+             setTimeout(() => {
+                document.getElementById('game-over-overlay').classList.remove('hidden');
+                document.getElementById('game-over-overlay').classList.add('flex');
+                // Stop Physics?
+                cancelAnimationFrame(physicsLoop); 
+             }, 600);
+        } else {
+             container.style.opacity = '1';
+        }
+    }
+
+    function scrambleStrike() {
+        // Try to find a smaller word (at least 2 letters shorter)
+        // using subset of current letters
+        const currentChars = currentWordText.split('').map(c => c.toUpperCase());
+        const candidates = Array.from(allKnownWords);
+        
+        // Helper to check if target can be formed from source
+        const canForm = (target, sourceArr) => {
+            let tempSource = [...sourceArr];
+            for (let char of target) {
+                const idx = tempSource.indexOf(char);
+                if (idx === -1) return false;
+                tempSource.splice(idx, 1);
+            }
+            return true;
+        };
+
+        // Find matches
+        const valid = candidates.filter(w => {
+            if (w.length === 0) return false;
+            // Must be at least 2 shorter
+            if (w.length > currentWordText.length - 2) return false;
+            // Must be formable
+            return canForm(w, currentChars);
+        });
+
+        if (valid.length > 0) {
+            // Found a save!
+            // Pick longest valid
+            valid.sort((a,b) => b.length - a.length);
+            const best = valid[0];
+            
+            // "Swallow" transition to this new word
+            // Animate transition similar to performSwallow but maybe different?
+            // Reuse performSwallow logic but we don't have a single specific letter index.
+            // Just fade out and render new.
+            
+            const container = document.getElementById('foodStack');
+            container.style.transform = 'scale(0.1) rotate(180deg)';
+            container.style.opacity = '0';
+            
+            setTimeout(() => {
+                currentWordText = best;
+                renderWord();
+                container.style.transform = 'scale(1) rotate(0deg)';
+                container.style.opacity = '1';
+            }, 400);
+
+        } else {
+            // FAIL - STRIKE! 
+            strikes++;
+            renderStrikes();
+            
+            // Shake screen harder
+            document.body.classList.add('shake');
+            setTimeout(() => document.body.classList.remove('shake'), 500);
+
+            // Skip current word completely
+            skipWord();
+        }
+    }
+
+    function focusApp() { window.focus(); }
+
+    function startGame() {
+        // Start Intro process instead of game directly
+        document.getElementById('overlay').style.display = 'none';
+        startIntro();
+    }
+
+    function startIntro() {
+        inIntro = true;
+        introStep = 0;
+        document.getElementById('intro-overlay').classList.remove('hidden');
+        renderIntroSlide();
+    }
+
+    function renderIntroSlide() {
+        const content = document.getElementById('intro-content');
+        content.innerHTML = INTRO_SLIDES[introStep];
+        content.style.opacity = '0';
+        content.style.transform = 'translateY(20px)';
+        
+        requestAnimationFrame(() => {
+            content.style.transition = 'all 0.4s ease-out';
+            content.style.opacity = '1';
+            content.style.transform = 'translateY(0)';
+        });
+    }
+
+    function nextIntroStep() {
+        if (!inIntro) return;
+        
+        introStep++;
+        if (introStep >= INTRO_SLIDES.length) {
+            // End Intro
+            finishIntro();
+        } else {
+            renderIntroSlide();
+        }
+    }
+
+    function finishIntro() {
+        inIntro = false;
+        document.getElementById('intro-overlay').classList.add('hidden');
+        runGame();
+    }
+
+    function runGame() {
+        gameActive = true;
+        initGraph();
+        document.getElementById('kb-light').classList.add('on');
+        strikes = 0;
+        renderStrikes();
+        resetLevel();
+        requestAnimationFrame(physicsLoop);
+    }
+
+    function resetLevel() {
+        currentWordText = CHAINS[currentChainIndex][0];
+        
+        const chamber = document.getElementById('chamber');
+        chamber.classList.add('mouth-retracted');
+        
+        setTimeout(() => {
+            renderWord();
+            chamber.classList.remove('mouth-retracted');
+        }, 800);
+    }
+
+
+    // GLOBAL KEYBOARD LISTENER
+    window.addEventListener('keydown', (e) => {
+        const k = e.key.toLowerCase();
+        
+        // Handle Space for Intro or Swallow
+        if (k === ' ') {
+            e.preventDefault();
+            if (inIntro) {
+                nextIntroStep();
+                return;
+            }
+            if (gameActive) {
+                scrambleStrike();
+                return;
+            }
+        }
+
+        // C to toggle cursor
+        if (k === 'c') {
+            const cb = document.querySelector('.cursor-toggle input');
+            cb.checked = !cb.checked;
+            toggleCursor(cb);
+        }
+
+        if (DOTS_KEY[k]) {
+            e.preventDefault();
+            keysActive.add(k);
+            currentChord.add(DOTS_KEY[k]);
+            updateTeethVisuals();
+            updateUvulaPreview();
+        }
+    });
+
+    window.addEventListener('keyup', (e) => {
+        const k = e.key.toLowerCase();
+        if (DOTS_KEY[k]) {
+            keysActive.delete(k);
+            if (keysActive.size === 0 && currentChord.size > 0) {
+                attemptBite(Array.from(currentChord).sort((a,b)=>a-b));
+                currentChord.clear();
+                updateUvulaPreview();
+            }
+            updateTeethVisuals();
+        }
+    });
+
+    function attemptBite(chord) {
+        const letter = Object.keys(BRAILLE).find(l => JSON.stringify(BRAILLE[l].sort((a,b)=>a-b)) === JSON.stringify(chord))?.toUpperCase();
+        if (!letter) { triggerShake(); return; }
+
+        let foundIdx = -1;
+        let validNextWord = null;
+
+        // Iterate through all instances of the letter in the current word
+        for(let i=0; i<currentWordText.length; i++) {
+            if(currentWordText[i] === letter) {
+                // Form candidate word by removing this letter
+                const candidate = currentWordText.slice(0, i) + currentWordText.slice(i+1);
+                
+                // Check against graph
+                const possibleNexts = wordGraph[currentWordText];
+                if (possibleNexts && possibleNexts.includes(candidate)) {
+                    foundIdx = i;
+                    validNextWord = candidate;
+                    break;
+                }
+            }
+        }
+
+        if (foundIdx !== -1 && validNextWord !== null) {
+            performSwallow(foundIdx, validNextWord);
+        } else {
+            triggerShake();
+        }
+    }
+    
+    // Toggle cursor helper
+    function toggleCursor(cb) {
+        if (cb.checked) document.body.classList.add('hide-cursor');
+        else document.body.classList.remove('hide-cursor');
+    }
+
+    function performSwallow(idx, nextWord) {
+        shakeIntensity = 20; // Jostle saliva on success
+        const sponge = document.querySelectorAll('.sponge')[idx];
+        const rect = sponge.getBoundingClientRect();
+        const clone = sponge.cloneNode(true);
+        
+        clone.style.position = 'fixed';
+        clone.style.left = rect.left + 'px';
+        clone.style.top = rect.top + 'px';
+        clone.style.zIndex = '500';
+        clone.style.transition = 'all 0.6s cubic-bezier(0.5, -0.2, 0.7, 0.5)';
+        document.body.appendChild(clone);
+        sponge.style.visibility = 'hidden';
+
+        // Pendulum Swing
+        document.getElementById('uvula').style.transform = 'rotate(25deg)';
+        setTimeout(() => document.getElementById('uvula').style.transform = 'rotate(0deg)', 400);
+
+        requestAnimationFrame(() => {
+            clone.style.left = '50%';
+            clone.style.top = '50%';
+            clone.style.transform = 'scale(0) rotate(360deg)';
+            clone.style.opacity = '0';
+        });
+
+        setTimeout(() => {
+            clone.remove();
+            currentWordText = nextWord;
+            
+            if (currentWordText === "") {
+                currentChainIndex = (currentChainIndex + 1) % CHAINS.length;
+                resetLevel();
+            } else {
+                renderWord();
+            }
+        }, 600);
+    }
+
+    function autoBite() {
+        const nexts = wordGraph[currentWordText];
+        if (!nexts || nexts.length === 0) return;
+        
+        const next = nexts[0]; // Pick first (prefer main chain usually)
+        let diff = currentWordText;
+        for(let c of next) diff = diff.replace(c, '');
+        
+        const targetBraille = BRAILLE[diff.toLowerCase()];
+        if (targetBraille) {
+            attemptBite(targetBraille.sort((a,b)=>a-b));
+        }
+    }
+
+    function changeChain(val) {
+        currentChainIndex = parseInt(val);
+        document.getElementById('level-select').blur(); // Remove focus so keyboard works for game
+        resetLevel();
+    }
+
+    function skipWord() {
+        // Just jump to the hint target
+        const nexts = wordGraph[currentWordText];
+        if (!nexts || nexts.length === 0) {
+            // Dead end or done? Try to force next level if empty
+            if (currentWordText === "") {
+                currentChainIndex = (currentChainIndex + 1) % CHAINS.length;
+                resetLevel();
+            }
+            return;
+        }
+
+        currentWordText = nexts[0];
+
+        if (currentWordText === "") {
+            currentChainIndex = (currentChainIndex + 1) % CHAINS.length;
+            resetLevel();
+        } else {
+            const container = document.getElementById('foodStack');
+            container.style.opacity = '0';
+            setTimeout(() => {
+                renderWord();
+                container.style.opacity = '1';
+            }, 200);
+        }
+    }
+
+    function renderWord() {
+        const word = currentWordText;
+        const container = document.getElementById('foodStack');
+        container.innerHTML = '';
+        
+        // Responsive Scaling
+        const scale = Math.min(1, 9 / word.length);
+        container.style.transform = `scale(${scale})`;
+
+        word.split('').forEach((char, i) => {
+            const dots = BRAILLE[char.toLowerCase()];
+            const s = document.createElement('div');
+            s.className = 'sponge';
+            s.style.backgroundColor = COLORS[i % COLORS.length];
+            s.innerHTML = `
+                <div class="sponge-letter">${char}</div>
+                <div class="sponge-braille">
+                    ${[1,4,2,5,3,6].map(d => `<div class="s-dot ${dots.includes(d) ? 'active' : ''}"></div>`).join('')}
+                </div>`;
+            container.appendChild(s);
+        });
+
+        // HINT LOGIC
+        const nexts = wordGraph[currentWordText];
+        const mainTarget = nexts && nexts.length > 0 ? nexts[0] : "DONE";
+        document.getElementById('hint-text').innerText = mainTarget;
+
+        // Reset old static lines logic - dynamic logic is now in physicsLoop
+        salivaLines = [];
+    }
+
+    function updateTeethVisuals() {
+        ['s','d','f','j','k','l'].forEach(k => {
+            const active = keysActive.has(k);
+            document.getElementById(`t-${k}`).classList.toggle('pressed', active);
+            document.getElementById(`b-${k}`).classList.toggle('pressed', active);
+        });
+    }
+
+    function updateUvulaPreview() {
+        const dots = Array.from(currentChord);
+        const children = document.getElementById('preview-grid').children;
+        const map = [1,4,2,5,3,6];
+        map.forEach((dotNum, idx) => {
+            children[idx].style.background = dots.includes(dotNum) ? '#fff' : 'rgba(0,0,0,0.2)';
+            children[idx].style.boxShadow = dots.includes(dotNum) ? '0 0 10px #fff' : 'none';
+        });
+    }
+
+    function triggerShake() {
+        shakeIntensity = 50; // Higher jostle on shake
+        const chamber = document.getElementById('chamber');
+        chamber.classList.add('shake');
+        setTimeout(() => chamber.classList.remove('shake'), 300);
+    }
+
+    function physicsLoop() {
+        if (strikes >= 5) return; // Stop physics on game over
+
+        // Manage Saliva
+        const svg = document.getElementById('saliva-layer');
+        svg.innerHTML = '';
+        
+        // Calculate Mouse Speed
+        const moveSpeed = Math.hypot(mouseX - prevMouseX, mouseY - prevMouseY);
+        
+        // Decay Shake
+        shakeIntensity *= 0.9;
+        if(shakeIntensity < 0.1) shakeIntensity = 0;
+
+        // Dynamic Candidates for attachments
+        const candidates = [...document.querySelectorAll('.tooth'), ...document.querySelectorAll('.sponge')];
+
+        // 1. UPDATE & DRAW EXISTING LINES
+        salivaLines = salivaLines.filter(line => {
+            if (line.anchor.style.visibility === 'hidden') return false;
+            // If target exists but is hidden (e.g. eaten sponge), break
+            if (line.target && line.target.el.style.visibility === 'hidden') return false;
+            
+            // --- Determine Start Point (A) ---
+            const r1 = line.anchor.getBoundingClientRect();
+            const off1 = line.anchorOffset || {x:0.5, y:0.5};
+            const ax = r1.left + r1.width * off1.x;
+            const ay = r1.top + r1.height * off1.y;
+
+            // --- Determine End Point (B) ---
+            let bx, by;
+            let isAttached = false;
+
+            if (line.target) {
+                // Attached to second object
+                const r2 = line.target.el.getBoundingClientRect();
+                const off2 = line.target.offset;
+                bx = r2.left + r2.width * off2.x;
+                by = r2.top + r2.height * off2.y;
+                isAttached = true;
+            } else {
+                // Attached to Mouse/Tongue
+                bx = mouseX;
+                by = mouseY;
+            }
+            
+            const dist = Math.hypot(bx - ax, by - ay);
+
+            // --- PHYSICS ---
+            line.sag += 0.3; // Gravity
+            
+            // Tautening: Only if mouse is involved
+            if (!isAttached && moveSpeed > 0.5) {
+                line.sag = Math.max(0, line.sag - moveSpeed * 0.8);
+            }
+            // Damping for static lines to prevent infinite droop
+            if (isAttached) {
+               if (line.sag > 50) line.sag *= 0.99;
+            }
+
+            // --- TRANSFER LOGIC (If connected to mouse) ---
+            if (!isAttached) {
+                // Check collision with candidates to transfer
+                for (let c of candidates) {
+                    if (c === line.anchor) continue; // Don't loop back to self
+                    const r = c.getBoundingClientRect();
+                    
+                    // Simple Box Check
+                    if (bx > r.left - 15 && bx < r.right + 15 && by > r.top - 15 && by < r.bottom + 15) {
+                         const corners = [
+                            {x:0.2, y:0.2}, {x:0.8, y:0.2}, 
+                            {x:0.2, y:0.8}, {x:0.8, y:0.8}
+                        ];
+                        // check corners
+                        for (let off of corners) {
+                            const cx = r.left + r.width * off.x;
+                            const cy = r.top + r.height * off.y;
+                            if (Math.hypot(bx - cx, by - cy) < 25) {
+                                // TRANSFER!
+                                line.target = { el: c, offset: off };
+                                isAttached = true;
+                                line.sag *= 0.5; // Snap effect
+                                break;
+                            }
+                        }
+                    }
+                    if (isAttached) break;
+                }
+            }
+
+            // --- POPPING LOGIC ---
+            if (dist > line.maxLength) return false;
+            
+            // Max sag pop
+            if (line.sag > line.maxSag * (isAttached ? 2 : 1)) return false; 
+
+            // Shake/Jostle Pop: Reduced chance
+            if (shakeIntensity > 10 && Math.random() < (shakeIntensity / 500)) return false; 
+            
+            // Random breaks: More stable if attached to object
+            const sagStress = line.sag / line.maxSag;
+            // Lowered base break chance (0.05 -> 0.02)
+            if (sagStress > (isAttached ? 2.0 : 0.8) && Math.random() < 0.02) return false;
+
+            // --- DRAW w/ JOSTLE ---
+            let midX = (ax + bx) / 2;
+            let midY = (ay + by) / 2 + line.sag;
+            
+            // Apply Jostle
+            if (moveSpeed > 0 || shakeIntensity > 0) {
+                 const jostleAmt = moveSpeed * 0.5 + shakeIntensity * 0.5;
+                 midX += (Math.random() - 0.5) * jostleAmt;
+                 midY += (Math.random() - 0.5) * jostleAmt;
+            }
+
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            path.setAttribute("d", `M ${ax} ${ay} Q ${midX} ${midY} ${bx} ${by}`);
+            
+            const width = Math.max(0.5, 5 - (dist/60));
+            path.setAttribute("stroke-width", width);
+            path.setAttribute("stroke", isAttached ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.65)");
+            path.setAttribute("fill", "none");
+            path.setAttribute("stroke-linecap", "round");
+            svg.appendChild(path);
+            
+            return true;
+        });
+
+        // 2. CREATION (Spawn from objects to Tongue)
+        const mouseAttachedCount = salivaLines.filter(l => !l.target).length;
+        
+        // Reduced frequency logic
+        if (mouseAttachedCount < 5) {
+            candidates.forEach(el => {
+                if (el.style.visibility === 'hidden') return;
+                
+                const rect = el.getBoundingClientRect();
+                const corners = [
+                    {x:0.1, y:0.1}, {x:0.9, y:0.1}, 
+                    {x:0.1, y:0.9}, {x:0.9, y:0.9}
+                ];
+                
+                for (let offset of corners) {
+                    const cx = rect.left + rect.width * offset.x;
+                    const cy = rect.top + rect.height * offset.y;
+                    const dist = Math.hypot(mouseX - cx, mouseY - cy);
+
+                    if (dist < 30) {
+                        // Reduced chance: 0.05 -> 0.015 (1.5%)
+                        if (Math.random() < 0.015) {
+                            if (!salivaLines.some(l => l.anchor === el && !l.target)) {
+                                salivaLines.push({
+                                    anchor: el,
+                                    anchorOffset: offset,
+                                    target: null, // Mouse
+                                    sag: Math.random() * 10 + 5,
+                                    maxSag: Math.random() * 120 + 80,
+                                    maxLength: Math.random() * 250 + 200
+                                });
+                            }
+                            break; 
+                        }
+                    }
+                }
+            });
+        }
+        
+        prevMouseX = mouseX;
+        prevMouseY = mouseY;
+        requestAnimationFrame(physicsLoop);
+    }
+
+    // Tongue Logic
+    const tongue = document.getElementById('tongue');
+    // We need to know the initial position of the tongue tip relative to window center
+    // Tongue Wrap is bottom: -50px. Muscle is centered.
+    // We force the tongue to follow the mouse exactly at the tip.
+    
+    window.addEventListener('mousemove', (e) => {
+        const mx = e.clientX;
+        const my = e.clientY;
+        
+        mouseX = mx;
+        mouseY = my;
+
+        // Calculate offset from default center-bottom position
+        // Ideally, we just translate the tongue so its tip (top-center) is at mx, my.
+        
+        // Center of screen X
+        const centerX = window.innerWidth / 2;
+        
+        // Default Top of Tongue Y (approximate based on CSS)
+        // .tongue-wrap is bottom: -50px.
+        // .tongue-muscle relative bottom: -1100px. Height 1500px.
+        // So visually: ScreenHeight + 50 - (-1100) = ScreenHeight + 1150 (Bottom of Muscle)
+        // Top of muscle = Bottom - Height = ScreenHeight + 1150 - 1500 = ScreenHeight - 350.
+        // So default tip is at Y = window.innerHeight - 350.
+        
+        const defaultTipY = window.innerHeight - 350;
+
+        const dx = mx - centerX;
+        const dy = my - defaultTipY;
+
+        tongue.style.transform = `translate(${dx}px, ${dy}px)`;
+        
+        // Rotate Uvula slightly based on X
+        const xPercent = (mx / window.innerWidth - 0.5) * 50;
+        document.getElementById('uvula').style.transform = `rotate(${-xPercent/3}deg)`;
+    });
+
+    function toggleCursor(cb) {
+        if (cb.checked) document.body.classList.add('hide-cursor');
+        else document.body.classList.remove('hide-cursor');
+    }
+</script>
+</body>
+</html>

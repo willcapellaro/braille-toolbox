@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Alphagator Transition Tester</title>
+    <style>
+        body { margin: 0; background: #1a1a1a; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; color: white; font-family: sans-serif; }
+        #stage { position: relative; width: 800px; height: 600px; outline: 2px solid #444; background: #000; }
+        img, video { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); max-width: 100%; max-height: 100%; display: none; }
+        .active { display: block; }
+        #controls { position: absolute; bottom: 20px; left: 20px; font-size: 14px; opacity: 0.7; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+<div id="stage">
+    <!-- Static Images -->
+    <img id="view-idle" src="idle.png" class="active">
+    <img id="view-ready" src="ready.png">
+
+    <!-- Transition Videos -->
+    <video id="vid-open" src="transition_to_open.mp4" playsinline muted></video>
+    <video id="vid-chomp" src="transition_to_chomp.mp4" playsinline muted></video>
+
+    <div id="controls">
+        [SPACE] Toggle Idle/Ready | [F] Mouth Open (A) | [F+J] Chomp Down (B)
+    </div>
+</div>
+
+<script>
+    const states = { IDLE: 'idle', READY: 'ready', TRANSITIONING: 'transitioning', OPEN_HELD: 'open_held', CHOMP_HELD: 'chomp_held' };
+    let currentState = states.IDLE;
+    let keysPressed = {};
+
+    const viewIdle = document.getElementById('view-idle');
+    const viewReady = document.getElementById('view-ready');
+    const vidOpen = document.getElementById('vid-open');
+    const vidChomp = document.getElementById('vid-chomp');
+
+    function hideAll() {
+        [viewIdle, viewReady, vidOpen, vidChomp].forEach(el => el.classList.remove('active'));
+    }
+
+    function playTransition(videoEl, endState) {
+        if (currentState === states.TRANSITIONING || currentState === endState) return;
+        
+        currentState = states.TRANSITIONING;
+        hideAll();
+        videoEl.classList.add('active');
+        videoEl.currentTime = 0;
+        videoEl.play();
+
+        videoEl.onended = () => {
+            currentState = endState;
+            videoEl.pause(); // Hold on the final frame
+        };
+    }
+
+    window.addEventListener('keydown', (e) => {
+        const key = e.key.toLowerCase();
+        keysPressed[key] = true;
+
+        if (currentState === states.TRANSITIONING) return;
+
+        // F + J: Chomp Down
+        if (keysPressed['f'] && keysPressed['j']) {
+            playTransition(vidChomp, states.CHOMP_HELD);
+        } 
+        // F: Mouth Open
+        else if (key === 'f') {
+            playTransition(vidOpen, states.OPEN_HELD);
+        }
+        // Space: Toggle Idle/Ready
+        else if (key === ' ') {
+            hideAll();
+            if (currentState === states.IDLE) {
+                currentState = states.READY;
+                viewReady.classList.add('active');
+            } else {
+                currentState = states.IDLE;
+                viewIdle.classList.add('active');
+            }
+        }
+    });
+
+    window.addEventListener('keyup', (e) => {
+        delete keysPressed[e.key.toLowerCase()];
+    });
+</script>
+</body>
+</html>

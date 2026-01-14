@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Alphagator High-Speed Tester</title>
+    <style>
+        body { margin: 0; background: #0a0a0a; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; color: #00ff00; font-family: 'Courier New', Courier, monospace; }
+        #stage { position: relative; width: 800px; height: 600px; outline: 4px solid #333; background: #000; overflow: hidden; }
+        img, video { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: contain; display: none; }
+        .active { display: block; }
+        #ui { position: absolute; top: 10px; left: 10px; font-size: 12px; text-transform: uppercase; background: rgba(0,0,0,0.7); padding: 10px; border: 1px solid #333; pointer-events: none; }
+        .stat { color: #fff; margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+
+<div id="stage">
+    <img id="view-idle" src="idle.png" class="active">
+    <img id="view-ready" src="ready.png">
+    <video id="vid-open" src="transition_to_open.mp4" playsinline muted preload="auto"></video>
+    <video id="vid-chomp" src="transition_to_chomp.mp4" playsinline muted preload="auto"></video>
+
+    <div id="ui">
+        <div class="stat">State: <span id="st-name">IDLE</span></div>
+        <hr>
+        [SPACE] IDLE/READY <br>
+        [F] MOUTH OPEN (A) <br>
+        [F+J] CHOMP DOWN (B)
+    </div>
+</div>
+
+<script>
+    // --- CONFIGURATION ---
+    const PLAYBACK_SPEED = 1.5; // Change this (e.g., 2.0) to make the MP4s play even faster
+    
+    const states = { IDLE: 'IDLE', READY: 'READY', OPENING: 'OPENING', CHOMPING: 'CHOMPING' };
+    let currentState = states.IDLE;
+    let keysPressed = {};
+
+    const els = {
+        idle: document.getElementById('view-idle'),
+        ready: document.getElementById('view-ready'),
+        vidOpen: document.getElementById('vid-open'),
+        vidChomp: document.getElementById('vid-chomp'),
+        status: document.getElementById('st-name')
+    };
+
+    // Set playback speed for both videos
+    els.vidOpen.playbackRate = PLAYBACK_SPEED;
+    els.vidChomp.playbackRate = PLAYBACK_SPEED;
+
+    function updateStateDisplay(name) {
+        els.status.innerText = name;
+    }
+
+    function resetViews() {
+        Object.values(els).forEach(el => {
+            if(el.classList) el.classList.remove('active');
+        });
+    }
+
+    function playAction(videoEl, stateName) {
+        // Instant interrupt: stop everything else
+        els.vidOpen.pause();
+        els.vidChomp.pause();
+        
+        resetViews();
+        videoEl.classList.add('active');
+        videoEl.currentTime = 0; 
+        
+        // Use a promise to handle the play action to avoid browser "interrupted by call to pause" errors
+        let playPromise = videoEl.play();
+        if (playPromise !== undefined) {
+            playPromise.then(_ => {
+                currentState = stateName;
+                updateStateDisplay(stateName);
+            }).catch(e => console.log("Playback interrupted"));
+        }
+
+        videoEl.onended = () => {
+            // Hold last frame logic is inherent to pausing at end
+            videoEl.pause();
+        };
+    }
+
+    window.addEventListener('keydown', (e) => {
+        const key = e.key.toLowerCase();
+        if (keysPressed[key]) return; // Prevent key repeat lag
+        keysPressed[key] = true;
+
+        // PRIORITIZE CHOMP (F+J)
+        if (keysPressed['f'] && keysPressed['j']) {
+            playAction(els.vidChomp, states.CHOMPING);
+            return;
+        }
+
+        // MOUTH OPEN (F)
+        if (key === 'f') {
+            // Small delay to check if J is being pressed simultaneously 
+            // but for "fast-paced", we trigger immediately. 
+            // If J follows immediately, it will interrupt the 'Open' animation.
+            playAction(els.vidOpen, states.OPENING);
+        }
+
+        // TOGGLE READY (SPACE)
+        if (key === ' ') {
+            els.vidOpen.pause();
+            els.vidChomp.pause();
+            resetViews();
+            if (currentState !== states.READY) {
+                currentState = states.READY;
+                els.ready.classList.add('active');
+            } else {
+                currentState = states.IDLE;
+                els.idle.classList.add('active');
+            }
+            updateStateDisplay(currentState);
+        }
+    });
+
+    window.addEventListener('keyup', (e) => {
+        delete keysPressed[e.key.toLowerCase()];
+    });
+</script>
+</body>
+</html>

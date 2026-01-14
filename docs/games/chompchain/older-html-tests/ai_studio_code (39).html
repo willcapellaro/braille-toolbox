@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Braille Chew - Cartoon Mouth</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@900&display=swap');
+        
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            overflow: hidden; background: #1a050a; font-family: 'Nunito', sans-serif;
+            touch-action: none;
+        }
+
+        /* The Mouth Chamber */
+        .mouth-chamber {
+            width: 100vw; height: 100vh;
+            background: #800f2f;
+            display: flex; flex-direction: column; justify-content: space-between;
+            align-items: center; position: relative; overflow: hidden;
+            animation: breathe 4s ease-in-out infinite;
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        /* Cartoon Throat Depth */
+        .throat-bg {
+            position: absolute; inset: 0;
+            display: flex; justify-content: center; align-items: center;
+            z-index: 1; pointer-events: none;
+        }
+        .throat-ring {
+            position: absolute; border-radius: 50%;
+            border: 12px solid #590d22;
+        }
+        .ring-1 { width: 300px; height: 300px; background: #1a050a; border: none; }
+        .ring-2 { width: 500px; height: 500px; border-width: 40px; }
+        .ring-3 { width: 800px; height: 800px; border-width: 60px; opacity: 0.5; }
+
+        /* Uvula Pendulum */
+        .uvula-anchor {
+            position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+            width: 4px; height: 100px; z-index: 5;
+        }
+        .uvula {
+            position: absolute; bottom: -40px; left: -30px;
+            width: 60px; height: 80px; background: #ff758f;
+            border: 6px solid #ff4d6d; border-radius: 30px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transform-origin: top center;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: inset -5px -5px 0 rgba(0,0,0,0.1);
+        }
+        .braille-preview { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+        .p-dot { width: 8px; height: 8px; background: rgba(0,0,0,0.2); border-radius: 50%; }
+        .p-dot.active { background: #fff; box-shadow: 0 0 10px #fff; }
+
+        /* Tongue: Anchored to bottom */
+        .tongue-container {
+            position: absolute; bottom: -100px; left: 0; width: 100%; height: 60%;
+            z-index: 2; display: flex; justify-content: center; pointer-events: none;
+        }
+        .tongue-muscle {
+            width: 350px; height: 100%; background: #ff85a1;
+            border: 10px solid #ff4d6d; border-radius: 150px 150px 0 0;
+            position: relative; transition: transform 0.1s ease-out;
+            box-shadow: inset 0 30px 0 rgba(255,255,255,0.2);
+        }
+        .tongue-line {
+            position: absolute; top: 20%; left: 50%; width: 6px; height: 40%;
+            background: #ff4d6d; border-radius: 3px; transform: translateX(-50%);
+        }
+
+        /* Teeth & Gums */
+        .gums { background: #590d22; height: 30px; width: 100%; position: absolute; z-index: 55; }
+        .gums-top { top: 0; border-bottom: 4px solid #4d0a1b; }
+        .gums-bottom { bottom: 0; border-top: 4px solid #4d0a1b; }
+
+        .teeth-row { 
+            display: flex; gap: 4px; z-index: 60; 
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        .tooth {
+            width: 70px; height: 80px; background: #fffcf2;
+            border: 4px solid #333; border-top: none; border-radius: 0 0 12px 12px;
+            display: flex; align-items: flex-end; justify-content: center;
+            padding-bottom: 8px; color: #ccc; font-size: 1.2rem;
+            transition: transform 0.1s;
+        }
+        .tooth.bottom { border-radius: 12px 12px 0 0; border-top: 4px solid #333; border-bottom: none; align-items: flex-start; padding-top: 8px; }
+        .pressed { transform: translateY(30px) !important; background: #ffb703 !important; }
+        .bottom.pressed { transform: translateY(-30px) !important; }
+
+        /* Extruded Sponge Food */
+        .food-stack {
+            z-index: 10; display: flex; gap: 4px; align-items: center; justify-content: center;
+            transition: transform 0.5s;
+        }
+        .sponge {
+            width: 75px; height: 110px; border-radius: 10px;
+            border: 4px solid #333; position: relative;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: 0 8px 0 #333, 8px 12px 0 rgba(0,0,0,0.1); /* 3D effect */
+            background-image: radial-gradient(#0000001a 20%, transparent 20%);
+            background-size: 12px 12px;
+        }
+        .sponge-letter { font-size: 3rem; color: #333; line-height: 1; margin-bottom: 5px; }
+        .sponge-braille { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
+        .s-dot { width: 8px; height: 8px; background: rgba(0,0,0,0.15); border-radius: 50%; }
+        .s-dot.active { background: #333; }
+
+        /* Screen Shake */
+        .shake { animation: shake-anim 0.3s; }
+        @keyframes shake-anim {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+
+        /* UI Overlays */
+        #start-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+        .hint-bar {
+            position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%);
+            background: #ffb703; color: #333; padding: 10px 25px; border-radius: 30px;
+            font-weight: 900; z-index: 100; cursor: pointer; border: 4px solid #333;
+        }
+
+        #saliva-svg { position: absolute; inset: 0; pointer-events: none; z-index: 40; }
+    </style>
+</head>
+<body onclick="focusGame()">
+
+    <div id="start-overlay" onclick="initGame()">
+        <h1 class="text-6xl text-rose-500 font-black mb-8 italic">CHEW!</h1>
+        <div class="bg-white text-3xl px-12 py-6 rounded-2xl font-black shadow-[0_10px_0_#ccc]">TAP TO OPEN</div>
+    </div>
+
+    <div id="chamber" class="mouth-chamber" tabindex="0">
+        <!-- Depth -->
+        <div class="throat-bg">
+            <div class="throat-ring ring-3"></div>
+            <div class="throat-ring ring-2"></div>
+            <div class="throat-ring ring-1"></div>
+            <div class="uvula-anchor">
+                <div class="uvula" id="uvula">
+                    <div class="braille-preview">
+                        <div id="p1" class="p-dot"></div><div id="p4" class="p-dot"></div>
+                        <div id="p2" class="p-dot"></div><div id="p5" class="p-dot"></div>
+                        <div id="p3" class="p-dot"></div><div id="p6" class="p-dot"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <svg id="saliva-svg" width="100%" height="100%"></svg>
+
+        <!-- Tongue -->
+        <div class="tongue-container">
+            <div class="tongue-muscle" id="tongue">
+                <div class="tongue-line"></div>
+            </div>
+        </div>
+
+        <!-- Upper -->
+        <div class="w-full flex flex-col items-center">
+            <div class="gums gums-top"></div>
+            <div class="teeth-row" id="teeth-top">
+                <div id="t-s" class="tooth">S</div><div id="t-d" class="tooth">D</div><div id="t-f" class="tooth">F</div>
+                <div class="w-8"></div>
+                <div id="t-j" class="tooth">J</div><div id="t-k" class="tooth">K</div><div id="t-l" class="tooth">L</div>
+            </div>
+        </div>
+
+        <!-- Food Stack -->
+        <div class="food-stack" id="foodStack"></div>
+
+        <!-- Lower -->
+        <div class="w-full flex flex-col items-center">
+            <div class="hint-bar" onclick="autoBite()">NEXT: <span id="hint-text">...</span></div>
+            <div class="teeth-row" id="teeth-bottom">
+                <div id="b-s" class="tooth bottom">S</div><div id="b-d" class="tooth bottom">D</div><div id="b-f" class="tooth bottom">F</div>
+                <div class="w-8"></div>
+                <div id="b-j" class="tooth bottom">J</div><div id="b-k" class="tooth bottom">K</div><div id="b-l" class="tooth bottom">L</div>
+            </div>
+            <div class="gums gums-bottom"></div>
+        </div>
+    </div>
+
+<script>
+    const BRAILLE = {
+        'a': [1], 'b': [1, 2], 'c': [1, 4], 'd': [1, 4, 5], 'e': [1, 5], 'f': [1, 2, 4], 'g': [1, 2, 4, 5], 'h': [1, 2, 5], 'i': [2, 4], 'j': [2, 4, 5],
+        'k': [1, 3], 'l': [1, 2, 3], 'm': [1, 3, 4], 'n': [1, 3, 4, 5], 'o': [1, 3, 5], 'p': [1, 2, 3, 4], 'q': [1, 2, 3, 4, 5], 'r': [1, 2, 3, 5],
+        's': [2, 3, 4], 't': [2, 3, 4, 5], 'u': [1, 3, 6], 'v': [1, 2, 3, 6], 'w': [2, 4, 5, 6], 'x': [1, 3, 4, 6], 'y': [1, 3, 4, 5, 6], 'z': [1, 3, 5, 6]
+    };
+    const DOTS = { 'f': 1, 'd': 2, 's': 3, 'j': 4, 'k': 5, 'l': 6 };
+    const COLORS = ['#e9ff70', '#ffd670', '#ff9770', '#ff70a6', '#70d6ff', '#b9fbc0'];
+    const CHAINS = [
+        ["STARTLING", "STARTING", "STARING", "STRING", "STING", "SING", "SIN", "IN", "I", ""],
+        ["PLANTS", "PLANT", "PANTS", "PANT", "PAN", "AN", "A", ""]
+    ];
+
+    let currentChain = 0, currentWord = 0, keysHeld = new Set(), chord = new Set();
+    let salivaStrands = [];
+
+    function focusGame() { document.getElementById('chamber').focus(); }
+
+    function initGame() {
+        document.getElementById('start-overlay').style.display = 'none';
+        resetMouthAnimation();
+        requestAnimationFrame(gameLoop);
+    }
+
+    function resetMouthAnimation() {
+        const top = document.getElementById('teeth-top');
+        const bot = document.getElementById('teeth-bottom');
+        const food = document.getElementById('foodStack');
+        
+        top.style.transform = 'translateY(-200px)';
+        bot.style.transform = 'translateY(200px)';
+        food.style.transform = 'scale(0) rotate(-20deg)';
+
+        setTimeout(() => {
+            render();
+            top.style.transform = 'translateY(0)';
+            bot.style.transform = 'translateY(0)';
+            food.style.transform = 'scale(1) rotate(0deg)';
+        }, 600);
+    }
+
+    window.addEventListener('keydown', (e) => {
+        const k = e.key.toLowerCase();
+        if (DOT_MAP[k]) {
+            e.preventDefault();
+            keysHeld.add(k);
+            chord.add(DOT_MAP[k]);
+            updateUI();
+            wiggleUvula(5);
+        }
+    });
+
+    window.addEventListener('keyup', (e) => {
+        const k = e.key.toLowerCase();
+        if (DOT_MAP[k]) {
+            keysHeld.delete(k);
+            if (keysHeld.size === 0) {
+                processBite(Array.from(chord).sort((a,b)=>a-b));
+                chord.clear();
+            }
+            updateUI();
+        }
+    });
+
+    function processBite(dots) {
+        const word = CHAINS[currentChain][currentWord];
+        const letter = Object.keys(BRAILLE).find(l => JSON.stringify(BRAILLE[l].sort((a,b)=>a-b)) === JSON.stringify(dots))?.toUpperCase();
+        
+        const nextTarget = CHAINS[currentChain][currentWord+1];
+        let foundIdx = -1;
+        if (letter) {
+            for(let i=0; i<word.length; i++) {
+                if(word[i] === letter && word.slice(0, i) + word.slice(i+1) === nextTarget) { foundIdx = i; break; }
+            }
+        }
+
+        if (foundIdx !== -1) {
+            swallow(foundIdx);
+        } else {
+            triggerShake();
+        }
+    }
+
+    function swallow(idx) {
+        const sponge = document.querySelectorAll('.sponge')[idx];
+        const rect = sponge.getBoundingClientRect();
+        const clone = sponge.cloneNode(true);
+        clone.style.position = 'fixed';
+        clone.style.left = rect.left + 'px';
+        clone.style.top = rect.top + 'px';
+        clone.style.zIndex = '500';
+        clone.style.transition = 'all 0.6s cubic-bezier(0.5, -0.5, 0.7, 0.5)';
+        document.body.appendChild(clone);
+        sponge.style.visibility = 'hidden';
+
+        wiggleUvula(30);
+
+        requestAnimationFrame(() => {
+            clone.style.left = '50%';
+            clone.style.top = '50%';
+            clone.style.transform = 'scale(0) rotate(720deg)';
+            clone.style.opacity = '0';
+        });
+
+        setTimeout(() => {
+            clone.remove();
+            currentWord++;
+            if (CHAINS[currentChain][currentWord] === "") {
+                currentChain = (currentChain + 1) % CHAINS.length;
+                currentWord = 0;
+                resetMouthAnimation();
+            } else {
+                render();
+            }
+        }, 600);
+    }
+
+    function autoBite() {
+        const word = CHAINS[currentChain][currentWord];
+        const next = CHAINS[currentChain][currentWord+1];
+        let temp = word;
+        for(let c of next) temp = temp.replace(c, '');
+        processBite(BRAILLE[temp.toLowerCase()].sort((a,b)=>a-b));
+    }
+
+    function triggerShake() {
+        const chamber = document.getElementById('chamber');
+        chamber.classList.add('shake');
+        setTimeout(() => chamber.classList.remove('shake'), 300);
+    }
+
+    function updateUI() {
+        for(let i=1; i<=6; i++) document.getElementById(`p${i}`).classList.toggle('active', chord.has(i));
+        ['s','d','f','j','k','l'].forEach(k => {
+            const active = keysHeld.has(k);
+            document.getElementById(`t-${k}`).classList.toggle('pressed', active);
+            document.getElementById(`b-${k}`).classList.toggle('pressed', active);
+        });
+    }
+
+    function wiggleUvula(deg) {
+        document.getElementById('uvula').style.transform = `rotate(${deg}deg)`;
+        setTimeout(() => document.getElementById('uvula').style.transform = `rotate(0deg)`, 200);
+    }
+
+    function render() {
+        const word = CHAINS[currentChain][currentWord];
+        const container = document.getElementById('foodStack');
+        container.innerHTML = '';
+        
+        const scale = Math.min(1, 10 / word.length);
+        container.style.transform = `scale(${scale})`;
+
+        word.split('').forEach((char, i) => {
+            const dots = BRAILLE[char.toLowerCase()];
+            const s = document.createElement('div');
+            s.className = 'sponge';
+            s.style.backgroundColor = COLORS[i % COLORS.length];
+            s.innerHTML = `
+                <div class="sponge-letter">${char}</div>
+                <div class="sponge-braille">
+                    ${[1,4,2,5,3,6].map(d => `<div class="s-dot ${dots.includes(d) ? 'active' : ''}"></div>`).join('')}
+                </div>`;
+            container.appendChild(s);
+        });
+
+        document.getElementById('hint-text').innerText = CHAINS[currentChain][currentWord+1] || "DONE";
+        generateSaliva();
+    }
+
+    function generateSaliva() {
+        salivaStrands = [];
+        const sponges = document.querySelectorAll('.sponge');
+        const teeth = document.querySelectorAll('.tooth:not(.bottom)');
+        
+        sponges.forEach(s => {
+            const tooth = teeth[Math.floor(Math.random()*teeth.length)];
+            salivaStrands.push({ a: s, b: tooth, offset: Math.random() * 20 - 10 });
+        });
+    }
+
+    function gameLoop() {
+        const svg = document.getElementById('saliva-svg');
+        svg.innerHTML = '';
+        
+        salivaStrands.forEach(strand => {
+            if (strand.a.style.visibility === 'hidden') return;
+            const rA = strand.a.getBoundingClientRect();
+            const rB = strand.b.getBoundingClientRect();
+            
+            const x1 = rA.left + rA.width/2;
+            const y1 = rA.top;
+            const x2 = rB.left + rB.width/2 + strand.offset;
+            const y2 = rB.bottom;
+
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            const cpY = (y1 + y2) / 2 + 20;
+            path.setAttribute("d", `M ${x1} ${y1} Q ${(x1+x2)/2} ${cpY} ${x2} ${y2}`);
+            path.setAttribute("stroke", "rgba(255,255,255,0.4)");
+            path.setAttribute("stroke-width", "3");
+            path.setAttribute("fill", "none");
+            svg.appendChild(path);
+        });
+
+        requestAnimationFrame(gameLoop);
+    }
+
+    // Tongue logic
+    const tongue = document.getElementById('tongue');
+    window.addEventListener('mousemove', (e) => {
+        const xPercent = (e.clientX / window.innerWidth - 0.5) * 40;
+        const yPercent = (e.clientY / window.innerHeight - 0.5) * 20;
+        tongue.style.transform = `translate(${xPercent}px, ${yPercent}px)`;
+        
+        // Tilt uvula toward tongue
+        const uvula = document.getElementById('uvula');
+        uvula.style.transform = `rotate(${-xPercent/2}deg)`;
+    });
+</script>
+</body>
+</html>

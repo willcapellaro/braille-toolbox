@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Alphagator Pro Scrub-Tester</title>
+    <style>
+        body { margin: 0; background: #050505; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; overflow: hidden; color: #fff; font-family: 'Segoe UI', sans-serif; }
+        #stage { position: relative; width: 960px; height: 540px; background: #000; border: 4px solid #222; border-radius: 8px; overflow: hidden; }
+        video { position: absolute; width: 100%; height: 100%; object-fit: contain; opacity: 0; transition: opacity 0.1s; pointer-events: none; }
+        video.active { opacity: 1; }
+        
+        /* UI Keys */
+        #controls { margin-top: 30px; display: flex; gap: 20px; align-items: flex-end; }
+        .key { border: 3px solid #444; display: flex; justify-content: center; align-items: center; font-weight: bold; color: #666; transition: all 0.05s; }
+        .square { width: 60px; height: 60px; border-radius: 10px; font-size: 24px; }
+        .rect { width: 180px; height: 50px; border-radius: 8px; font-size: 18px; }
+        
+        /* Active States */
+        .pressed { border-color: #00ffcc; color: #00ffcc; box-shadow: 0 0 15px rgba(0, 255, 204, 0.4); transform: translateY(2px); }
+        #debug { position: absolute; top: 10px; left: 10px; font-family: monospace; font-size: 12px; color: #555; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+<div id="stage">
+    <div id="debug">SYSTEM: BOOTING...</div>
+    <!-- Transitions -->
+    <video id="vid_i2r" src="transition_idle_to_ready.mp4" muted playsinline preload="auto"></video>
+    <video id="vid_r2o" src="transition_ready_to_open.mp4" muted playsinline preload="auto"></video>
+    <video id="vid_o2c" src="transition_open_to_chomp.mp4" muted playsinline preload="auto"></video>
+</div>
+
+<div id="controls">
+    <div id="key-space" class="key rect">SPACE (READY)</div>
+    <div id="key-f" class="key square">F</div>
+    <div id="key-j" class="key square">J</div>
+</div>
+
+<script>
+    const vids = {
+        i2r: document.getElementById('vid_i2r'),
+        r2o: document.getElementById('vid_r2o'),
+        o2c: document.getElementById('vid_o2c')
+    };
+
+    // Timing Configuration
+    const TIME_IDLE_READY = 300; // ms
+    const TIME_OPEN = 250;       // ms (Total 500ms for Open+Chomp)
+    const TIME_CHOMP = 250;      // ms
+
+    let inputs = { f: false, j: false, space: false };
+    let isReadyMode = false;
+    
+    // Virtual Playheads (0.0 to 1.0)
+    let heads = { i2r: 0, r2o: 0, o2c: 0 };
+
+    function update() {
+        // 1. INPUT PROCESSING & TARGET SELECTION
+        
+        // Handle Space Toggle (Idle <-> Ready)
+        let targetI2R = isReadyMode ? 1 : 0;
+        heads.i2r = moveTowards(heads.i2r, targetI2R, TIME_IDLE_READY);
+
+        // Handle F (Ready -> Open)
+        // Only works if we are at least partially in Ready mode
+        let targetR2O = (inputs.f && isReadyMode) ? 1 : 0;
+        heads.r2o = moveTowards(heads.r2o, targetR2O, TIME_OPEN);
+
+        // Handle J (Open -> Chomp)
+        // Only works if F is held
+        let targetO2C = (inputs.j && inputs.f && isReadyMode) ? 1 : 0;
+        
+        // QUICK CHOMP OVERRIDE: If F+J pressed simultaneously
+        if (inputs.f && inputs.j) targetR2O = 1; 
+        
+        heads.o2c = moveTowards(heads.o2c, targetO2C, TIME_CHOMP);
+
+        // 2. VIDEO LAYER PRIORITY (Top-down)
+        let activeLayer = 'i2r';
+        if (heads.o2c > 0) activeLayer = 'o2c';
+        else if (heads.r2o > 0) activeLayer = 'r2o';
+        else activeLayer = 'i2r';
+
+        // 3. APPLY TO HARDWARE
+        render(activeLayer);
+
+        document.getElementById('debug').innerText = 
+            `MODE: ${isReadyMode ? 'READY' : 'IDLE'} | LAYER: ${activeLayer.toUpperCase()} | P: ${heads[activeLayer].toFixed(2)}`;
+        
+        requestAnimationFrame(update);
+    }
+
+    function moveTowards(current, target, duration) {
+        const step = 16.6 / duration; // Amount to move per frame
+        if (current < target) return Math.min(current + step, target);
+        if (current > target) return Math.max(current - step, target);
+        return current;
+    }
+
+    function render(activeId) {
+        Object.keys(vids).forEach(id => {
+            const v = vids[id];
+            if (id === activeId) {
+                v.classList.add('active');
+                // Scrub the video to the virtual playhead position
+                if (v.duration) {
+                    v.currentTime = heads[id] * v.duration;
+                }
+            } else {
+                v.classList.remove('active');
+            }
+        });
+    }
+
+    // Event Listeners
+    window.addEventListener('keydown', e => {
+        const k = e.key.toLowerCase();
+        if (k === ' ') {
+            isReadyMode = !isReadyMode;
+            document.getElementById('key-space').classList.toggle('pressed', isReadyMode);
+        }
+        if (k === 'f') { inputs.f = true; document.getElementById('key-f').classList.add('pressed'); }
+        if (k === 'j') { inputs.j = true; document.getElementById('key-j').classList.add('pressed'); }
+    });
+
+    window.addEventListener('keyup', e => {
+        const k = e.key.toLowerCase();
+        if (k === 'f') { inputs.f = false; document.getElementById('key-f').classList.remove('pressed'); }
+        if (k === 'j') { inputs.j = false; document.getElementById('key-j').classList.remove('pressed'); }
+    });
+
+    // Start Loop
+    update();
+</script>
+</body>
+</html>
