@@ -1,0 +1,1936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GRID-LOCK: THE GAME</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-magenta: #ff00ff;
+            --neon-blue: #00f2ff;
+            --off-white: #e0e0ff;
+            --bg-dark: #05000a;
+            --glow: 0 0 15px rgba(255, 0, 255, 0.7);
+            
+            /* Scalable sizing */
+            --status-bar-top: 5vh;
+            --archive-top: 10vh;
+            --letter-top: 28vh;
+            --letter-size: 13vh;
+            --hex-bottom: 12vh;
+            --hex-size: 8vh;
+            --hex-gap: 3vh;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-user-select: none; user-select: none; }
+
+        body {
+            background-color: var(--bg-dark);
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            touch-action: none;
+        }
+
+        #app-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+        /* Gate / Status Bar */
+        #ui-layer {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .status-bar {
+            width: 90%;
+            height: 12px;
+            display: flex;
+            gap: 4px;
+            margin-top: var(--status-bar-top);
+            filter: drop-shadow(0 0 10px white);
+            transition: transform 0.1s linear, border-radius 0.1s;
+        }
+        
+        .bar-segment {
+            flex: 1;
+            background: white;
+            transition: background 0.5s ease;
+        }
+
+        /* Typewriter / Archive */
+        .archive-display {
+            margin-top: 2vh;
+            font-size: 1.5rem;
+            letter-spacing: 0.4rem;
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        /* Completed Letters Trail */
+        .completed-letters {
+            position: absolute;
+            left: 50%;
+            top: 45%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: row;
+            gap: -30px;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .completed-letter {
+            width: 60px;
+            height: 60px;
+            border: 3px solid var(--neon-blue);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px var(--neon-blue);
+            box-shadow: 0 0 15px var(--neon-blue);
+            background: rgba(0, 242, 255, 0.1);
+            opacity: 0;
+            animation: letter-chain-in 0.5s ease-out forwards;
+        }
+
+        @keyframes letter-chain-in {
+            from { opacity: 0; transform: scale(1.5); }
+            to { opacity: 0.6; transform: scale(1); }
+        }
+
+        /* Central Hub - Drag Target */
+        .central-hub {
+            position: absolute;
+            top: var(--letter-top);
+            transform: translateY(-50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: auto;
+            cursor: grab;
+            touch-action: none;
+        }
+
+        .target-circle {
+            width: 160px;
+            height: 160px;
+            border: 6px solid white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 30px var(--neon-blue), inset 0 0 20px var(--neon-blue);
+            background: rgba(0,0,0,0.4);
+            position: relative;
+        }
+
+        /* Futuristic rotating ring details */
+        .ring-detail {
+            position: absolute;
+            background: var(--neon-magenta);
+            box-shadow: 0 0 10px var(--neon-magenta);
+        }
+
+        .ring-detail-1 {
+            width: 20px;
+            height: 4px;
+            top: -2px;
+            left: 30%;
+            animation: ring-rotate 3s linear infinite;
+            transform-origin: 50px 82px;
+        }
+
+        .ring-detail-2 {
+            width: 12px;
+            height: 3px;
+            top: 20px;
+            right: -6px;
+            animation: ring-rotate 4s linear infinite reverse;
+            transform-origin: -70px 62px;
+        }
+
+        .ring-detail-3 {
+            width: 8px;
+            height: 8px;
+            bottom: 10px;
+            left: -4px;
+            border-radius: 50%;
+            animation: ring-rotate 5s linear infinite;
+            transform-origin: 84px -66px;
+        }
+
+        @keyframes ring-rotate {
+            from { transform: rotate(0deg); };
+            to { transform: rotate(360deg); }
+        }
+        /* Reduce Motion */
+        body.reduce-motion .ring-detail,
+        body.reduce-motion .particle,
+        body.reduce-motion .success-letter,
+        body.reduce-motion .success-ring {
+            animation: none !important;
+        }
+
+        body.reduce-motion .ring-detail {
+            display: none;
+        }
+
+        /* Monochrome Mode */
+        body.monochrome {
+            --neon-magenta: #ffffff;
+            --neon-blue: #999999;
+            --bg-dark: #000000;
+        }
+        
+        body.monochrome .toggle-switch.active,
+        body.monochrome .mode-btn.active,
+        body.monochrome .option-btn.active {
+            background: #ffffff;
+            border-color: #ffffff;
+            color: #000000;
+        }
+        
+        body.monochrome .setting-label,
+        body.monochrome .keyboard-help {
+            color: #cccccc;
+        }
+        /* Reduce Motion */
+        body.reduce-motion .ring-detail,
+        body.reduce-motion .particle,
+        body.reduce-motion .success-letter,
+        body.reduce-motion .success-ring {
+            animation: none !important;
+        }
+
+        body.reduce-motion .ring-detail {
+            display: none;
+        }
+
+        .letter-display {
+            font-size: var(--letter-size);
+            font-weight: 900;
+            text-shadow: 0 0 20px white;
+            transition: transform 0.3s, opacity 0.3s;
+        }
+
+        /* Hex Grid */
+        .hex-grid {
+            position: absolute;
+            bottom: var(--hex-bottom);
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--hex-gap);
+            pointer-events: auto;
+        }
+
+        .hex-svg { width: var(--hex-size); height: calc(var(--hex-size) * 1.13); overflow: visible; cursor: pointer; position: relative; }
+        .hex-container { position: relative; display: inline-block; }
+        .hex-path {
+            fill: rgba(255, 0, 255, 0.05);
+            stroke: var(--neon-magenta);
+            stroke-width: 3;
+            transition: all 0.2s;
+        }
+        .hex-path.active {
+            fill: var(--neon-magenta);
+            filter: drop-shadow(0 0 10px var(--neon-magenta));
+        }
+        .hex-path.focused {
+            stroke: var(--neon-blue);
+            stroke-width: 5;
+            filter: drop-shadow(0 0 20px var(--neon-blue));
+        }
+        .hex-key-label {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            color: #666;
+            font-family: 'Rajdhani';
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        body.perkins-mode .hex-key-label {
+            opacity: 1;
+        }
+        
+        .hex-key-label.active {
+            color: var(--neon-magenta);
+            text-shadow: 0 0 5px var(--neon-magenta);
+        }
+
+        /* Particle Effects */
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: white;
+            box-shadow: 0 0 10px var(--neon-blue);
+            pointer-events: none;
+            z-index: 100;
+            border-radius: 50%;
+        }
+
+        /* Shame Sheet Overlay */
+        #shame-sheet {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 0, 10, 0.95);
+            z-index: 100;
+            display: none;
+            padding: 40px;
+            overflow-y: auto;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        .cipher-item { font-size: 0.7rem; color: var(--neon-blue); text-align: center; }
+        .cipher-dots { font-size: 1.2rem; display: block; color: var(--neon-magenta); }
+
+        /* Controls */
+        #settings-btn {
+            position: absolute;
+            top: calc(var(--status-bar-top) + 30px);
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--neon-blue);
+            background: rgba(0, 242, 255, 0.1);
+            color: var(--neon-blue);
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 110;
+            pointer-events: auto;
+        }
+
+        #mute-btn {
+            position: absolute;
+            top: calc(var(--status-bar-top) + 80px);
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--neon-blue);
+            background: rgba(0, 242, 255, 0.1);
+            color: var(--neon-blue);
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 110;
+            pointer-events: auto;
+            transition: all 0.3s;
+        }
+
+        #mute-btn.muted {
+            background: rgba(255, 0, 255, 0.2);
+            border-color: var(--neon-magenta);
+            color: var(--neon-magenta);
+        }
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--neon-magenta);
+            border-radius: 50%;
+            background: rgba(255, 0, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--neon-magenta);
+            cursor: pointer;
+            z-index: 110;
+            pointer-events: auto;
+            transition: all 0.3s;
+        }
+
+        #settings-btn:hover {
+            background: rgba(255, 0, 255, 0.3);
+            box-shadow: 0 0 20px var(--neon-magenta);
+        }
+
+        /* Settings Panel */
+        #settings-panel {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 0, 10, 0.97);
+            z-index: 120;
+            display: none;
+            padding: 60px 30px;
+            overflow-y: auto;
+        }
+
+        .settings-header {
+            font-size: 2rem;
+            color: var(--neon-magenta);
+            text-shadow: 0 0 20px var(--neon-magenta);
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 2px solid var(--neon-blue);
+            border-radius: 10px;
+            background: rgba(0, 242, 255, 0.05);
+        }
+
+        .setting-label {
+            font-size: 1.2rem;
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        .setting-description {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid var(--neon-blue);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch:focus {
+            outline: 3px solid var(--neon-blue);
+            outline-offset: 3px;
+        }
+
+        .toggle-switch.active {
+            background: var(--neon-magenta);
+            border-color: var(--neon-magenta);
+            box-shadow: 0 0 15px var(--neon-magenta);
+        }
+
+        .toggle-switch.active:focus {
+            outline-color: var(--neon-magenta);
+        }
+
+        .toggle-knob {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .toggle-switch.active .toggle-knob {
+            left: 32px;
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 10px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid var(--neon-blue);
+            background: rgba(0, 242, 255, 0.05);
+            color: var(--neon-blue);
+            font-family: 'Rajdhani';
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .mode-btn:focus,
+        .option-btn:focus {
+            outline: 3px solid var(--neon-blue);
+            outline-offset: 2px;
+        }
+
+        .mode-btn.active {
+            background: var(--neon-magenta);
+            border-color: var(--neon-magenta);
+            color: white;
+            box-shadow: 0 0 15px var(--neon-magenta);
+        }
+
+        .mode-btn.active:focus,
+        .option-btn.active:focus {
+            outline-color: var(--neon-magenta);
+        }
+
+        .option-selector {
+            display: flex;
+            gap: 8px;
+        }
+
+        .option-btn {
+            flex: 1;
+            padding: 8px;
+            border: 2px solid var(--neon-blue);
+            background: rgba(0, 242, 255, 0.05);
+            color: var(--neon-blue);
+            font-family: 'Rajdhani';
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option-btn.active {
+            background: var(--neon-magenta);
+            border-color: var(--neon-magenta);
+            color: white;
+            box-shadow: 0 0 15px var(--neon-magenta);
+        }
+
+        .keyboard-help {
+            font-size: 0.85rem;
+            color: #aaa;
+            margin-top: 10px;
+            line-height: 1.6;
+            font-family: 'Rajdhani';
+        }
+
+        .keyboard-help code {
+            background: rgba(255, 0, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: var(--neon-magenta);
+            font-family: monospace;
+        }
+
+        /* Volume Sliders */
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 200px;
+        }
+
+        .volume-slider {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--neon-blue);
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--neon-magenta);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--neon-magenta);
+        }
+
+        .volume-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: var(--neon-magenta);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--neon-magenta);
+        }
+
+        .volume-slider:focus {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 8px var(--neon-blue);
+        }
+
+        .volume-label {
+            font-size: 0.8rem;
+            color: #888;
+            font-family: 'Rajdhani';
+            min-width: 30px;
+            text-align: right;
+        }
+
+        /* Debug Panel */
+        .debug-panel {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid var(--neon-blue);
+            padding: 10px;
+            font-family: 'Rajdhani';
+            font-size: 0.75rem;
+            color: var(--neon-blue);
+            z-index: 1000;
+            max-width: 200px;
+            display: none;
+        }
+
+        .debug-panel.visible {
+            display: block;
+        }
+
+        .debug-control {
+            margin: 5px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .debug-control label {
+            font-size: 0.7rem;
+            color: #aaa;
+        }
+
+        .debug-control input {
+            width: 100%;
+        }
+
+        .debug-toggle {
+            position: absolute;
+            bottom: 50px;
+            left: 20px;
+            width: 30px;
+            height: 30px;
+            background: transparent;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0;
+            cursor: pointer;
+            z-index: 110;
+            pointer-events: auto;
+            opacity: 0.05;
+        }
+
+        .debug-toggle:hover {
+            opacity: 0.2;
+        }
+
+        @media (max-width: 400px) {
+            .keyboard-help {
+                display: none;
+            }
+        }
+
+        .close-settings {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2rem;
+            color: var(--neon-magenta);
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #shame-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px;
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            font-family: 'Rajdhani';
+            background: none;
+            z-index: 110;
+            pointer-events: auto;
+        }
+
+        #shame-counter {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            font-family: 'Rajdhani';
+            font-size: 0.8rem;
+            color: #444;
+        }
+
+        /* Particle Effects */
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: white;
+            box-shadow: 0 0 10px var(--neon-blue);
+            pointer-events: none;
+            z-index: 100;
+            border-radius: 50%;
+        }
+
+        /* Feedback States */
+        .fail-ring { border-color: red !important; box-shadow: 0 0 40px red !important; }
+        .success-ring { 
+            border-color: var(--neon-magenta) !important; 
+            box-shadow: 0 0 60px var(--neon-magenta), inset 0 0 40px var(--neon-magenta) !important;
+            animation: success-pulse 0.4s ease-out;
+        }
+        .success-letter {
+            animation: letter-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes success-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+        @keyframes letter-pop {
+            0% { transform: scale(1); }
+            40% { transform: scale(1.4); }
+            100% { transform: scale(1); }
+        }
+        .success-flash { 
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255, 255, 255, 0.3);
+            pointer-events: none;
+            z-index: 90;
+            animation: flash-fade 0.3s ease-out;
+        }
+        @keyframes flash-fade {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    <canvas id="bg-canvas"></canvas>
+    <canvas id="floor-canvas"></canvas>
+
+    <div id="ui-layer">
+        <button id="settings-btn">⚙</button>
+        <button id="mute-btn" title="Mute/Unmute">🔊</button>
+        
+        <div class="status-bar" id="gate">
+            <div class="bar-segment"></div>
+            <div class="bar-segment"></div>
+            <div class="bar-segment"></div>
+            <div class="bar-segment"></div>
+            <div class="bar-segment"></div>
+        </div>
+        <div class="archive-display" id="archive">_ _ _</div>
+
+        <div class="completed-letters" id="completedLetters"></div>
+
+        <div class="central-hub" id="shackle">
+            <div class="target-circle" id="ring">
+                <div class="ring-detail ring-detail-1"></div>
+                <div class="ring-detail ring-detail-2"></div>
+                <div class="ring-detail ring-detail-3"></div>
+                <span class="letter-display" id="mainLetter">A</span>
+            </div>
+        </div>
+
+        <div class="hex-grid" id="mainGrid"></div>
+    </div>
+
+    <button id="shame-btn">CIPHER_LOG</button>
+    <div id="shame-counter">PEEKS: 0</div>
+
+    <div id="shame-sheet"></div>
+
+    <!-- Debug Panel -->
+    <div class="debug-toggle" id="debugToggle">🔧</div>
+    <div class="debug-panel" id="debugPanel">
+        <strong>LAYOUT DEBUG</strong>
+        <div class="debug-control">
+            <label>Status Bar Top: <span id="statusVal">5vh</span></label>
+            <input type="range" id="statusBar" min="2" max="15" value="5" step="1">
+        </div>
+        <div class="debug-control">
+            <label>Letter Top: <span id="letterTopVal">28vh</span></label>
+            <input type="range" id="letterTop" min="25" max="50" value="28" step="1">
+        </div>
+        <div class="debug-control">
+            <label>Letter Size: <span id="letterSizeVal">13vh</span></label>
+            <input type="range" id="letterSize" min="6" max="20" value="13" step="1">
+        </div>
+        <div class="debug-control">
+            <label>Hex Bottom: <span id="hexBottomVal">12vh</span></label>
+            <input type="range" id="hexBottom" min="5" max="25" value="12" step="1">
+        </div>
+        <div class="debug-control">
+            <label>Hex Size: <span id="hexSizeVal">8vh</span></label>
+            <input type="range" id="hexSize" min="5" max="15" value="8" step="1">
+        </div>
+        <div class="debug-control">
+            <label>Hex Gap: <span id="hexGapVal">3vh</span></label>
+            <input type="range" id="hexGap" min="1" max="8" value="3" step="0.5">
+        </div>
+    </div>
+
+    <div id="settings-panel">
+        <div class="close-settings" id="closeSettings">×</div>
+        <div class="settings-header">SETTINGS</div>
+        
+        <div class="setting-item">
+            <div class="setting-label">Reduce Motion</div>
+            <div class="toggle-switch" id="toggleMotion" tabindex="0" role="switch" aria-checked="false">
+                <div class="toggle-knob"></div>
+            </div>
+        </div>
+
+        <div class="setting-item">
+            <div class="setting-label">Monochrome</div>
+            <div class="toggle-switch" id="toggleMonochrome" tabindex="0" role="switch" aria-checked="false">
+                <div class="toggle-knob"></div>
+            </div>
+        </div>
+
+        <div class="setting-item">
+            <div class="setting-label">After ✅</div>
+            <div class="option-selector">
+                <button class="option-btn active" id="resetKeep">Keep</button>
+                <button class="option-btn" id="resetClear">Clear</button>
+                <button class="option-btn" id="resetShuffle">Shuffle</button>
+            </div>
+        </div>
+
+        <div class="setting-item">
+            <div style="flex: 1;">
+                <div class="setting-label">Keyboard Mode</div>
+                <div class="keyboard-help" id="keyboardHelp">
+                    ← → ↑ ↓ navigate • <code>Space</code> toggle • <code>Enter</code> submit
+                </div>
+            </div>
+            <div class="mode-selector">
+                <button class="mode-btn active" id="modeRegular">Regular</button>
+                <button class="mode-btn" id="modePerkins">Perkins</button>
+            </div>
+        </div>
+
+        <div class="setting-item">
+            <div class="setting-label">Music</div>
+            <div class="volume-control">
+                <input type="range" min="0" max="100" value="50" class="volume-slider" id="musicVolume">
+                <span class="volume-label" id="musicLabel">50%</span>
+            </div>
+        </div>
+
+        <div class="setting-item">
+            <div class="setting-label">Effects</div>
+            <div class="volume-control">
+                <input type="range" min="0" max="100" value="70" class="volume-slider" id="effectsVolume">
+                <span class="volume-label" id="effectsLabel">70%</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- Configuration & Data ---
+    const brailleAlphabet = {
+        'A':[1,0,0,0,0,0], 'B':[1,1,0,0,0,0], 'C':[1,0,0,1,0,0], 'D':[1,0,0,1,1,0],
+        'E':[1,0,0,0,1,0], 'F':[1,1,0,1,0,0], 'G':[1,1,0,1,1,0], 'H':[1,1,0,0,1,0],
+        'I':[0,1,0,1,0,0], 'J':[0,1,0,1,1,0], 'K':[1,0,1,0,0,0], 'L':[1,1,1,0,0,0],
+        'M':[1,0,1,1,0,0], 'N':[1,0,1,1,1,0], 'O':[1,0,1,0,1,0], 'P':[1,1,1,1,0,0],
+        'Q':[1,1,1,1,1,0], 'R':[1,1,1,0,1,0], 'S':[0,1,1,1,0,0], 'T':[0,1,1,1,1,0],
+        'U':[1,0,1,0,0,1], 'V':[1,1,1,0,0,1], 'W':[0,1,0,1,1,1], 'X':[1,0,1,1,0,1],
+        'Y':[1,0,1,1,1,1], 'Z':[1,0,1,0,1,1]
+    };
+
+    const words = ["A", "IT", "FLY", "GRID", "CYBER", "TRONIC", "LOCKSMITH"];
+    let wordIdx = 0;
+    let charIdx = 0;
+    let hexStates = [0,0,0,0,0,0];
+    let peeks = 0;
+
+    // --- DOM Elements ---
+    const shackle = document.getElementById('shackle');
+    const ring = document.getElementById('ring');
+    const gate = document.getElementById('gate');
+    const letterEl = document.getElementById('mainLetter');
+    const archiveEl = document.getElementById('archive');
+    const counterEl = document.getElementById('shame-counter');
+    const shameSheet = document.getElementById('shame-sheet');
+    const completedLettersEl = document.getElementById('completedLetters');
+
+    // Settings
+    const settings = {
+        reduceMotion: false,
+        monochrome: false,
+        resetMode: 'keep', // 'keep', 'clear', 'shuffle'
+        keyboardMode: 'regular', // 'regular' or 'perkins'
+        musicVolume: 0.5,
+        effectsVolume: 0.7
+    };
+
+    // --- TRON CHIPTUNE AUDIO SYSTEM ---
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const musicGain = audioCtx.createGain();
+    const effectsGain = audioCtx.createGain();
+    const masterCompressor = audioCtx.createDynamicsCompressor();
+    
+    musicGain.connect(masterCompressor);
+    effectsGain.connect(masterCompressor);
+    masterCompressor.connect(audioCtx.destination);
+    musicGain.gain.value = settings.musicVolume;
+    effectsGain.gain.value = settings.effectsVolume;
+
+    // Tron-inspired chiptune music system
+    let musicSequencer = null;
+    let bassOsc = null;
+    let arpOsc = null;
+    let drumInterval = null;
+    
+    // Chiptune scales (pentatonic for that Tron vibe)
+    const bassLine = [110, 110, 146.83, 110, 164.81, 146.83]; // A2, A2, D3, A2, E3, D3
+    const arpNotes = [440, 554.37, 659.25, 880]; // A4, C#5, E5, A5
+    let beatCount = 0;
+
+    function startMusic() {
+        if (musicSequencer) return;
+        
+        // Bass pulse - square wave for that retro punch
+        const playBassPulse = () => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            const filter = audioCtx.createBiquadFilter();
+            
+            osc.type = 'square';
+            osc.frequency.value = bassLine[beatCount % bassLine.length];
+            filter.type = 'lowpass';
+            filter.frequency.value = 800;
+            
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(musicGain);
+            
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.15);
+        };
+        
+        // Arpeggio lead - triangle wave for melodic shimmer
+        const playArp = (noteIdx) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.type = 'triangle';
+            osc.frequency.value = arpNotes[noteIdx % arpNotes.length];
+            
+            osc.connect(gain);
+            gain.connect(musicGain);
+            
+            gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.08);
+        };
+        
+        // Drum/kick - pitched noise burst
+        const playKick = () => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.05);
+            
+            gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+            
+            osc.connect(gain);
+            gain.connect(musicGain);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.05);
+        };
+        
+        // Hi-hat - white noise burst
+        const playHihat = () => {
+            const buffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.03, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < data.length; i++) {
+                data[i] = Math.random() * 2 - 1;
+            }
+            const noise = audioCtx.createBufferSource();
+            const gain = audioCtx.createGain();
+            const filter = audioCtx.createBiquadFilter();
+            
+            noise.buffer = buffer;
+            filter.type = 'highpass';
+            filter.frequency.value = 5000;
+            
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(musicGain);
+            
+            gain.gain.value = 0.08;
+            noise.start();
+        };
+        
+        // Sequencer - 16th note grid at 140 BPM
+        let sixteenthCount = 0;
+        musicSequencer = setInterval(() => {
+            const isDownbeat = sixteenthCount % 4 === 0;
+            
+            if (isDownbeat) {
+                playBassPulse();
+                playKick();
+                beatCount++;
+            }
+            
+            // Arpeggio on every 16th note
+            playArp(sixteenthCount);
+            
+            // Hi-hats on off-beats
+            if (sixteenthCount % 2 === 1) {
+                playHihat();
+            }
+            
+            sixteenthCount++;
+        }, 107); // 140 BPM = 560ms per beat, 140ms per 16th note
+    }
+
+    function stopMusic() {
+        if (musicSequencer) {
+            clearInterval(musicSequencer);
+            musicSequencer = null;
+        }
+    }
+
+    // TRON-INSPIRED SOUND EFFECTS
+    
+    // Toggle dot - digital blip with pitch bend
+    function playToggleSound() {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(1200, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.04);
+        
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.04);
+        
+        osc.connect(gain);
+        gain.connect(effectsGain);
+        
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.04);
+    }
+
+    // Success - uplifting digital chime cascade
+    function playSuccessSound() {
+        const now = audioCtx.currentTime;
+        const notes = [659.25, 783.99, 987.77, 1318.51]; // E5, G5, B5, E6
+        
+        notes.forEach((freq, i) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.type = 'square';
+            osc.frequency.value = freq;
+            
+            const time = now + i * 0.05;
+            gain.gain.setValueAtTime(0.2, time);
+            gain.gain.exponentialRampToValueAtTime(0.01, time + 0.25);
+            
+            osc.connect(gain);
+            gain.connect(effectsGain);
+            
+            osc.start(time);
+            osc.stop(time + 0.25);
+        });
+        
+        // Add sweep for extra Tron feel
+        const sweep = audioCtx.createOscillator();
+        const sweepGain = audioCtx.createGain();
+        sweep.type = 'sawtooth';
+        sweep.frequency.setValueAtTime(2000, now);
+        sweep.frequency.exponentialRampToValueAtTime(4000, now + 0.2);
+        sweepGain.gain.setValueAtTime(0.08, now);
+        sweepGain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+        sweep.connect(sweepGain);
+        sweepGain.connect(effectsGain);
+        sweep.start(now);
+        sweep.stop(now + 0.2);
+    }
+
+    // Failure - harsh digital descending buzz
+    function playFailureSound() {
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        
+        osc1.type = 'square';
+        osc2.type = 'square';
+        osc1.frequency.setValueAtTime(300, audioCtx.currentTime);
+        osc1.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.3);
+        osc2.frequency.setValueAtTime(305, audioCtx.currentTime); // Slight detune
+        osc2.frequency.exponentialRampToValueAtTime(102, audioCtx.currentTime + 0.3);
+        
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+        
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(effectsGain);
+        
+        osc1.start();
+        osc2.start();
+        osc1.stop(audioCtx.currentTime + 0.3);
+        osc2.stop(audioCtx.currentTime + 0.3);
+    }
+
+    // Word complete - triumphant fanfare with harmonics
+    function playWordCompleteSound() {
+        const now = audioCtx.currentTime;
+        const fanfare = [
+            [523.25, 659.25], // C5 + E5
+            [659.25, 783.99], // E5 + G5
+            [783.99, 1046.50], // G5 + C6
+            [1046.50, 1318.51] // C6 + E6
+        ];
+        
+        fanfare.forEach((chord, i) => {
+            chord.forEach(freq => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc.type = 'square';
+                osc.frequency.value = freq;
+                
+                const time = now + i * 0.12;
+                gain.gain.setValueAtTime(0.15, time);
+                gain.gain.exponentialRampToValueAtTime(0.01, time + 0.4);
+                
+                osc.connect(gain);
+                gain.connect(effectsGain);
+                
+                osc.start(time);
+                osc.stop(time + 0.4);
+            });
+        });
+        
+        // Victory sweep
+        const sweep = audioCtx.createOscillator();
+        const sweepGain = audioCtx.createGain();
+        sweep.type = 'sawtooth';
+        sweep.frequency.setValueAtTime(1000, now);
+        sweep.frequency.exponentialRampToValueAtTime(3000, now + 0.5);
+        sweepGain.gain.setValueAtTime(0.1, now);
+        sweepGain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+        sweep.connect(sweepGain);
+        sweepGain.connect(effectsGain);
+        sweep.start(now);
+        sweep.stop(now + 0.5);
+    }
+
+    // Start music on first user interaction
+    let musicStarted = false;
+    function ensureMusicStarted() {
+        if (!musicStarted) {
+            startMusic();
+            musicStarted = true;
+        }
+    }
+
+    const settingsBtn = document.getElementById('settings-btn');
+    const settingsPanel = document.getElementById('settings-panel');
+    const closeSettings = document.getElementById('closeSettings');
+    const toggleMotion = document.getElementById('toggleMotion');
+    const toggleMonochrome = document.getElementById('toggleMonochrome');
+    const resetKeep = document.getElementById('resetKeep');
+    const resetClear = document.getElementById('resetClear');
+    const resetShuffle = document.getElementById('resetShuffle');
+    const modeRegular = document.getElementById('modeRegular');
+    const modePerkins = document.getElementById('modePerkins');
+    const musicVolumeSlider = document.getElementById('musicVolume');
+    const effectsVolumeSlider = document.getElementById('effectsVolume');
+    const musicLabel = document.getElementById('musicLabel');
+    const effectsLabel = document.getElementById('effectsLabel');
+
+    // Debug panel controls
+    const debugToggle = document.getElementById('debugToggle');
+    const debugPanel = document.getElementById('debugPanel');
+    
+    debugToggle.onclick = () => {
+        debugPanel.classList.toggle('visible');
+    };
+
+    // Click anywhere on debug panel to dismiss
+    debugPanel.onclick = (e) => {
+        if (e.target === debugPanel) {
+            debugPanel.classList.remove('visible');
+        }
+    };
+
+    // Mute button
+    const muteBtn = document.getElementById('mute-btn');
+    let isMuted = false;
+    
+    muteBtn.onclick = () => {
+        isMuted = !isMuted;
+        if (isMuted) {
+            musicGain.gain.value = 0;
+            effectsGain.gain.value = 0;
+            muteBtn.textContent = '🔇';
+            muteBtn.classList.add('muted');
+        } else {
+            musicGain.gain.value = settings.musicVolume;
+            effectsGain.gain.value = settings.effectsVolume;
+            muteBtn.textContent = '🔊';
+            muteBtn.classList.remove('muted');
+        }
+    };
+
+    // Volume controls
+    musicVolumeSlider.oninput = () => {
+        const value = parseInt(musicVolumeSlider.value);
+        settings.musicVolume = value / 100;
+        if (!isMuted) {
+            musicGain.gain.value = settings.musicVolume;
+        }
+        musicLabel.textContent = value + '%';
+    };
+
+    effectsVolumeSlider.oninput = () => {
+        const value = parseInt(effectsVolumeSlider.value);
+        settings.effectsVolume = value / 100;
+        if (!isMuted) {
+            effectsGain.gain.value = settings.effectsVolume;
+            playToggleSound(); // Preview sound
+        }
+        effectsLabel.textContent = value + '%';
+    };
+
+    // Debug sliders
+    const debugControls = {
+        statusBar: { input: 'statusBar', val: 'statusVal', prop: '--status-bar-top' },
+        letterTop: { input: 'letterTop', val: 'letterTopVal', prop: '--letter-top' },
+        letterSize: { input: 'letterSize', val: 'letterSizeVal', prop: '--letter-size' },
+        hexBottom: { input: 'hexBottom', val: 'hexBottomVal', prop: '--hex-bottom' },
+        hexSize: { input: 'hexSize', val: 'hexSizeVal', prop: '--hex-size' },
+        hexGap: { input: 'hexGap', val: 'hexGapVal', prop: '--hex-gap' }
+    };
+
+    Object.entries(debugControls).forEach(([key, config]) => {
+        const slider = document.getElementById(config.input);
+        const label = document.getElementById(config.val);
+        slider.oninput = () => {
+            const value = slider.value + 'vh';
+            document.documentElement.style.setProperty(config.prop, value);
+            label.textContent = value;
+        };
+    });
+
+    settingsBtn.onclick = () => {
+        settingsPanel.style.display = 'block';
+    };
+
+    closeSettings.onclick = () => {
+        settingsPanel.style.display = 'none';
+    };
+
+    toggleMotion.onclick = () => {
+        settings.reduceMotion = !settings.reduceMotion;
+        toggleMotion.classList.toggle('active');
+        toggleMotion.setAttribute('aria-checked', settings.reduceMotion);
+        document.body.classList.toggle('reduce-motion', settings.reduceMotion);
+    };
+
+    toggleMotion.onkeydown = (e) => {
+        if (e.key === ' ' || e.key === 'Enter') {
+            e.preventDefault();
+            toggleMotion.click();
+        }
+    };
+
+    toggleMonochrome.onclick = () => {
+        settings.monochrome = !settings.monochrome;
+        toggleMonochrome.classList.toggle('active');
+        toggleMonochrome.setAttribute('aria-checked', settings.monochrome);
+        document.body.classList.toggle('monochrome', settings.monochrome);
+    };
+
+    toggleMonochrome.onkeydown = (e) => {
+        if (e.key === ' ' || e.key === 'Enter') {
+            e.preventDefault();
+            toggleMonochrome.click();
+        }
+    };
+
+    resetKeep.onclick = () => {
+        settings.resetMode = 'keep';
+        resetKeep.classList.add('active');
+        resetClear.classList.remove('active');
+        resetShuffle.classList.remove('active');
+    };
+
+    resetClear.onclick = () => {
+        settings.resetMode = 'clear';
+        resetClear.classList.add('active');
+        resetKeep.classList.remove('active');
+        resetShuffle.classList.remove('active');
+    };
+
+    resetShuffle.onclick = () => {
+        settings.resetMode = 'shuffle';
+        resetShuffle.classList.add('active');
+        resetKeep.classList.remove('active');
+        resetClear.classList.remove('active');
+        if (settings.resetMode === 'shuffle') {
+            shuffleHexGrid();
+        } else {
+            resetHexGrid();
+        }
+    };
+
+    modeRegular.onclick = () => {
+        settings.keyboardMode = 'regular';
+        modeRegular.classList.add('active');
+        modePerkins.classList.remove('active');
+        document.body.classList.remove('perkins-mode');
+        focusedHex = 0;
+        updateFocus();
+        updateKeyboardHelp();
+    };
+
+    modePerkins.onclick = () => {
+        settings.keyboardMode = 'perkins';
+        modePerkins.classList.add('active');
+        modeRegular.classList.remove('active');
+        document.body.classList.add('perkins-mode');
+        clearFocus();
+        updateKeyboardHelp();
+    };
+
+    function updateKeyboardHelp() {
+        const helpEl = document.getElementById('keyboardHelp');
+        if (settings.keyboardMode === 'regular') {
+            helpEl.innerHTML = '← → ↑ ↓ navigate • <code>Space</code> toggle • <code>Enter</code> submit<br><code>C</code> clear • <code>/</code> invert';
+        } else {
+            helpEl.innerHTML = 'Hold <code>SDFJKL</code> for dots 1-6 • Release to submit';
+        }
+    }
+
+    // --- Init Braille UI ---
+    let hexOrder = [0, 3, 1, 4, 2, 5]; // Default Braille order
+    const perkinsKeys = ['F', 'D', 'S', 'J', 'K', 'L']; // For dots 1-6
+
+    function initGrid() {
+        const grid = document.getElementById('mainGrid');
+        grid.innerHTML = '';
+        hexOrder.forEach((logicIdx, visualIdx) => {
+            const container = document.createElement('div');
+            container.className = 'hex-container';
+            
+            const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            svg.setAttribute("class", "hex-svg");
+            svg.setAttribute("viewBox", "0 0 60 70");
+            svg.setAttribute("data-index", logicIdx);
+            svg.innerHTML = `<path class="hex-path" d="M30 2 L58 18 L58 52 L30 68 L2 52 L2 18 Z" />`;
+            svg.onclick = () => toggleHex(logicIdx);
+            
+            const label = document.createElement('div');
+            label.className = 'hex-key-label';
+            label.textContent = perkinsKeys[logicIdx];
+            
+            container.appendChild(svg);
+            container.appendChild(label);
+            grid.appendChild(container);
+        });
+    }
+
+    function shuffleHexGrid() {
+        hexOrder = [0, 1, 2, 3, 4, 5].sort(() => Math.random() - 0.5);
+        initGrid();
+        renderHexes();
+    }
+
+    function resetHexGrid() {
+        hexOrder = [0, 3, 1, 4, 2, 5];
+        initGrid();
+        renderHexes();
+    }
+
+    // --- Keyboard Controls ---
+    let focusedHex = 0;
+    const perkinsState = { F: false, D: false, S: false, J: false, K: false, L: false };
+    let anyPerkinsKeyPressed = false;
+
+    function updateFocus() {
+        document.querySelectorAll('.hex-path').forEach((path, idx) => {
+            path.classList.toggle('focused', idx === focusedHex);
+        });
+    }
+
+    function clearFocus() {
+        document.querySelectorAll('.hex-path').forEach(path => {
+            path.classList.remove('focused');
+        });
+    }
+
+    // Escape key to toggle settings
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            if (settingsPanel.style.display === 'block') {
+                settingsPanel.style.display = 'none';
+            } else if (shameSheet.style.display === 'grid') {
+                shameSheet.style.display = 'none';
+            } else {
+                settingsPanel.style.display = 'block';
+            }
+            return;
+        }
+    });
+
+    // Number pad mapping: 78, 45, 12 for visual positions 0-5
+    const numPadMap = { '7': 0, '8': 1, '4': 2, '5': 3, '1': 4, '2': 5 };
+    
+    window.addEventListener('keydown', (e) => {
+        // Ignore if typing in settings or cipher
+        if (settingsPanel.style.display === 'block' || shameSheet.style.display === 'grid') return;
+
+        // Number pad support (works in both modes)
+        if (numPadMap.hasOwnProperty(e.key)) {
+            const visualIdx = numPadMap[e.key];
+            const logicIdx = hexOrder[visualIdx];
+            toggleHex(logicIdx);
+            return;
+        }
+
+        if (settings.keyboardMode === 'regular') {
+            // Regular mode: Arrow keys + space + enter
+            if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                focusedHex = (focusedHex + 1) % 6;
+                updateFocus();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                focusedHex = (focusedHex - 1 + 6) % 6;
+                updateFocus();
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                focusedHex = (focusedHex + 2) % 6;
+                updateFocus();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                focusedHex = (focusedHex - 2 + 6) % 6;
+                updateFocus();
+            } else if (e.key === ' ') {
+                e.preventDefault();
+                const logicIdx = hexOrder[focusedHex];
+                toggleHex(logicIdx);
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                checkAnswer();
+            } else if (e.key === 'Backspace' || e.key.toLowerCase() === 'c') {
+                e.preventDefault();
+                // Clear all dots
+                hexStates = [0, 0, 0, 0, 0, 0];
+                renderHexes();
+            } else if (e.key === '/') {
+                e.preventDefault();
+                // Invert all dots
+                hexStates = hexStates.map(v => v ? 0 : 1);
+                renderHexes();
+            }
+        } else if (settings.keyboardMode === 'perkins') {
+            // Perkins mode: SDFJKL chorded input
+            const key = e.key.toUpperCase();
+            if (perkinsState.hasOwnProperty(key) && !perkinsState[key]) {
+                perkinsState[key] = true;
+                anyPerkinsKeyPressed = true;
+                const dotIdx = perkinsKeys.indexOf(key);
+                perkinsDots.add(dotIdx);
+                
+                // Highlight the key label
+                const labels = document.querySelectorAll('.hex-key-label');
+                hexOrder.forEach((logicIdx, visualIdx) => {
+                    if (logicIdx === dotIdx) {
+                        labels[visualIdx].classList.add('active');
+                    }
+                });
+            }
+        }
+    });
+
+    window.addEventListener('keyup', (e) => {
+        if (settings.keyboardMode === 'perkins') {
+            const key = e.key.toUpperCase();
+            if (perkinsState.hasOwnProperty(key)) {
+                perkinsState[key] = false;
+                
+                // Remove highlight
+                const dotIdx = perkinsKeys.indexOf(key);
+                const labels = document.querySelectorAll('.hex-key-label');
+                hexOrder.forEach((logicIdx, visualIdx) => {
+                    if (logicIdx === dotIdx) {
+                        labels[visualIdx].classList.remove('active');
+                    }
+                });
+                
+                // Check if all Perkins keys are released
+                const allReleased = !Object.values(perkinsState).some(v => v);
+                if (allReleased && anyPerkinsKeyPressed) {
+                    anyPerkinsKeyPressed = false;
+                    // Set the dots based on what was pressed
+                    hexStates = [0, 0, 0, 0, 0, 0];
+                    perkinsDots.forEach(dotIdx => {
+                        hexStates[dotIdx] = 1;
+                    });
+                    renderHexes();
+                    perkinsDots.clear();
+                    checkAnswer();
+                }
+            }
+        }
+    });
+
+    function toggleHex(index) {
+        hexStates[index] = hexStates[index] ? 0 : 1;
+        renderHexes();
+        playToggleSound();
+        ensureMusicStarted();
+    }
+
+    function renderHexes() {
+        const paths = document.querySelectorAll('.hex-path');
+        hexOrder.forEach((logicIdx, visualIdx) => {
+            paths[visualIdx].classList.toggle('active', hexStates[logicIdx] === 1);
+        });
+    }
+
+    // --- Game Logic ---
+    function updateGameUI() {
+        const currentWord = words[wordIdx];
+        letterEl.innerText = currentWord[charIdx];
+        
+        let display = "";
+        for(let i=0; i < currentWord.length; i++) {
+            display += (i < charIdx) ? currentWord[i] : "_ ";
+        }
+        archiveEl.innerText = display;
+    }
+
+    function checkAnswer() {
+        const target = words[wordIdx][charIdx];
+        const correct = brailleAlphabet[target];
+        const isCorrect = hexStates.every((val, i) => val === correct[i]);
+
+        if (isCorrect) {
+            handleSuccess();
+        } else {
+            handleFailure();
+        }
+    }
+
+    function handleSuccess() {
+        playSuccessSound();
+        ensureMusicStarted();
+        triggerForwardBurst(); // Grid acceleration
+        
+        // Shatter the dots
+        shatterDots();
+        
+        // Add completed letter to trail
+        addCompletedLetter(words[wordIdx][charIdx]);
+        
+        // Visual feedback
+        letterEl.classList.add('success-letter');
+        ring.classList.add('success-ring');
+        
+        // Screen flash
+        const flash = document.createElement('div');
+        flash.className = 'success-flash';
+        document.body.appendChild(flash);
+        setTimeout(() => flash.remove(), 300);
+        
+        // Particle explosion
+        spawnParticles();
+        
+        // Cleanup animations
+        setTimeout(() => {
+            letterEl.classList.remove('success-letter');
+            ring.classList.remove('success-ring');
+        }, 500);
+        
+        charIdx++;
+        if (charIdx >= words[wordIdx].length) {
+            // Smash Gate - change colors
+            updateStatusBarColors();
+            playWordCompleteSound();
+            triggerLateralShift(Math.random() > 0.5 ? 1 : -1); // Random lateral shift
+            setTimeout(() => {
+                wordIdx++;
+                charIdx = 0;
+                clearCompletedLetters();
+                resetBarColors();
+                unreliableReset();
+                updateGameUI();
+            }, 400);
+        } else {
+            unreliableReset();
+            updateGameUI();
+        }
+        resetPosition();
+    }
+
+    function spawnParticles() {
+        const rect = letterEl.getBoundingClientRect();
+        for(let i = 0; i < 20; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.style.left = (rect.left + rect.width / 2) + 'px';
+            p.style.top = (rect.top + rect.height / 2) + 'px';
+            p.style.background = i % 3 === 0 ? 'var(--neon-magenta)' : 'white';
+            document.body.appendChild(p);
+            
+            const angle = Math.random() * Math.PI * 2;
+            const dist = 100 + Math.random() * 120;
+            p.animate([
+                { transform: 'translate(0, 0) scale(1.5)', opacity: 1 },
+                { transform: `translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist}px) scale(0)`, opacity: 0 }
+            ], { duration: 600, easing: 'ease-out' }).onfinish = () => p.remove();
+        }
+    }
+
+    function shatterDots() {
+        const hexContainers = document.querySelectorAll('.hex-container');
+        const gridRect = hexGrid.getBoundingClientRect();
+        
+        hexContainers.forEach((container, i) => {
+            const rect = container.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            // Create multiple shards per dot
+            for (let j = 0; j < 4; j++) {
+                const shard = document.createElement('div');
+                shard.className = 'particle';
+                shard.style.left = centerX + 'px';
+                shard.style.top = centerY + 'px';
+                shard.style.background = hexStates[hexOrder[i]] === 1 ? 'var(--neon-magenta)' : 'rgba(255, 0, 255, 0.3)';
+                shard.style.width = '6px';
+                shard.style.height = '6px';
+                document.body.appendChild(shard);
+                
+                const angle = (Math.PI * 2 * j / 4) + Math.random() * 0.5;
+                const dist = 80 + Math.random() * 100;
+                const gravity = 200;
+                
+                shard.animate([
+                    { transform: 'translate(0, 0) rotate(0deg)', opacity: 1 },
+                    { transform: `translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist + gravity}px) rotate(${Math.random()*720}deg)`, opacity: 0 }
+                ], { duration: 500 + Math.random() * 200, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' }).onfinish = () => shard.remove();
+            }
+        });
+        
+        // Hide original grid during shatter
+        hexGrid.style.opacity = '0';
+        setTimeout(() => {
+            hexGrid.style.opacity = '1';
+            resetPosition();
+        }, 300);
+    }
+
+    function updateStatusBarColors() {
+        const segments = document.querySelectorAll('.bar-segment');
+        const colors = ['#fff', '#ff00ff', '#00f2ff', '#ffff00'];
+        segments.forEach(s => {
+            if(Math.random() > 0.6) {
+                s.style.background = colors[Math.floor(Math.random() * colors.length)];
+            }
+        });
+    }
+
+    function resetBarColors() {
+        const segments = document.querySelectorAll('.bar-segment');
+        segments.forEach(s => s.style.background = 'white');
+    }
+
+    function addCompletedLetter(letter) {
+        const letterCircle = document.createElement('div');
+        letterCircle.className = 'completed-letter';
+        letterCircle.textContent = letter;
+        letterCircle.style.zIndex = completedLettersEl.children.length;
+        completedLettersEl.insertBefore(letterCircle, completedLettersEl.firstChild);
+        
+        // Limit to last 10 letters
+        while (completedLettersEl.children.length > 10) {
+            completedLettersEl.removeChild(completedLettersEl.lastChild);
+        }
+    }
+
+    function clearCompletedLetters() {
+        completedLettersEl.innerHTML = '';
+    }
+
+    function handleFailure() {
+        playFailureSound();
+        ensureMusicStarted();
+        ring.classList.add('fail-ring');
+        setTimeout(() => ring.classList.remove('fail-ring'), 500);
+        resetPosition();
+    }
+
+    function unreliableReset() {
+        if (wordIdx >= words.length) return;
+        const nextChar = words[wordIdx][charIdx];
+        const nextPattern = brailleAlphabet[nextChar];
+        
+        if (settings.resetMode === 'clear') {
+            // Clear all dots
+            hexStates = [0, 0, 0, 0, 0, 0];
+        } else if (settings.resetMode === 'shuffle') {
+            // Random dots
+            hexStates = hexStates.map(() => Math.random() > 0.5 ? 1 : 0);
+        } else {
+            // Keep mode: Ghosting effect
+            hexStates = hexStates.map((val, i) => {
+                if (val === 1 && nextPattern[i] === 1) return 1; // Keep
+                return Math.random() > 0.8 ? 1 : 0; // Noise
+            });
+        }
+        renderHexes();
+    }
+
+    // --- Touch/Push Physics ---
+    let startY = 0;
+    let currentY = 0;
+    let dragging = false;
+    const hexGrid = document.getElementById('mainGrid');
+
+    // Double-tap detection on the entire ring/circle
+    let lastTap = 0;
+    ring.addEventListener('pointerdown', (e) => {
+        const now = Date.now();
+        const timeSince = now - lastTap;
+        
+        if (timeSince < 300 && timeSince > 0) {
+            // Double tap detected - simulate swipe up
+            e.stopPropagation();
+            simulateSwipeUp();
+            lastTap = 0;
+            return;
+        } else {
+            lastTap = now;
+        }
+    });
+
+    function simulateSwipeUp() {
+        hexGrid.style.transition = 'transform 0.2s ease-out';
+        hexGrid.style.transform = 'translateY(-250px)';
+        
+        setTimeout(() => {
+            checkAnswer();
+        }, 200);
+    }
+
+    shackle.addEventListener('pointerdown', (e) => {
+        dragging = true;
+        startY = e.clientY;
+        hexGrid.style.transition = 'none';
+    });
+
+    window.addEventListener('pointermove', (e) => {
+        if (!dragging) return;
+        currentY = e.clientY - startY;
+        if (currentY < 0) {
+            hexGrid.style.transform = `translateY(${currentY}px)`;
+        }
+    });
+
+    window.addEventListener('pointerup', () => {
+        if (!dragging) return;
+        dragging = false;
+        const gridRect = hexGrid.getBoundingClientRect();
+        const letterRect = ring.getBoundingClientRect();
+
+        // Check if grid top reaches letter bottom
+        if (gridRect.top < letterRect.bottom + 50) {
+            checkAnswer();
+        } else {
+            resetPosition();
+        }
+    });
+
+    function resetPosition() {
+        hexGrid.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        hexGrid.style.transform = 'translateY(0)';
+    }
+
+    // --- Canvas Visuals (Tron Grid Floor) ---
+    const bgCanvas = document.getElementById('bg-canvas');
+    const floorCanvas = document.getElementById('floor-canvas');
+    const bgCtx = bgCanvas.getContext('2d');
+    const floorCtx = floorCanvas.getContext('2d');
+    let width, height;
+    
+    // Animation state
+    let forwardOffset = 0;
+    let lateralOffset = 0;
+    const baseSpeed = 0.5; // Constant forward motion
+    let burstSpeed = 0; // Extra speed on success
+    let targetLateral = 0;
+
+    function resize() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        bgCanvas.width = width; bgCanvas.height = height;
+        floorCanvas.width = width; floorCanvas.height = height;
+    }
+
+    function draw() {
+        bgCtx.fillStyle = '#05000a';
+        bgCtx.fillRect(0,0,width,height);
+        
+        // Tron grid floor with perspective
+        floorCtx.clearRect(0,0,width,height);
+        
+        // Skip animation if reduce motion enabled
+        if (!settings.reduceMotion) {
+            forwardOffset += baseSpeed + burstSpeed;
+            burstSpeed *= 0.92; // Decay burst
+            if (burstSpeed < 0.1) burstSpeed = 0;
+            
+            // Smooth lateral movement
+            lateralOffset += (targetLateral - lateralOffset) * 0.1;
+            if (Math.abs(targetLateral - lateralOffset) < 0.5) {
+                lateralOffset = targetLateral;
+                targetLateral = 0;
+            }
+        }
+        
+        const horizon = height * 0.6;
+        const gridSize = 80;
+        const vanishPoint = width / 2 + lateralOffset;
+        
+        floorCtx.strokeStyle = 'rgba(0, 242, 255, 0.3)';
+        floorCtx.lineWidth = 1;
+        
+        // Horizontal lines (receding into distance)
+        for(let i = 0; i < 15; i++) {
+            const depth = (i * gridSize + (forwardOffset % gridSize)) / gridSize;
+            const y = horizon + (Math.pow(depth, 1.8) * 40);
+            if (y > height) continue;
+            
+            const perspective = depth / 15;
+            const spread = width * 0.8 * perspective;
+            
+            floorCtx.globalAlpha = Math.max(0.1, 1 - perspective);
+            floorCtx.beginPath();
+            floorCtx.moveTo(vanishPoint - spread, y);
+            floorCtx.lineTo(vanishPoint + spread, y);
+            floorCtx.stroke();
+        }
+        
+        // Vertical lines (perpendicular, creating grid)
+        const numVerticals = 11;
+        for(let i = -numVerticals; i <= numVerticals; i++) {
+            const offset = (i * gridSize + (forwardOffset % gridSize)) * 0.5;
+            const xStart = vanishPoint + offset;
+            
+            floorCtx.globalAlpha = 0.3;
+            floorCtx.beginPath();
+            floorCtx.moveTo(xStart, horizon);
+            
+            // Draw perspective line toward camera
+            for(let j = 0; j < 15; j++) {
+                const depth = (j * gridSize) / gridSize;
+                const y = horizon + (Math.pow(depth, 1.8) * 40);
+                const perspective = depth / 15;
+                const spread = offset * perspective;
+                floorCtx.lineTo(xStart - spread, y);
+            }
+            floorCtx.stroke();
+        }
+        
+        floorCtx.globalAlpha = 1;
+        requestAnimationFrame(draw);
+    }
+    
+    // Trigger motion effects
+    function triggerForwardBurst() {
+        if (!settings.reduceMotion) {
+            burstSpeed = 15; // Sudden acceleration
+        }
+    }
+    
+    function triggerLateralShift(direction) {
+        if (!settings.reduceMotion) {
+            targetLateral = direction * 200; // -1 = left, 1 = right
+        }
+    }
+
+    // --- Cipher / Shame Logic ---
+    document.getElementById('shame-btn').onclick = () => {
+        const isVisible = shameSheet.style.display === 'grid';
+        shameSheet.style.display = isVisible ? 'none' : 'grid';
+        if (!isVisible) {
+            peeks++;
+            counterEl.innerText = `PEEKS: ${peeks}`;
+        }
+    };
+
+    function initShameSheet() {
+        Object.keys(brailleAlphabet).forEach(key => {
+            const item = document.createElement('div');
+            item.className = 'cipher-item';
+            const dots = brailleAlphabet[key].map(d => d ? '●' : '○').join('');
+            item.innerHTML = `<span class="cipher-dots">${dots.slice(0,3)}<br>${dots.slice(3)}</span>${key}`;
+            shameSheet.appendChild(item);
+        });
+    }
+
+    // Boot
+    window.addEventListener('resize', resize);
+    resize();
+    initGrid();
+    initShameSheet();
+    updateGameUI();
+    draw();
+
+</script>
+</body>
+</html>
