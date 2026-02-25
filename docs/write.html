@@ -113,6 +113,26 @@
 
     // Check for capital letters
     checkForCapitals(textValue);
+
+    // Update the braille preview
+    updatePreview(textValue);
+  }
+
+  function updatePreview(textValue) {
+    const preview = document.getElementById('braillePreview');
+    if (!preview) {
+      return;
+    }
+    preview.textContent = textValue;
+  }
+
+  function syncFlipButton(isFlipped) {
+    const button = document.getElementById('flipButton');
+    if (!button) {
+      return;
+    }
+    button.setAttribute('aria-pressed', isFlipped ? 'true' : 'false');
+    button.classList.toggle('is-active', isFlipped);
   }
 
   // Function to check for capital letters in the text
@@ -143,8 +163,14 @@
     // Optionally, reset the visual flip if applied
     applyFlip(false);
 
+    // Reset the flip button state
+    syncFlipButton(false);
+
     // Hide the capital letters alert
     document.getElementById('capitalAlert').style.display = 'none';
+
+    // Clear the braille preview
+    updatePreview('');
   }
 
   // Initialize the textarea with the text value and checkbox with the flip option on page load
@@ -158,15 +184,26 @@
 
     // Check for capital letters on page load
     checkForCapitals(textValue);
+
+    // Populate preview and flip button state on load
+    updatePreview(decodeURIComponent(textValue));
+    syncFlipButton(isFlipped);
   };
 
   // Optional function to apply visual flip to the textarea (for demonstration)
   function applyFlip(isFlipped) {
     const textarea = document.getElementById('encoderField');
+    const preview = document.getElementById('braillePreview');
     if (isFlipped) {
       textarea.style.transform = 'scaleX(-1)'; // Flip the textarea horizontally
+      if (preview) {
+        preview.style.transform = 'scaleX(-1)';
+      }
     } else {
       textarea.style.transform = 'scaleX(1)'; // Default orientation
+      if (preview) {
+        preview.style.transform = 'scaleX(1)';
+      }
     }
   }
 
@@ -174,24 +211,15 @@
   function handleCheckboxClick() {
     updateTextInUrl(); // Update the URL with the checkbox state
     applyFlip(document.getElementById('myCheck').checked); // Apply the visual flip
+    syncFlipButton(document.getElementById('myCheck').checked);
   }
 
-  // Function to copy the current URL to the clipboard
-  function copyUrlToClipboard() {
-    const currentUrl = window.location.href;
-    
-    // Copy the URL to the clipboard
-    navigator.clipboard.writeText(currentUrl).then(() => {
-      // Show the confirmation alert
-      const alert = document.getElementById('copyAlert');
-      alert.style.display = 'block'; // Show the alert
-      setTimeout(() => {
-        alert.style.display = 'none'; // Hide it after 3 seconds
-      }, 3000); // Auto-hide after 3 seconds
-    }).catch((err) => {
-      console.error('Failed to copy: ', err);
-    });
+  function toggleFlip() {
+    const checkbox = document.getElementById('myCheck');
+    checkbox.checked = !checkbox.checked;
+    handleCheckboxClick();
   }
+
 </script>
 
 
@@ -200,93 +228,19 @@
       text-transform: lowercase;
     }
 
-    details {
-      text-align: left;
-      margin-top: 20px;
-      padding: 10px;
-      border-radius: 5px;
-    }
-    summary {
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 18px;
-    }
-    .changelog-entry {
-      margin-bottom: 15px;
-    }
-    .changelog-entry h3 {
-      font-size: 16px;
-      margin-bottom: 5px;
-    }
-    .changelog-entry p {
-      margin: 0;
-      padding: 0;
-      font-size: 14px;
-      color: #666;
-    }
-    .changelog-date {
-      font-size: 12px;
-      color: #999;
-    }
     .newCheck:checked { color:red;
 
     }
   </style>
 
-<body>
+<body class="write-page">
 
   <a href="#maincontent" class="skiplink">Skip to content</a>
 
-<nav class="navbar navbar-expand-lg navbar-light">
-  <a class="navbar-brand" href="index.html"><img src="imgs/btlogo.svg" alt="Braille toolbox logo"></a>
+  <main class="write-shell">
+    <h1 id="maincontent">Write in Braille!</h1>
 
-
-  <button class="navbar-toggler" style="height: 2em; border: none;" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span>    <img class="ham_icon" src="braille/con_for.svg" alt="braille cell icon">
-</span>
-  </button>
-
-
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="intro.html">Intro to Braille</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="quickref.html">Quick Reference</a>
-      </li>
-      <li class="nav-item active">
-        <a class="nav-link" href="write.html">Write in Braille</a>
-      </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          More Tools
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="slate.html">Slate & Stylus Quick Reference</a>
-          <a class="dropdown-item" href="digitactile.html">Digi-Tactile Simulator</a>
-          <a class="dropdown-item" href="decode.html">Dot Decoder</a>
-          <a class="dropdown-item" href="braillewriter.html">Braillewriter Help</a>
-          <a class="dropdown-item" href="about.html">About Braille Toolbox</a>
-          <a class="dropdown-item" href="font.html">Braille Toolbox Font</a></div>      </li>
-    </ul>
-  </div>
-</nav>
-
-<div class="afternav">
-
-
-<h1 id="maincontent">Write in Braille!</h1>
-<p class="betatag">Beta Feature | Currently Supported Browsers: Mac Safari, iOS Chrome<button type="button" class="btn btn-link" style="font-size: 16px; color: #b1d" data-toggle="modal" data-target="#exampleModalLong">
-  <i class="fas fa-bug"></i> Report a Bug
-</button></p>
-
-
-
-<p> Enter some text below to translate it to contracted braille. To learn about the mechanics of braille, refer to the <a href="intro.html">Braille Explainer</a> section.</p>
-
-
-<form> 
+    <form class="write-form"> 
   <!-- Warning alert for capital letters -->
   <div id="capitalAlert" class="alert alert-info" role="alert" style="display:none;">
     <i class="fas fa-info-circle"></i> Capital letters coming soon!
@@ -295,32 +249,31 @@
 
   <label for="encoderField"><strong>Input Your Text Here</strong></label><br>
   
-  <!-- Checkbox to control the flipping option -->
-  <input type="checkbox" name="myCheck" id="myCheck" onclick="handleCheckboxClick()" value="Lockinput">
-  <label for="myCheck" class="alignright">Flip horizontally (slate and stylus)</label>
+  <!-- Checkbox to control the flipping option (hidden) -->
+  <input type="checkbox" name="myCheck" id="myCheck" class="visually-hidden" value="Lockinput">
+
+  <div class="write-toolbar">
+    <button
+      type="button"
+      id="flipButton"
+      class="icon-button"
+      onclick="toggleFlip()"
+      aria-pressed="false"
+      title="Flip horizontally"
+    >
+      <i class="fas fa-exchange-alt" aria-hidden="true"></i>
+      <span>Flip</span>
+    </button>
+  </div>
   
   <!-- Textarea to input the text -->
   <textarea class="spaceafter" id="encoderField" placeholder="your braille here" onkeyup="updateTextInUrl();"></textarea>
 
-  <!-- Add an Update URL button for manual update -->
-  <button type="button" onclick="updateTextInUrl()">Update URL</button>
+  <div class="preview-label">Braille Preview</div>
+  <div id="braillePreview" class="braille-preview" aria-live="polite"></div>
 
-  <!-- Add a Clear button to clear the field and reset the URL -->
-  <button type="button" onclick="clearFieldAndResetUrl()">Clear Field & Reset URL</button>
-
-  <!-- Add a Share button to copy URL to clipboard -->
-  <button type="button" class="btn btn-primary" onclick="copyUrlToClipboard()">Share URL</button>
-
-  <!-- Confirmation alert -->
-  <div id="copyAlert" class="alert alert-success" role="alert" style="display:none;">
-    Copied to clipboard!
-  </div>
-</form>
-
-
-
-
-
+    </form>
+  </main>
 </div> 
 
 
@@ -388,17 +341,6 @@ function reFillText ()
     </div>
   </div>
 </div>
-
-  <!-- Add your changelog section -->
-  <details>
-    <summary>View Changelog</summary>
-    <div id="changelog">
-      <div class="changelog-entry">
-        <h3>v1.3 - Added two-way url parameter to field function for Write in Braille</h3>
-        <p class="changelog-date">Date: September 27, 2024, Will Capellaro</p>
-      </div>
-    </div>
-  </details>
 
 </body>
 

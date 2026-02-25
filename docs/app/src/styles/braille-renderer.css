@@ -1,0 +1,39 @@
+.braille-cell {
+  --cell-dot-size: 10px;
+  --cell-gap: 8px;
+  --cell-dot-color: #151515;
+  --cell-dot-background: transparent;
+  display: inline-grid;
+  grid-template-columns: repeat(2, var(--cell-dot-size));
+  gap: var(--cell-gap);
+  border: 1px solid #d8d8d8;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.braille-cell--sm {
+  --cell-dot-size: 8px;
+  --cell-gap: 6px;
+}
+
+.braille-cell--md {
+  --cell-dot-size: 10px;
+  --cell-gap: 8px;
+}
+
+.braille-cell--lg {
+  --cell-dot-size: 14px;
+  --cell-gap: 10px;
+}
+
+.braille-dot {
+  width: var(--cell-dot-size);
+  height: var(--cell-dot-size);
+  border-radius: 50%;
+  border: 1px solid var(--cell-dot-color);
+  background: var(--cell-dot-background);
+}
+
+.braille-dot.is-raised {
+  background: var(--cell-dot-color);
+}

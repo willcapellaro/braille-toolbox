@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Source+Sans+3:wght@400;500;600&display=swap');
+
+@font-face {
+  font-family: 'BraillePreview';
+  src: url('/fonts/OverpassMono-Braille.otf') format('opentype');
+  font-display: swap;
+}
+
+:root {
+  --bt-ink: #221b14;
+  --bt-muted: #6a5a4d;
+  --bt-paper: #fcfaf6;
+  --bt-accent: #b24a2b;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
+  background: var(--bt-paper);
+  color: var(--bt-ink);
+}

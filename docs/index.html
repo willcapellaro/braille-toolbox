@@ -1,73 +1,136 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Braille Toolbox</title>
+  <style>
+    :root {
+      color-scheme: light;
+    }
 
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f8f8f8;
+      color: #1f1f1f;
+    }
 
-<title>Braille Toolbox</title>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-<link rel="stylesheet" type="text/css" href="styles/styles.css">
+    main {
+      max-width: 920px;
+      margin: 2rem auto;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 1.25rem;
+    }
 
-<link rel="preconnect" href="https://fonts.gstatic.com">
-<link href="https://fonts.googleapis.com/css2?family=Francois+One&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Francois+One&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Merriweather&display=swap" rel="stylesheet">
+    h1 {
+      margin: 0 0 0.75rem;
+      font-size: 1.8rem;
+    }
 
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 0.5rem;
+    }
 
-<meta property="og:title" content="">
-<meta property="og:site_name" content="Braille Toolbox">
-<meta property="og:url" content="http://brailletoolbox.com/">
-<meta property="og:description" content="Braille Toolbox is the world's most user-friendly braille reference. Read simple guides, use the innovative dot decoder, or preview text in braille code. Free to use forever!">
-<meta property="og:type" content="website">
-<meta property="og:image" content="http://brailletoolbox.com/mktimg/BTX-Unfurl-v1.jpg"><script type="text/javascript" src="https://platform-api.sharethis.com/js/sharethis.js#property=61f6a10d30d3010019e430f6&product=sticky-share-buttons" async="async"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css">
-<script defer data-domain="brailletoolbox.com" src="https://plausible.io/js/plausible.js"></script>
-<link rel="apple-touch-icon" sizes="180x180" href="imgs/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="imgs/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="imgs/favicon-16x16.png">
-<link rel="manifest" href="imgs/site.webmanifest"></head>
+    .tab {
+      appearance: none;
+      border: 1px solid #c9c9c9;
+      background: #fff;
+      color: #1f1f1f;
+      border-radius: 6px;
+      padding: 0.45rem 0.7rem;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
 
+    .tab.active {
+      border-color: #1756a9;
+      color: #1756a9;
+      font-weight: 700;
+    }
 
-<script type="text/javascript" src="https://platform-api.sharethis.com/js/sharethis.js#property=61f6a10d30d3010019e430f6&product=sticky-share-buttons" async="async"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css">
-<script defer data-domain="brailletoolbox.com" src="https://plausible.io/js/plausible.js"></script>
-<link rel="apple-touch-icon" sizes="180x180" href="imgs/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="imgs/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="imgs/favicon-16x16.png">
-<link rel="manifest" href="imgs/site.webmanifest"></head>
+    .panel {
+      display: none;
+    }
 
-<body class="locked index">
-<a href="#maincontent" class="skiplink">Skip to content</a>
+    .panel.active {
+      display: block;
+    }
 
+    .panel p {
+      margin: 0.35rem 0 1rem;
+    }
 
-<div class="titling_box">
-	<h1 id="toc_0"><img class="indexlogo" src="imgs/btlogo.svg" alt="Braille toolbox logo"></h1>
-	<div class="site_slogan">Decode and learn about braille</div>
-</div>
+    .panel ul {
+      margin: 0;
+      padding-left: 1.2rem;
+    }
 
-	<div class="indextoolbox" id="maincontent" role="navigation" aria-label="main navigation">
-	<a href="quickref.html">       <img src="imgs/quickstart.svg"><p>Quick Reference</p></a>
-	<a href="intro.html">     <img src="imgs/intro-to-braille.svg"><p>Intro to Braille</p></a>
-	<a href="write.html">  <img src="imgs/composer.svg"><p>Write in Braille</p></a>
-	<a href="decode.html">  		 <img src="imgs/dot-decoder.svg"><p>Dot Decoder</p></a>
-	<a href="braillewriter.html">    <img src="imgs/braillewriter.svg"><p>Braillewriter Help</p></a>
-	<a href="slate.html">     <img src="imgs/slate.svg"><p>Slate & Stylus Help</p></a>
-	</ul>
+    .panel li {
+      margin: 0.5rem 0;
+    }
 
-</div> 
+    a {
+      color: #1756a9;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Braille Toolbox</h1>
 
-<p class="legal">©2025 Will Capellaro & Braille Toolbox</p>
+    <nav class="tabs" aria-label="Main sections">
+      <button class="tab active" data-tab="quickref" type="button">Quick Reference</button>
+      <button class="tab" data-tab="intro" type="button">Full Explainer</button>
+      <button class="tab" data-tab="archive" type="button">Archive</button>
+    </nav>
 
-<a style="  display:         flex;
-  flex-wrap:       wrap;
-  justify-content: center;" class= href="https://www.buymeacoffee.com/willcapellaro"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=willcapellaro&button_colour=BD5FFF&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00" /></a>
+    <section class="panel active" data-panel="quickref">
+      <p>Open the current Quick Reference experience.</p>
+      <ul>
+        <li><a href="app/#/quickref">Open Quick Reference</a></li>
+      </ul>
+    </section>
 
+    <section class="panel" data-panel="intro">
+      <p>Open the current Full Explainer experience.</p>
+      <ul>
+        <li><a href="app/#/intro">Open Full Explainer</a></li>
+      </ul>
+    </section>
 
-<div class="sharethis-sticky-share-buttons"></div>
+    <section class="panel" data-panel="archive">
+      <p>Legacy pages remain accessible here.</p>
+      <ul>
+        <li><a href="write.html">Write in Braille</a></li>
+        <li><a href="decode.html">Dot Decoder</a></li>
+        <li><a href="braillewriter.html">Braillewriter Help</a></li>
+        <li><a href="app/#/about">About (Updated)</a></li>
+        <li><a href="archive/index.html">Archive landing page</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <script>
+    const tabs = Array.from(document.querySelectorAll('.tab'));
+    const panels = Array.from(document.querySelectorAll('.panel'));
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const target = tab.dataset.tab;
+
+        tabs.forEach((item) => item.classList.toggle('active', item === tab));
+        panels.forEach((panel) => {
+          panel.classList.toggle('active', panel.dataset.panel === target);
+        });
+      });
+    });
+  </script>
 </body>
-
-
-
 </html>

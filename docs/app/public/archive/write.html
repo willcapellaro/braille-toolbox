@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Write in Braille</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="../styles/styles.css">
+  <link rel="stylesheet" type="text/css" href="../styles/range-override.css">
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous" async=""></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous" async=""></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous" async=""></script>
+  <style> @font-face {font-family: 'MyWebFont'; src: url('../fonts/OverpassMono-Braille.otf');}</style>
+  <style>
+    /* Safari syntax */
+:-webkit-full-screen {
+  background-color: yellow;
+}
+
+/* IE11 syntax */
+:-ms-fullscreen {
+  background-color: yellow;
+}
+
+/* Standard syntax */
+:fullscreen {
+  background-color: yellow;
+}</style>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css">
+
+
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Francois+One&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Francois+One&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&display=swap" rel="stylesheet">
+
+
+<meta property="og:title" content="Braille Toolbox">
+<meta property="og:site_name" content="">
+<meta property="og:url" content="http://brailletoolbox.com/">
+<meta property="og:description" content="Braille Toolbox's Write In Braille feature allows you to write or paste in text, and see it transformed into English braille signs.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="http://brailletoolbox.com/mktimg/BTX-Unfurl-v1.jpg">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:domain" value="brailletoolbox.com" />
+<meta name="twitter:title" value="Write In Braille" />
+<meta name="twitter:description" value="Braille Toolbox is the world's most user-friendly braille reference. Read simple guides, use the innovative dot decoder, or preview text in braille code. Free to use forever!" />
+<meta name="twitter:image" content="http://brailletoolbox.com/mktimg/BTX-Unfurl-v1.jpg" />
+<meta name="twitter:url" value="http://brailletoolbox.com" />
+<meta name="twitter:label1" value="Total Characters Written" />
+<meta name="twitter:data1" value="12,023" />
+<meta name="twitter:label1" value="Weekly Trend" />
+<meta name="twitter:data1" value="+4%" />
+
+<script type="text/javascript" src="https://platform-api.sharethis.com/js/sharethis.js#property=61f6a10d30d3010019e430f6&product=sticky-share-buttons" async="async"></script>
+<script type="text/javascript" src="https://platform-api.sharethis.com/js/sharethis.js#property=61f6a10d30d3010019e430f6&product=sticky-share-buttons" async="async"></script>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<script defer data-domain="brailletoolbox.com" src="https://plausible.io/js/plausible.js"></script>
+<script defer data-domain="brailletoolbox.com" src="https://plausible.io/js/plausible.js"></script>
+<link rel="apple-touch-icon" sizes="180x180" href="../imgs/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../imgs/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../imgs/favicon-16x16.png">
+<link rel="manifest" href="../imgs/site.webmanifest"></head>
+
+<script>
+  let timeout;
+
+  // Function to get the text parameter and check if it's flipped (via `fliptext`)
+  function getUrlParameters() {
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    // Check if the fliptext parameter is present
+    const isFlipped = urlParams.has('fliptext');
+    
+    // Get the text from either `foo` or `fliptext`
+    const paramValue = isFlipped ? urlParams.get('fliptext') : urlParams.keys().next().value;
+    const textValue = paramValue || ''; // Get the text value, or empty string if none
+    
+    return { textValue, isFlipped }; // Return text and flip state
+  }
+
+  // Function to update the URL with the text and flip option
+  function updateTextInUrl() {
+    const textarea = document.getElementById('encoderField');
+    const textValue = textarea.value;
+
+    const checkbox = document.getElementById('myCheck');
+    const isFlipped = checkbox.checked;
+
+    // Clear any previously set timeout
+    clearTimeout(timeout);
+
+    // Set a timeout to update the URL after a brief pause (300 ms)
+    timeout = setTimeout(() => {
+      const url = new URL(window.location.href);
+      // Replace spaces with `+` for encoding
+      const encodedValue = encodeURIComponent(textValue).replace(/%20/g, '+');
+      
+      // Use `fliptext` if the checkbox is checked, otherwise use default
+      if (isFlipped) {
+        url.search = `?fliptext=${encodedValue}`; // Use the flipped parameter
+      } else {
+        url.search = `?${encodedValue}`; // Use the default parameter
+      }
+
+      window.history.replaceState({}, '', url); // Replace the URL without reloading the page
+    }, 300); // 300ms delay after the user stops typing
+
+    // Check for capital letters
+    checkForCapitals(textValue);
+
+    // Update the braille preview
+    updatePreview(textValue);
+  }
+
+  function updatePreview(textValue) {
+    const preview = document.getElementById('braillePreview');
+    if (!preview) {
+      return;
+    }
+    preview.textContent = textValue;
+  }
+
+  function syncFlipButton(isFlipped) {
+    const button = document.getElementById('flipButton');
+    if (!button) {
+      return;
+    }
+    button.setAttribute('aria-pressed', isFlipped ? 'true' : 'false');
+    button.classList.toggle('is-active', isFlipped);
+  }
+
+  // Function to check for capital letters in the text
+  function checkForCapitals(text) {
+    const capitalAlert = document.getElementById('capitalAlert');
+    const hasCapitals = /[A-Z]/.test(text); // Regular expression to detect capital letters
+
+    if (hasCapitals) {
+      capitalAlert.style.display = 'block'; // Show the warning alert if capitals are present
+    } else {
+      capitalAlert.style.display = 'none'; // Hide the alert if no capitals
+    }
+  }
+
+  // Function to clear the textarea, uncheck the checkbox, and reset the URL
+  function clearFieldAndResetUrl() {
+    // Clear the textarea
+    document.getElementById('encoderField').value = '';
+
+    // Uncheck the flip checkbox
+    document.getElementById('myCheck').checked = false;
+
+    // Reset the URL to its base form without parameters
+    const url = new URL(window.location.href);
+    url.search = ''; // Remove all parameters
+    window.history.replaceState({}, '', url); // Replace the URL without reloading the page
+
+    // Optionally, reset the visual flip if applied
+    applyFlip(false);
+
+    // Reset the flip button state
+    syncFlipButton(false);
+
+    // Hide the capital letters alert
+    document.getElementById('capitalAlert').style.display = 'none';
+
+    // Clear the braille preview
+    updatePreview('');
+  }
+
+  // Initialize the textarea with the text value and checkbox with the flip option on page load
+  window.onload = function() {
+    const { textValue, isFlipped } = getUrlParameters(); // Get the text and flip state
+    document.getElementById('encoderField').value = decodeURIComponent(textValue); // Populate the textarea
+    document.getElementById('myCheck').checked = isFlipped; // Set the checkbox state
+    
+    // Optionally apply any visual flip to the field, e.g., via CSS or JavaScript
+    applyFlip(isFlipped); // Function to visually flip the textarea if necessary
+
+    // Check for capital letters on page load
+    checkForCapitals(textValue);
+
+    // Populate preview and flip button state on load
+    updatePreview(decodeURIComponent(textValue));
+    syncFlipButton(isFlipped);
+  };
+
+  // Optional function to apply visual flip to the textarea (for demonstration)
+  function applyFlip(isFlipped) {
+    const textarea = document.getElementById('encoderField');
+    const preview = document.getElementById('braillePreview');
+    if (isFlipped) {
+      textarea.style.transform = 'scaleX(-1)'; // Flip the textarea horizontally
+      if (preview) {
+        preview.style.transform = 'scaleX(-1)';
+      }
+    } else {
+      textarea.style.transform = 'scaleX(1)'; // Default orientation
+      if (preview) {
+        preview.style.transform = 'scaleX(1)';
+      }
+    }
+  }
+
+  // Event handler when the checkbox is clicked
+  function handleCheckboxClick() {
+    updateTextInUrl(); // Update the URL with the checkbox state
+    applyFlip(document.getElementById('myCheck').checked); // Apply the visual flip
+    syncFlipButton(document.getElementById('myCheck').checked);
+  }
+
+  function toggleFlip() {
+    const checkbox = document.getElementById('myCheck');
+    checkbox.checked = !checkbox.checked;
+    handleCheckboxClick();
+  }
+
+</script>
+
+
+  <style>
+    #encoderField {
+      text-transform: lowercase;
+    }
+
+    .newCheck:checked { color:red;
+
+    }
+  </style>
+
+<body class="write-page">
+
+  <a href="#maincontent" class="skiplink">Skip to content</a>
+
+  <main class="write-shell">
+    <h1 id="maincontent">Write in Braille!</h1>
+
+    <form class="write-form"> 
+  <!-- Warning alert for capital letters -->
+  <div id="capitalAlert" class="alert alert-info" role="alert" style="display:none;">
+    <i class="fas fa-info-circle"></i> Capital letters coming soon!
+  </div>
+
+
+  <label for="encoderField"><strong>Input Your Text Here</strong></label><br>
+  
+  <!-- Checkbox to control the flipping option (hidden) -->
+  <input type="checkbox" name="myCheck" id="myCheck" class="visually-hidden" value="Lockinput">
+
+  <div class="write-toolbar">
+    <button
+      type="button"
+      id="flipButton"
+      class="icon-button"
+      onclick="toggleFlip()"
+      aria-pressed="false"
+      title="Flip horizontally"
+    >
+      <i class="fas fa-exchange-alt" aria-hidden="true"></i>
+      <span>Flip</span>
+    </button>
+  </div>
+  
+  <!-- Textarea to input the text -->
+  <textarea class="spaceafter" id="encoderField" placeholder="your braille here" onkeyup="updateTextInUrl();"></textarea>
+
+  <div class="preview-label">Braille Preview</div>
+  <div id="braillePreview" class="braille-preview" aria-live="polite"></div>
+
+    </form>
+  </main>
+</div> 
+
+
+
+
+
+<p class="legal">©2024 Will Capellaro & Braille Toolbox XiI232|</p>
+
+<!-- <script>
+  function flashText() {
+    var element = document.getElementById("encoderField");
+    element.classList.remove('flashStyle2')
+    element.classList.add("flashStyle");
+
+  }
+</script> -->
+
+
+
+
+<script>
+function myFunction() {
+  // Get the checkbox
+  var checkBox = document.getElementById("myCheck");
+  var textarea = document.getElementById("encoderField")
+  // If the checkbox is checked, display the output text
+  if (checkBox.checked == true){
+    textarea.classList.add("flip");
+  } else {
+    textarea.classList.remove("flip");
+  }
+}
+var encoderFieldText = '';
+function reFillText ()
+{
+  if (document.getElementById("encoderField").value != encoderFieldText)
+  {
+    encoderFieldText = document.getElementById("encoderField").value;
+    document.getElementById("encoderField").value = ''
+    document.getElementById("encoderField").value = encoderFieldText;
+
+  }
+}
+</script>
+
+<div class="sharethis-sticky-share-buttons"></div>
+
+<!-- Button trigger modal -->
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Feedback</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" style="margin-left: auto; margin-right: auto;">
+        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSewt_2Qd3Y87NSmYO5ZORzJaz2QbzS_fvakA31beBd-rEfOQg/viewform?embedded=true" width="640" height="1292" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+
+
+
+</html>
+
+
+
+<!-- <div class="otherpage">-->
+
+
