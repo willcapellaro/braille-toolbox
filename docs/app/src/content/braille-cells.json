@@ -1,0 +1,487 @@
+{
+  "schemaVersion": "2.0",
+  "binaryOrder": "321456",
+  "cells": [
+    {
+      "id": "space",
+      "binary": "000000",
+      "unicode": "U+2800",
+      "verbal": "no dots"
+    },
+    {
+      "id": "a",
+      "binary": "001000",
+      "unicode": "U+2801",
+      "verbal": "dot 1",
+      "letterSymbol": "a",
+      "numberSymbol": "1",
+      "numberSymbolSpoken": "one",
+      "contractions": [
+        "about",
+        "above",
+        "according",
+        "across",
+        "after",
+        "afternoon",
+        "afterward",
+        "again",
+        "against",
+        "almost",
+        "already",
+        "also",
+        "although",
+        "altogether",
+        "always",
+        "⌂ance",
+        "and",
+        "ar",
+        "as"
+      ]
+    },
+    {
+      "id": "b",
+      "binary": "011000",
+      "unicode": "U+2803",
+      "verbal": "dots 1 2",
+      "letterSymbol": "b",
+      "numberSymbol": "2",
+      "numberSymbolSpoken": "two",
+      "contractions": []
+    },
+    {
+      "id": "c",
+      "binary": "001100",
+      "unicode": "U+2809",
+      "verbal": "dots 1 4",
+      "letterSymbol": "c",
+      "numberSymbol": "3",
+      "numberSymbolSpoken": "three",
+      "contractions": []
+    },
+    {
+      "id": "d",
+      "binary": "001110",
+      "unicode": "U+2819",
+      "verbal": "dots 1 4 5",
+      "letterSymbol": "d",
+      "numberSymbol": "4",
+      "numberSymbolSpoken": "four",
+      "contractions": []
+    },
+    {
+      "id": "e",
+      "binary": "001010",
+      "unicode": "U+2811",
+      "verbal": "dots 1 5",
+      "letterSymbol": "e",
+      "numberSymbol": "5",
+      "numberSymbolSpoken": "five",
+      "contractions": []
+    },
+    {
+      "id": "f",
+      "binary": "011100",
+      "unicode": "U+280B",
+      "verbal": "dots 1 2 4",
+      "letterSymbol": "f",
+      "numberSymbol": "6",
+      "numberSymbolSpoken": "six",
+      "contractions": []
+    },
+    {
+      "id": "g",
+      "binary": "011110",
+      "unicode": "U+281B",
+      "verbal": "dots 1 2 4 5",
+      "letterSymbol": "g",
+      "numberSymbol": "7",
+      "numberSymbolSpoken": "seven",
+      "contractions": []
+    },
+    {
+      "id": "h",
+      "binary": "011010",
+      "unicode": "U+2813",
+      "verbal": "dots 1 2 5",
+      "letterSymbol": "h",
+      "numberSymbol": "8",
+      "numberSymbolSpoken": "eight",
+      "contractions": []
+    },
+    {
+      "id": "i",
+      "binary": "010100",
+      "unicode": "U+280A",
+      "verbal": "dots 2 4",
+      "letterSymbol": "i",
+      "numberSymbol": "9",
+      "numberSymbolSpoken": "nine",
+      "contractions": []
+    },
+    {
+      "id": "j",
+      "binary": "010110",
+      "unicode": "U+281A",
+      "verbal": "dots 2 4 5",
+      "letterSymbol": "j",
+      "numberSymbol": "0",
+      "numberSymbolSpoken": "zero",
+      "contractions": []
+    },
+    {
+      "id": "k",
+      "binary": "101000",
+      "unicode": "U+2805",
+      "verbal": "dots 1 3",
+      "letterSymbol": "k",
+      "contractions": []
+    },
+    {
+      "id": "l",
+      "binary": "111000",
+      "unicode": "U+2807",
+      "verbal": "dots 1 2 3",
+      "letterSymbol": "l",
+      "contractions": []
+    },
+    {
+      "id": "m",
+      "binary": "101100",
+      "unicode": "U+280D",
+      "verbal": "dots 1 3 4",
+      "letterSymbol": "m",
+      "contractions": []
+    },
+    {
+      "id": "n",
+      "binary": "101110",
+      "unicode": "U+281D",
+      "verbal": "dots 1 3 4 5",
+      "letterSymbol": "n",
+      "contractions": []
+    },
+    {
+      "id": "o",
+      "binary": "101010",
+      "unicode": "U+2815",
+      "verbal": "dots 1 3 5",
+      "letterSymbol": "o",
+      "contractions": []
+    },
+    {
+      "id": "p",
+      "binary": "111100",
+      "unicode": "U+280F",
+      "verbal": "dots 1 2 3 4",
+      "letterSymbol": "p",
+      "contractions": []
+    },
+    {
+      "id": "q",
+      "binary": "111110",
+      "unicode": "U+281F",
+      "verbal": "dots 1 2 3 4 5",
+      "letterSymbol": "q",
+      "contractions": []
+    },
+    {
+      "id": "r",
+      "binary": "111010",
+      "unicode": "U+2817",
+      "verbal": "dots 1 2 3 5",
+      "letterSymbol": "r",
+      "contractions": []
+    },
+    {
+      "id": "s",
+      "binary": "110100",
+      "unicode": "U+280E",
+      "verbal": "dots 2 3 4",
+      "letterSymbol": "s",
+      "contractions": []
+    },
+    {
+      "id": "t",
+      "binary": "110110",
+      "unicode": "U+281E",
+      "verbal": "dots 2 3 4 5",
+      "letterSymbol": "t",
+      "contractions": []
+    },
+    {
+      "id": "u",
+      "binary": "101001",
+      "unicode": "U+2825",
+      "verbal": "dots 1 3 6",
+      "letterSymbol": "u",
+      "contractions": []
+    },
+    {
+      "id": "v",
+      "binary": "111001",
+      "unicode": "U+2827",
+      "verbal": "dots 1 2 3 6",
+      "letterSymbol": "v",
+      "contractions": []
+    },
+    {
+      "id": "w",
+      "binary": "010111",
+      "unicode": "U+283A",
+      "verbal": "dots 2 4 5 6",
+      "letterSymbol": "w",
+      "contractions": []
+    },
+    {
+      "id": "x",
+      "binary": "101101",
+      "unicode": "U+282D",
+      "verbal": "dots 1 3 4 6",
+      "letterSymbol": "x",
+      "contractions": []
+    },
+    {
+      "id": "y",
+      "binary": "101111",
+      "unicode": "U+283D",
+      "verbal": "dots 1 3 4 5 6",
+      "letterSymbol": "y",
+      "contractions": []
+    },
+    {
+      "id": "z",
+      "binary": "101011",
+      "unicode": "U+2835",
+      "verbal": "dots 1 3 5 6",
+      "letterSymbol": "z",
+      "contractions": []
+    },
+    {
+      "id": "capital-sign",
+      "binary": "000001",
+      "unicode": "U+2820",
+      "verbal": "dot 6",
+      "name": "Capital"
+    },
+    {
+      "id": "number-sign",
+      "binary": "100111",
+      "unicode": "U+283C",
+      "verbal": "dots 3 4 5 6",
+      "name": "Number"
+    },
+    {
+      "id": "punctuation-period",
+      "binary": "010011",
+      "unicode": "U+2832",
+      "verbal": "dots 2 5 6",
+      "symbol": ".",
+      "name": "Period"
+    },
+    {
+      "id": "punctuation-comma",
+      "binary": "010000",
+      "unicode": "U+2802",
+      "verbal": "dot 2",
+      "symbol": ",",
+      "name": "Comma"
+    },
+    {
+      "id": "punctuation-exclamation",
+      "binary": "110010",
+      "unicode": "U+2816",
+      "verbal": "dots 2 3 5",
+      "symbol": "!",
+      "name": "Exclamation mark"
+    },
+    {
+      "id": "punctuation-question",
+      "binary": "110001",
+      "unicode": "U+2826",
+      "verbal": "dots 2 3 6",
+      "symbol": "?",
+      "name": "Question mark"
+    },
+    {
+      "id": "punctuation-colon",
+      "binary": "010010",
+      "unicode": "U+2812",
+      "verbal": "dots 2 5",
+      "symbol": ":",
+      "name": "Colon"
+    },
+    {
+      "id": "punctuation-semicolon",
+      "binary": "110000",
+      "unicode": "U+2806",
+      "verbal": "dots 2 3",
+      "symbol": ";",
+      "name": "Semicolon"
+    },
+    {
+      "id": "punctuation-quote-open",
+      "binary": "110001",
+      "unicode": "U+2826",
+      "verbal": "dots 2 3 6",
+      "symbol": "“",
+      "name": "Opening double quote"
+    },
+    {
+      "id": "punctuation-quote-close",
+      "binary": "100011",
+      "unicode": "U+2834",
+      "verbal": "dots 3 5 6",
+      "symbol": "”",
+      "name": "Closing double quote"
+    },
+    {
+      "id": "punctuation-single-quote-open",
+      "binary": "000001",
+      "unicode": "U+2820",
+      "verbal": "dot 6, dots 2 3 6",
+      "symbol": "‘",
+      "name": "Opening single quote",
+      "dotSets": [
+        "6",
+        "236"
+      ]
+    },
+    {
+      "id": "punctuation-single-quote-close",
+      "binary": "000001",
+      "unicode": "U+2820",
+      "verbal": "dot 6, dots 3 5 6",
+      "symbol": "’",
+      "name": "Closing single quote",
+      "dotSets": [
+        "6",
+        "356"
+      ]
+    },
+    {
+      "id": "punctuation-parenthesis-open",
+      "binary": "000010",
+      "unicode": "U+2810",
+      "verbal": "dot 5, dots 1 2 6",
+      "symbol": "(",
+      "name": "Opening parenthesis",
+      "dotSets": [
+        "5",
+        "126"
+      ]
+    },
+    {
+      "id": "punctuation-parenthesis-close",
+      "binary": "000010",
+      "unicode": "U+2810",
+      "verbal": "dot 5, dots 3 4 5",
+      "symbol": ")",
+      "name": "Closing parenthesis",
+      "dotSets": [
+        "5",
+        "345"
+      ]
+    },
+    {
+      "id": "punctuation-bracket-open",
+      "binary": "000101",
+      "unicode": "U+2828",
+      "verbal": "dots 4 6, dots 1 2 6",
+      "symbol": "[",
+      "name": "Opening bracket",
+      "dotSets": [
+        "46",
+        "126"
+      ]
+    },
+    {
+      "id": "punctuation-bracket-close",
+      "binary": "000101",
+      "unicode": "U+2828",
+      "verbal": "dots 4 6, dots 3 4 5",
+      "symbol": "]",
+      "name": "Closing bracket",
+      "dotSets": [
+        "46",
+        "345"
+      ]
+    },
+    {
+      "id": "punctuation-hyphen",
+      "binary": "100001",
+      "unicode": "U+2824",
+      "verbal": "dots 3 6",
+      "symbol": "-",
+      "name": "Hyphen"
+    },
+    {
+      "id": "punctuation-dash",
+      "binary": "000001",
+      "unicode": "U+2820",
+      "verbal": "dot 6, dots 3 6",
+      "symbol": "—",
+      "name": "Dash",
+      "dotSets": [
+        "6",
+        "36"
+      ]
+    },
+    {
+      "id": "punctuation-apostrophe",
+      "binary": "100000",
+      "unicode": "U+2804",
+      "verbal": "dot 3",
+      "symbol": "'",
+      "name": "Apostrophe"
+    },
+    {
+      "id": "punctuation-asterisk",
+      "binary": "000010",
+      "unicode": "U+2810",
+      "verbal": "dot 5, dots 3 5",
+      "symbol": "*",
+      "name": "Asterisk",
+      "dotSets": [
+        "5",
+        "35"
+      ]
+    },
+    {
+      "id": "punctuation-slash",
+      "binary": "000111",
+      "unicode": "U+2838",
+      "verbal": "dots 4 5 6, dots 3 4",
+      "symbol": "/",
+      "name": "Slash",
+      "dotSets": [
+        "456",
+        "34"
+      ]
+    },
+    {
+      "id": "punctuation-ellipsis",
+      "binary": "010011",
+      "unicode": "U+2832",
+      "verbal": "dots 2 5 6, dots 2 5 6, dots 2 5 6",
+      "symbol": "…",
+      "name": "Ellipsis",
+      "dotSets": [
+        "256",
+        "256",
+        "256"
+      ]
+    },
+    {
+      "id": "punctuation-dollar",
+      "binary": "000100",
+      "unicode": "U+2808",
+      "verbal": "dot 4, dots 2 3 4",
+      "symbol": "$",
+      "name": "Dollar sign",
+      "dotSets": [
+        "4",
+        "234"
+      ]
+    }
+  ]
+}
