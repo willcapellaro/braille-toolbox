@@ -13,7 +13,7 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink, Navigate, Route, Routes } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSun, faMoon, faCircleHalfStroke } from '@fortawesome/free-solid-svg-icons';
+import { faSun, faMoon, faCircleHalfStroke, faPalette } from '@fortawesome/free-solid-svg-icons';
 import AboutPage from './pages/AboutPage';
 import ArchivePage from './pages/ArchivePage';
 import BraillewriterHelpPage from './pages/BraillewriterHelpPage';
@@ -29,9 +29,18 @@ const HEADING_FONT = '"Playfair Display", "Georgia", "Times New Roman", serif';
 const INK  = { light: '#1a1a1a', dark: '#e4e4e4' };
 const PAPER = { light: '#fafafa', dark: '#121212' };
 
-function buildTheme(mode) {
-  const ink   = INK[mode];
-  const paper = PAPER[mode];
+// Parse hex to relative luminance (0 = black, 1 = white)
+function luminance(hex) {
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+  const toLinear = (c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+  return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+}
+
+function buildTheme(mode, customInk, customPaper) {
+  const ink   = customInk  || INK[mode];
+  const paper = customPaper || PAPER[mode];
   return createTheme({
     palette: {
       mode,
@@ -101,9 +110,9 @@ function buildTheme(mode) {
   });
 }
 
-const MODE_CYCLE = ['auto', 'light', 'dark'];
-const MODE_ICONS = { light: faSun, dark: faMoon, auto: faCircleHalfStroke };
-const MODE_LABELS = { light: 'Light mode', dark: 'Dark mode', auto: 'Auto (system)' };
+const MODE_CYCLE = ['auto', 'light', 'dark', 'custom'];
+const MODE_ICONS = { light: faSun, dark: faMoon, auto: faCircleHalfStroke, custom: faPalette };
+const MODE_LABELS = { light: 'Light mode', dark: 'Dark mode', auto: 'Auto (system)', custom: 'Custom colors' };
 
 
 
@@ -112,9 +121,23 @@ export default function App() {
   const [modeSetting, setModeSetting] = useState(() => {
     try { return localStorage.getItem('bt-theme') || 'auto'; } catch { return 'auto'; }
   });
+  const [customInk, setCustomInk] = useState(() => {
+    try { return localStorage.getItem('bt-custom-ink') || '#1a1a1a'; } catch { return '#1a1a1a'; }
+  });
+  const [customPaper, setCustomPaper] = useState(() => {
+    try { return localStorage.getItem('bt-custom-paper') || '#fafafa'; } catch { return '#fafafa'; }
+  });
 
-  const resolvedMode = modeSetting === 'auto' ? (prefersDark ? 'dark' : 'light') : modeSetting;
-  const theme = useMemo(() => buildTheme(resolvedMode), [resolvedMode]);
+  const isCustom = modeSetting === 'custom';
+  const resolvedMode = isCustom
+    ? (luminance(customPaper) > 0.5 ? 'light' : 'dark')
+    : modeSetting === 'auto'
+      ? (prefersDark ? 'dark' : 'light')
+      : modeSetting;
+  const theme = useMemo(
+    () => buildTheme(resolvedMode, isCustom ? customInk : null, isCustom ? customPaper : null),
+    [resolvedMode, isCustom, customInk, customPaper],
+  );
 
   // Sync data-theme attribute so CSS vars stay in sync
   useEffect(() => {
@@ -127,32 +150,109 @@ export default function App() {
     try { localStorage.setItem('bt-theme', next); } catch {}
   };
 
+  const updateCustomInk = (hex) => {
+    setCustomInk(hex);
+    try { localStorage.setItem('bt-custom-ink', hex); } catch {}
+  };
+  const updateCustomPaper = (hex) => {
+    setCustomPaper(hex);
+    try { localStorage.setItem('bt-custom-paper', hex); } catch {}
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Container maxWidth="lg" sx={{ py: 2 }}>
+      <Container
+        maxWidth="lg"
+        sx={{
+          py: 2,
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-          <Typography variant="h5" component="p">
-            Braille Toolbox
-          </Typography>
-          <Tooltip title={MODE_LABELS[modeSetting]} arrow>
-            <IconButton onClick={cycleMode} size="small" sx={{ color: 'text.secondary' }}>
-              <FontAwesomeIcon icon={MODE_ICONS[modeSetting]} />
-            </IconButton>
-          </Tooltip>
+          <MuiLink
+            component={RouterLink}
+            to="/quickref"
+            underline="none"
+            color="text.primary"
+            sx={{ '&:hover': { opacity: 0.7 } }}
+          >
+            <Typography variant="h5" component="p">
+              Braille Toolbox
+            </Typography>
+          </MuiLink>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            {isCustom && (
+              <>
+                <Tooltip title="Foreground (ink)" arrow>
+                  <Box
+                    component="input"
+                    type="color"
+                    value={customInk}
+                    onChange={(e) => updateCustomInk(e.target.value)}
+                    sx={{
+                      width: 28,
+                      height: 28,
+                      p: 0,
+                      border: '2px solid',
+                      borderColor: 'divider',
+                      borderRadius: '50%',
+                      cursor: 'pointer',
+                      appearance: 'none',
+                      bgcolor: 'transparent',
+                      '&::-webkit-color-swatch-wrapper': { p: 0 },
+                      '&::-webkit-color-swatch': { border: 'none', borderRadius: '50%' },
+                      '&::-moz-color-swatch': { border: 'none', borderRadius: '50%' },
+                    }}
+                  />
+                </Tooltip>
+                <Tooltip title="Background (paper)" arrow>
+                  <Box
+                    component="input"
+                    type="color"
+                    value={customPaper}
+                    onChange={(e) => updateCustomPaper(e.target.value)}
+                    sx={{
+                      width: 28,
+                      height: 28,
+                      p: 0,
+                      border: '2px solid',
+                      borderColor: 'divider',
+                      borderRadius: '50%',
+                      cursor: 'pointer',
+                      appearance: 'none',
+                      bgcolor: 'transparent',
+                      '&::-webkit-color-swatch-wrapper': { p: 0 },
+                      '&::-webkit-color-swatch': { border: 'none', borderRadius: '50%' },
+                      '&::-moz-color-swatch': { border: 'none', borderRadius: '50%' },
+                    }}
+                  />
+                </Tooltip>
+              </>
+            )}
+            <Tooltip title={MODE_LABELS[modeSetting]} arrow>
+              <IconButton onClick={cycleMode} size="small" sx={{ color: 'text.secondary' }}>
+                <FontAwesomeIcon icon={MODE_ICONS[modeSetting]} />
+              </IconButton>
+            </Tooltip>
+          </Box>
         </Box>
 
-        <Routes>
-          <Route path="/quickref" element={<QuickRefPage />} />
-          <Route path="/intro" element={<Navigate to="/quickref" replace />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/decode" element={<DotDecoderPage />} />
-          <Route path="/write" element={<WritePage />} />
-          <Route path="/braillewrite-help" element={<BraillewriterHelpPage />} />
-          <Route path="/archive" element={<ArchivePage />} />
-          <Route path="/admin" element={<AdminPage />} />
-          <Route path="*" element={<Navigate to="/quickref" replace />} />
-        </Routes>
+        <Box sx={{ flex: 1 }}>
+          <Routes>
+            <Route path="/quickref" element={<QuickRefPage />} />
+            <Route path="/intro" element={<Navigate to="/quickref" replace />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/decode" element={<Navigate to="/archive?tab=decode" replace />} />
+            <Route path="/write" element={<Navigate to="/archive?tab=write" replace />} />
+            <Route path="/braillewrite-help" element={<Navigate to="/archive?tab=braillewriter" replace />} />
+            <Route path="/archive" element={<ArchivePage />} />
+            <Route path="/admin" element={<AdminPage />} />
+            <Route path="*" element={<Navigate to="/quickref" replace />} />
+          </Routes>
+        </Box>
         <Box
           component="footer"
           sx={{
