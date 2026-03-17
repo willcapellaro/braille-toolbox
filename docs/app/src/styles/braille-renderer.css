@@ -1,14 +1,22 @@
 .braille-cell {
   --cell-dot-size: 10px;
   --cell-gap: 8px;
-  --cell-dot-color: #151515;
+  --cell-dot-color: #1a1a1a;
   --cell-dot-background: transparent;
+  --cell-border-color: rgba(26,26,26,0.2);
   display: inline-grid;
   grid-template-columns: repeat(2, var(--cell-dot-size));
   gap: var(--cell-gap);
-  border: 1px solid #d8d8d8;
+  border: 1px solid var(--cell-border-color);
   border-radius: 8px;
   padding: 8px;
+}
+
+.braille-cell--xs {
+  --cell-dot-size: 6px;
+  --cell-gap: 4px;
+  padding: 5px;
+  border-radius: 6px;
 }
 
 .braille-cell--sm {

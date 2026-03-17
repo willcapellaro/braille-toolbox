@@ -204,13 +204,14 @@ const BraillewriterHelpPage = () => {
             alignItems: 'center',
             justifyContent: 'center',
             minHeight: '200px',
-            bgcolor: 'white',
+            bgcolor: 'background.paper',
             borderRadius: 1,
-            border: '2px solid #e0e0e0',
+            border: 2,
+            borderColor: 'divider',
             position: 'relative',
             '&:empty::before': {
               content: '"Character display area"',
-              color: '#999',
+              color: 'text.disabled',
               fontSize: '0.875rem',
             },
           }}

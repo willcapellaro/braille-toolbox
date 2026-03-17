@@ -6,13 +6,6 @@
   font-display: swap;
 }
 
-:root {
-  --bt-ink: #221b14;
-  --bt-muted: #6a5a4d;
-  --bt-paper: #fcfaf6;
-  --bt-accent: #b24a2b;
-}
-
 html,
 body,
 #root {
@@ -22,6 +15,4 @@ body,
 
 body {
   font-family: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
-  background: var(--bt-paper);
-  color: var(--bt-ink);
 }

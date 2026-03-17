@@ -98,9 +98,9 @@ export default function DotDecoderPage() {
                     height: 112,
                     borderRadius: '50%',
                     border: '2px solid',
-                    borderColor: isOn ? 'primary.main' : 'divider',
-                    backgroundColor: isOn ? 'primary.main' : 'transparent',
-                    boxShadow: isOn ? '0 12px 24px rgba(33, 61, 86, 0.25)' : 'none',
+                    borderColor: isOn ? 'text.primary' : 'divider',
+                    backgroundColor: isOn ? 'text.primary' : 'transparent',
+                    boxShadow: 'none',
                     transition: 'all 180ms ease',
                     cursor: 'pointer',
                     display: 'flex',
@@ -108,13 +108,13 @@ export default function DotDecoderPage() {
                     justifyContent: 'center',
                     outline: 'none',
                     '&:focus-visible': {
-                      boxShadow: '0 0 0 3px rgba(25, 118, 210, 0.35)',
+                      boxShadow: '0 0 0 3px rgba(128, 128, 128, 0.35)',
                     },
                   }}
                 >
                   <Typography
                     variant="subtitle1"
-                    sx={{ color: isOn ? 'common.white' : 'text.secondary', fontWeight: 600 }}
+                    sx={{ color: isOn ? 'background.default' : 'text.primary', fontWeight: 600 }}
                   >
                     {dot.id}
                   </Typography>

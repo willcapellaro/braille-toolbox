@@ -71,7 +71,7 @@ export default function WritePage() {
             borderRadius: 2,
             p: 2,
             minHeight: 160,
-            backgroundColor: 'common.white',
+            backgroundColor: 'background.paper',
             transform: flipTransform,
             fontFamily: '"BraillePreview", "Source Sans 3", sans-serif',
             fontSize: `${fontSize}rem`,

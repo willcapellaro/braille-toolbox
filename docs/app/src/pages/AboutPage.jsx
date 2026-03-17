@@ -7,9 +7,9 @@ export default function AboutPage() {
         sx={{
           p: { xs: 3, md: 4 },
           borderRadius: 3,
-          border: '1px solid #eadfce',
-          background:
-            'linear-gradient(135deg, #f7efe4 0%, #fff8ee 55%, #f1f4f8 100%)',
+          border: 1,
+          borderColor: 'divider',
+          bgcolor: 'background.paper',
           mb: 3,
         }}
       >
@@ -17,15 +17,13 @@ export default function AboutPage() {
           variant="h3"
           component="h1"
           sx={{
-            fontFamily: "'Fraunces', 'Georgia', serif",
             fontWeight: 700,
-            color: '#241910',
             mb: 1,
           }}
         >
           About Braille Toolbox
         </Typography>
-        <Typography variant="body1" sx={{ maxWidth: 720, color: '#3d2f24' }}>
+        <Typography variant="body1" sx={{ maxWidth: 720 }}>
 Braille Toolbox is a collection of practical tools and references for braille learners and the braille-curious. It’s designed to be approachable, reliable, and accurate, making braille inviting and useful while respecting its role in independent access. The project is led by Will Capellaro, whose early work designing a braille device sparked a lifelong focus on solving braille challenges.
         </Typography>
               <br></br>
@@ -34,7 +32,7 @@ Braille Toolbox is a collection of practical tools and references for braille le
         </Divider>
                   <Typography
             variant="h6"
-            sx={{ fontFamily: "'Fraunces', 'Georgia', serif", mb: 0.5 }}
+            sx={{ mb: 0.5 }}
           >
             Technical notes
           </Typography>
