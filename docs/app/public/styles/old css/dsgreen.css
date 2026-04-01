@@ -1,0 +1,1587 @@
+/* 	
+	Responsive Starter 04.15.13
+	Doug Green: douglasgreen.com
+	
+	Inspiration:
+	http://twitter.github.io/bootstrap/
+	http://foundation.zurb.com/
+	http://www.getskeleton.com/
+	http://html5boilerplate.com/
+*/
+/**
+ * ##################################################
+ * ##################################################
+ * 	
+ * RESET
+ *  
+ */
+body, ul, ol, li, dl, dt, dd, h1, h2, h3, h4, h5, h6, p, td, th, address, blockquote, pre, code, form, fieldset, legend, input, textarea { margin: 0; padding: 0; }
+h1, h2, h3, h4, h5, h6 { font-weight: normal; }
+fieldset, img, input, select, textarea { border: none; }
+input, textarea, select { font-family: inherit;	font-size: inherit;	font-weight: inherit; }
+address, cite { font-style: normal; }
+table { border-collapse: collapse; }
+caption, th { text-align: left; }
+ul li { list-style-type: none; }
+a { text-decoration: none; }
+section, article, header, footer, nav, aside, hgroup { display: block; }
+/**
+ * ##################################################
+ * ##################################################
+ * 	
+ * TYPE
+ *  
+ */
+/**
+ * -------------------------------------------------- 
+ * MOBILE & UP
+ * --------------------------------------------------
+ */
+/* 
+ * type references:
+ * original method:  http://clagnut.com/blog/348/
+ * updated approach: http://snook.ca/archives/html_and_css/font-size-with-rem
+ * more thoughts:    http://css-tricks.com/css-font-size/
+ * 
+ */
+body {
+	font: 62.5%/2.4em "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+}
+/* the basics */
+h1 {
+	font-size: 2.4em;
+	line-height: 1em;
+}
+h2 {
+	font-size: 1.8em;
+	line-height: 1.333em;
+}
+h3, h4, h5, h6, dt, legend, caption {
+	font-size: 1.4em;
+	line-height: 1.7143em;
+}
+h1, h2, h3, h4, h5, h6, dt, legend, caption, th {
+	font-weight: bold;
+}
+p, li, dd, td, th, label, input, select, textarea, address, blockquote {
+	font-size: 1.4em;
+	line-height: 1.7143em;
+}
+p, dd, address, blockquote {
+	margin-bottom: 1.7143em;
+}
+ul li ul {
+	margin-bottom: 0;
+}
+table, ul, ol, dl {
+	margin-bottom: 2.4em;
+}
+strong {
+	font-weight: bold;
+}
+em {
+	font-style: italic;
+}
+/* nested sizes */
+li li, li p, td p, blockquote p {
+	font-size: 1em;
+}
+/* extra formatting */
+ul, ol {
+	margin-left: 4.5em;
+}
+ul li {
+	list-style-type: disc;
+}
+th, td {
+	width: 5.8em;
+}
+blockquote {
+	margin-left: auto;
+	margin-right: auto;
+	width: 90%;
+}
+blockquote span.author {
+	padding-right: 1em;
+	display: block;
+	text-align: right;
+}
+abbr[title]:hover {
+	cursor: help;
+}
+/**
+ * --------------------------------------------------	
+ * TABLET PORTRAIT 768
+ * --------------------------------------------------
+ */
+@media only screen and (min-width: 768px) {
+	blockquote { width: 80%; }
+}
+/**
+ * --------------------------------------------------	
+ * DESKTOP 960
+ * --------------------------------------------------
+ */
+@media only screen and (min-width: 980px) {
+	blockquote { width: 70%; }
+}
+/**
+ * ##################################################
+ * ##################################################
+ * 	
+ * FORMS
+ *  
+ */
+/**
+ * -------------------------------------------------- 
+ * MOBILE & UP
+ * --------------------------------------------------
+ */
+/* form elements not aligned to baseline grid */
+label {
+	display: block;
+	font-weight: bold;
+}
+input, select, textarea {
+	margin-bottom: 0.5em;
+	padding: 0.4em;
+	width: 95%;
+}
+input, select {
+	width: 95%;
+}
+.radio input, .checkbox input, input[type="radio"], input[type="checkbox"] {
+	width: auto;
+	float: left;
+	margin: 0.4em;
+}
+.radio label, .checkbox label {
+	float: left;
+}
+.radio, .checkbox {
+	clear: both;
+}
+.radio p, .checkbox p {
+	margin-bottom: 0;
+}
+input.btn, input[type="submit"] {
+	margin: 1em 0;
+	padding: 0.4em;
+	font-weight: bold;
+	text-transform: uppercase;
+	width: 10em;
+	clear: both;
+	border-radius: 0.4em;
+	transition: all 0.1s ease;
+}
+label.hidden {
+	margin-left: -10000em;
+	width: 0;
+	float: none;
+}
+/**
+ * --------------------------------------------------	
+ * TABLET PORTRAIT 768
+ * --------------------------------------------------
+ */
+@media only screen and (min-width: 768px) {
+	input, select, textarea {
+		width: 30em;
+	}
+	input, select {
+		width: 15em;
+	}
+}
+/**
+ * ##################################################
+ * ##################################################
+ * 	
+ * LAYOUT
+ *  
+ */
+/**
+ * -------------------------------------------------- 
+ * MOBILE & UP
+ * --------------------------------------------------
+ */
+/* padding for small displays */
+body {
+	padding: 0 1em;
+}
+/* header title */
+body>header p {
+	font-weight: bold;
+}
+#content,
+body>footer {
+	clear: both;
+}
+/* main navigation list */
+body>header nav a {
+	display: block;
+	border-radius: 0.2em;
+	padding: 0.25em 0.5em;
+}
+body>header nav ul {
+	margin-left: 0;
+	font-weight: bold;
+}
+body>header nav li {
+	list-style-type: none;
+	margin-bottom: 0.25em;
+}	
+/* footer */
+body>footer p {
+	font-size: 1.2em;
+	line-height: 2em;
+	clear: both;
+}
+body>footer p.top {
+	clear: none;
+}
+/* skiplink */
+#skiplink a {
+	width: 0;
+	height: 0;
+	position: absolute;
+	overflow: hidden;
+}
+#skiplink a:active, 
+#skiplink a:focus {
+	padding: 0.2em;
+	font-size: 1.2em;
+	font-weight: bold;
+	width: auto;
+	height: auto;
+	overflow: visible;
+	top: 0.2em;
+	left: 0.2em;
+	z-index: 5;
+}
+/**
+ * -------------------------------------------------- 
+ * MOBILE LANDSCAPE / 7" TABLET PORTRAIT
+ * --------------------------------------------------
+ */
+@media only screen and (min-width: 480px) {
+	/* linear main navigation bar */
+	body>header nav ul,
+	body>header nav li,
+	body>header nav a {
+		float: left;
+	}
+	body>header nav a {
+		padding: 0 0.5em;
+		display: block;
+	}
+}
+/**
+ * --------------------------------------------------	
+ * TABLET PORTRAIT 768
+ * --------------------------------------------------
+ */
+@media only screen and (min-width: 768px) {
+	/* 
+	 * remove padding on body for tablet
+	 * padding on #content div */
+	body {
+		padding: 0;
+	}
+	/* set a fixed size container & center it */
+	body>header div.wrap,
+	body>footer div.wrap,
+	#content {
+		margin: 0 auto;
+		width: 720px;
+	}
+	/* fixes header alignment issues */
+	body>header p,
+  	body>header nav {
+    	margin-left:10px;
+    	margin-right:10px;
+  	}
+}
+/**
+ * --------------------------------------------------	
+ * DESKTOP 960
+ * --------------------------------------------------
+ */
+@media only screen and (min-width: 980px) {
+	body>header div.wrap,
+	body>footer div.wrap,
+	#content {
+		width: 960px;
+	}
+}
+/**
+ * --------------------------------------------------	
+ * DESKTOP 1200
+ * --------------------------------------------------
+ */
+@media only screen and (min-width: 1230px) {
+	body>header div.wrap,
+	body>footer div.wrap,
+	#content {
+		width: 1200px;
+	}
+	/* fixes header alignment issues */
+	body>header p,
+  	body>header nav {
+    	margin-left:15px;
+    	margin-right:15px;
+  	}
+}
+/**
+ * ##################################################
+ * ##################################################
+ * 	
+ * CLASSES
+ *  
+ */
+/* general */
+.left {
+	float: left;
+}
+.right {
+	float: right;
+}
+.clear {
+	clear: both;
+}
+/* http://css-tricks.com/snippets/css/clear-fix/ */
+.clearfix:before,
+.clearfix:after {
+  content: "";
+  display: table;
+}
+.clearfix:after {
+  clear: both;
+}
+.clearfix {
+  zoom: 1;
+}
+.nowrap {
+	white-space: nowrap;
+}
+.hidden {
+	visibility: hidden;
+	height: 0;
+	width: 0;
+}
+.offscreen {
+	text-indent: -10000em;
+}
+img.flex {
+	width: 100%;
+	max-width: 100%;
+	height: auto;
+}
+/* button style */
+a.btn {
+	padding: 0.25em 0.5em;
+	font-weight: bold;
+	border-radius: 0.2em;
+	transition: all 0.1s ease;
+}
+.divider {
+	margin: 2em 0;
+}
+/**
+ * --------------------------------------------------	
+ * TABLET PORTRAIT 768
+ * --------------------------------------------------
+ */
+@media only screen and (min-width: 768px) {
+	/* back to top links */
+	.top {
+		font-weight: bold;
+		text-align: right;
+	}
+}
+/**
+ * ##################################################
+ * ##################################################
+ * 	
+ * GRID
+ *  
+ */
+/* columns */
+.row,
+.col {
+	margin-bottom: 18px; /* space rows/cols out for mobile */
+	display: block;
+}
+form .row {
+	margin-bottom: 0;
+}
+/**
+ * --------------------------------------------------	
+ * TABLET PORTRAIT 768
+ * --------------------------------------------------
+ */
+@media only screen and (min-width: 768px) {
+
+	/* initial column style */
+	/* float tablet & above */ 
+	.col {
+		float: left;
+	}
+/* 
+ 	Columns:
+
+ 	total width    740 px
+	columns        720 px
+	outer padding   10 px per side
+	column width    40 px
+	column padding  10 px per side
+	column gutter  	20 px
+	--
+	12 columns total
+*/
+	.col {							margin: 0 10px; }
+	.col.no-gutter,
+	.row.no-gutter .col {			margin: 0; }
+	
+	/* 1 col */
+	.col-1,
+	.span-1,
+	.one {							width: 40px; }
+	
+	.col-1.no-gutter,
+	.span-1.no-gutter,
+	.one.no-gutter,
+	
+	.row.no-gutter .col-1,
+	.row.no-gutter .span-1,
+	.row.no-gutter .one	 {			width: 60px; }
+	
+	/* 2 cols */
+	.col-2,
+	.span-2,
+	.two {							width: 100px; }
+
+	.col-2.no-gutter,
+	.span-2.no-gutter,
+	.two.no-gutter,
+	
+	.row.no-gutter .col-2,
+	.row.no-gutter .span-2,
+	.row.no-gutter .two	 { 			width: 120px; }
+		
+	/* 3 cols / 1/4 */
+	.col-3,
+	.col-1-4,
+	.span-3,
+	.span-1-4,
+	.three,
+	.one-quarter { 					width: 160px; }
+
+	.col-3.no-gutter,
+	.col-1-4.no-gutter,
+	.span-3.no-gutter,
+	.span-1-4.no-gutter,
+	.three.no-gutter,
+	.one-quarter.no-gutter,
+	
+	.row.no-gutter .col-3,
+	.row.no-gutter .col-1-4,
+	.row.no-gutter .span-3,
+	.row.no-gutter .span-1-4,
+	.row.no-gutter .three,
+	.row.no-gutter .one-quarter { 	width: 180px; }
+
+	/* 4 cols / 1/3 */
+	.col-4,
+	.col-1-3,
+	.span-4,
+	.span-1-3,
+	.four,
+	.one-third {					width: 220px; }
+
+	.col-4.no-gutter,
+	.col-1-3.no-gutter,
+	.span-4.no-gutter,
+	.span-1-3.no-gutter,
+	.four.no-gutter,
+	.one-third.no-gutter,
+	
+	.row.no-gutter .col-4,
+	.row.no-gutter .col-1-3,
+	.row.no-gutter .span-4,
+	.row.no-gutter .span-1-3,
+	.row.no-gutter .four,
+	.row.no-gutter .one-third { 	width: 240px; }
+	
+	/* 5 cols */
+	.col-5,
+	.span-5,
+	.five {							width: 280px; }
+	
+	.col-5.no-gutter,
+	.span-5.no-gutter,
+	.five.no-gutter,
+	
+	.row.no-gutter .col-5,
+	.row.no-gutter .span-5,
+	.row.no-gutter .five	 { 		width: 300px; }
+	
+	/* 6 cols / 1/2 */
+	.col-6,
+	.col-1-2,
+	.span-6,
+	.span-1-2,
+	.six,
+	.half {							width: 340px; }
+
+	.col-6.no-gutter,
+	.col-1-2.no-gutter,
+	.span-6.no-gutter,
+	.span-1-2.no-gutter,
+	.six.no-gutter,
+	.half.no-gutter,
+	
+	.row.no-gutter .col-6,
+	.row.no-gutter .col-1-2,
+	.row.no-gutter .span-6,
+	.row.no-gutter .span-1-2,
+	.row.no-gutter .six,
+	.row.no-gutter .half { 			width: 360px; }
+
+	/* 7 cols */
+	.col-7,
+	.span-7,
+	.seven {						width: 400px; }
+
+	.col-7.no-gutter,
+	.span-7.no-gutter,
+	.seven.no-gutter,
+	
+	.row.no-gutter .col-7,
+	.row.no-gutter .span-7,
+	.row.no-gutter .seven	 { 		width: 420px; }
+	
+	/* 8 cols / 2/3 */
+	.col-8,
+	.col-2-3,
+	.span-8,
+	.span-2-3,
+	.eight,
+	.two-thirds {					width: 460px; }
+
+	.col-8.no-gutter,
+	.col-2-3.no-gutter,
+	.span-8.no-gutter,
+	.span-2-3.no-gutter,
+	.eight.no-gutter,
+	.two-thirds.no-gutter,
+	
+	.row.no-gutter .col-8,
+	.row.no-gutter .col-2-3,
+	.row.no-gutter .span-8,
+	.row.no-gutter .span-2-3,
+	.row.no-gutter .eight,
+	.row.no-gutter .two-thirds { 	width: 480px; }
+	
+	/* 9 cols / 3/4 */
+	.col-9,
+	.col-3-4,
+	.span-9,
+	.span-3-4,
+	.nine,
+	.three-quarters {				width: 520px; }
+
+	.col-9.no-gutter,
+	.col-3-4.no-gutter,
+	.span-9.no-gutter,
+	.span-3-4.no-gutter,
+	.nine.no-gutter,
+	.three-quarters.no-gutter,
+	
+	.row.no-gutter .col-9,
+	.row.no-gutter .col-3-4,
+	.row.no-gutter .span-9,
+	.row.no-gutter .span-3-4,
+	.row.no-gutter .nine,
+	.row.no-gutter .three-quarters {width: 540px; }
+	
+	/* 10 cols */
+	.col-10,
+	.span-10,
+	.ten {							width: 580px; }
+
+	.col-10.no-gutter,
+	.span-10.no-gutter,
+	.ten.no-gutter,
+	
+	.row.no-gutter .col-10,
+	.row.no-gutter .span-10,
+	.row.no-gutter .ten { 			width: 600px; }
+	
+	/* 11 cols */
+	.col-11,
+	.span-11,
+	.eleven {						width: 640px; }
+
+	.col-11.no-gutter,
+	.span-11.no-gutter,
+	.eleven.no-gutter,
+	
+	.row.no-gutter .col-11,
+	.row.no-gutter .span-11,
+	.row.no-gutter .eleven	 { 		width: 660px; }
+	
+	/* 12 cols / full width */
+	.col-12,
+	.span-12,
+	.span-all,
+	.twelve,
+	.all,
+	.full {							width: 700px; }
+	
+	.col-12.no-gutter,
+	.span-12.no-gutter,
+	.span-all.no-gutter,
+	.twelve.no-gutter,
+	.all.no-gutter,
+	.full.no-gutter,
+	
+	.row.no-gutter .col-12,
+	.row.no-gutter .span-12,
+	.row.no-gutter .span-all,
+	.row.no-gutter .twelve,
+	.row.no-gutter .all,
+	.row.no-gutter .full { 	  		width: 720px; }
+	
+	/* offsets */
+	.offset-1 {						margin-left: 70px; }
+	.row.no-gutter .offset-1,
+	.col.offset-1.no-gutter {		margin-left: 60px; }
+
+	.offset-2 {						margin-left: 130px; }
+	.row.no-gutter .offset-2,
+	.col.offset-2.no-gutter {		margin-left: 120px; }
+
+	.offset-3 {						margin-left: 190px; }
+	.row.no-gutter .offset-3,
+	.col.offset-3.no-gutter {		margin-left: 180px; }
+	
+	.offset-4 {						margin-left: 250px; }
+	.row.no-gutter .offset-4,
+	.col.offset-4.no-gutter {		margin-left: 240px; }
+
+	.offset-5 {						margin-left: 310px; }
+	.row.no-gutter .offset-5,
+	.col.offset-5.no-gutter {		margin-left: 300px; }
+
+	.offset-6 {						margin-left: 370px; }
+	.row.no-gutter .offset-6,
+	.col.offset-6.no-gutter {		margin-left: 360px; }
+	
+	.offset-7 {						margin-left: 430px; }
+	.row.no-gutter .offset-7,
+	.col.offset-7.no-gutter {		margin-left: 420px; }
+	
+	.offset-8 {						margin-left: 490px; }
+	.row.no-gutter .offset-8,
+	.col.offset-8.no-gutter {		margin-left: 480px; }
+	
+	.offset-9 {						margin-left: 550px; }
+	.row.no-gutter .offset-9,
+	.col.offset-9.no-gutter {		margin-left: 540px; }
+	
+	.offset-10 {					margin-left: 610px; }
+	.row.no-gutter .offset-10,
+	.col.offset-10.no-gutter {		margin-left: 600px; }
+	
+	.offset-11 {					margin-left: 670px; }
+	.row.no-gutter .offset-11,
+	.col.offset-11.no-gutter {		margin-left: 660px; }
+
+}
+/**
+ * --------------------------------------------------	
+ * DESKTOP 960
+ * --------------------------------------------------
+ */
+@media only screen and (min-width: 980px) {
+/* 
+ 	Columns:
+
+ 	total width    980 px
+	columns        960 px
+	outer padding   10 px per side
+	column width    60 px
+	column padding  10 px per side
+	column gutter  	20 px
+	--
+	12 columns total
+*/
+	.col {							margin: 0 10px; }
+	.col.no-gutter,
+	.row.no-gutter .col {			margin: 0; }
+	
+	/* 1 col */
+	.col-1,
+	.span-1,
+	.one {							width: 60px; }
+	
+	.col-1.no-gutter,
+	.span-1.no-gutter,
+	.one.no-gutter,
+	
+	.row.no-gutter .col-1,
+	.row.no-gutter .span-1,
+	.row.no-gutter .one	 {			width: 80px; }
+	
+	/* 2 cols */
+	.col-2,
+	.span-2,
+	.two {							width: 140px; }
+
+	.col-2.no-gutter,
+	.span-2.no-gutter,
+	.two.no-gutter,
+	
+	.row.no-gutter .col-2,
+	.row.no-gutter .span-2,
+	.row.no-gutter .two	 { 			width: 160px; }
+		
+	/* 3 cols / 1/4 */
+	.col-3,
+	.col-1-4,
+	.span-3,
+	.span-1-4,
+	.three,
+	.one-quarter { 					width: 220px; }
+
+	.col-3.no-gutter,
+	.col-1-4.no-gutter,
+	.span-3.no-gutter,
+	.span-1-4.no-gutter,
+	.three.no-gutter,
+	.one-quarter.no-gutter,
+	
+	.row.no-gutter .col-3,
+	.row.no-gutter .col-1-4,
+	.row.no-gutter .span-3,
+	.row.no-gutter .span-1-4,
+	.row.no-gutter .three,
+	.row.no-gutter .one-quarter { 	width: 240px; }
+
+	/* 4 cols / 1/3 */
+	.col-4,
+	.col-1-3,
+	.span-4,
+	.span-1-3,
+	.four,
+	.one-third {					width: 300px; }
+
+	.col-4.no-gutter,
+	.col-1-3.no-gutter,
+	.span-4.no-gutter,
+	.span-1-3.no-gutter,
+	.four.no-gutter,
+	.one-third.no-gutter,
+	
+	.row.no-gutter .col-4,
+	.row.no-gutter .col-1-3,
+	.row.no-gutter .span-4,
+	.row.no-gutter .span-1-3,
+	.row.no-gutter .four,
+	.row.no-gutter .one-third { 	width: 320px; }
+	
+	/* 5 cols */
+	.col-5,
+	.span-5,
+	.five {							width: 380px; }
+	
+	.col-5.no-gutter,
+	.span-5.no-gutter,
+	.five.no-gutter,
+	
+	.row.no-gutter .col-5,
+	.row.no-gutter .span-5,
+	.row.no-gutter .five	 { 		width: 400px; }
+	
+	/* 6 cols / 1/2 */
+	.col-6,
+	.col-1-2,
+	.span-6,
+	.span-1-2,
+	.six,
+	.half {							width: 460px; }
+
+	.col-6.no-gutter,
+	.col-1-2.no-gutter,
+	.span-6.no-gutter,
+	.span-1-2.no-gutter,
+	.six.no-gutter,
+	.half.no-gutter,
+	
+	.row.no-gutter .col-6,
+	.row.no-gutter .col-1-2,
+	.row.no-gutter .span-6,
+	.row.no-gutter .span-1-2,
+	.row.no-gutter .six,
+	.row.no-gutter .half { 			width: 480px; }
+
+	/* 7 cols */
+	.col-7,
+	.span-7,
+	.seven {						width: 540px; }
+
+	.col-7.no-gutter,
+	.span-7.no-gutter,
+	.seven.no-gutter,
+	
+	.row.no-gutter .col-7,
+	.row.no-gutter .span-7,
+	.row.no-gutter .seven	 { 		width: 560px; }
+	
+	/* 8 cols / 2/3 */
+	.col-8,
+	.col-2-3,
+	.span-8,
+	.span-2-3,
+	.eight,
+	.two-thirds {					width: 620px; }
+
+	.col-8.no-gutter,
+	.col-2-3.no-gutter,
+	.span-8.no-gutter,
+	.span-2-3.no-gutter,
+	.eight.no-gutter,
+	.two-thirds.no-gutter,
+	
+	.row.no-gutter .col-8,
+	.row.no-gutter .col-2-3,
+	.row.no-gutter .span-8,
+	.row.no-gutter .span-2-3,
+	.row.no-gutter .eight,
+	.row.no-gutter .two-thirds { 	width: 640px; }
+	
+	/* 9 cols / 3/4 */
+	.col-9,
+	.col-3-4,
+	.span-9,
+	.span-3-4,
+	.nine,
+	.three-quarters {				width: 700px; }
+
+	.col-9.no-gutter,
+	.col-3-4.no-gutter,
+	.span-9.no-gutter,
+	.span-3-4.no-gutter,
+	.nine.no-gutter,
+	.three-quarters.no-gutter,
+	
+	.row.no-gutter .col-9,
+	.row.no-gutter .col-3-4,
+	.row.no-gutter .span-9,
+	.row.no-gutter .span-3-4,
+	.row.no-gutter .nine,
+	.row.no-gutter .three-quarters {width: 720px; }
+	
+	/* 10 cols */
+	.col-10,
+	.span-10,
+	.ten {							width: 780px; }
+
+	.col-10.no-gutter,
+	.span-10.no-gutter,
+	.ten.no-gutter,
+	
+	.row.no-gutter .col-10,
+	.row.no-gutter .span-10,
+	.row.no-gutter .ten { 			width: 800px; }
+	
+	/* 11 cols */
+	.col-11,
+	.span-11,
+	.eleven {						width: 860px; }
+
+	.col-11.no-gutter,
+	.span-11.no-gutter,
+	.eleven.no-gutter,
+	
+	.row.no-gutter .col-11,
+	.row.no-gutter .span-11,
+	.row.no-gutter .eleven	 { 		width: 880px; }
+	
+	/* 12 cols / full width */
+	.col-12,
+	.span-12,
+	.span-all,
+	.twelve,
+	.all,
+	.full {							width: 940px; }
+	
+	.col-12.no-gutter,
+	.span-12.no-gutter,
+	.span-all.no-gutter,
+	.twelve.no-gutter,
+	.all.no-gutter,
+	.full.no-gutter,
+	
+	.row.no-gutter .col-12,
+	.row.no-gutter .span-12,
+	.row.no-gutter .span-all,
+	.row.no-gutter .twelve,
+	.row.no-gutter .all,
+	.row.no-gutter .full { 	  		width: 960px; }
+	
+	/* offsets */
+	.offset-1 {						margin-left: 90px; }
+	.row.no-gutter .offset-1,
+	.col.offset-1.no-gutter {		margin-left: 80px; }
+
+	.offset-2 {						margin-left: 170px; }
+	.row.no-gutter .offset-2,
+	.col.offset-2.no-gutter {		margin-left: 160px; }
+
+	.offset-3 {						margin-left: 250px; }
+	.row.no-gutter .offset-3,
+	.col.offset-3.no-gutter {		margin-left: 240px; }
+	
+	.offset-4 {						margin-left: 330px; }
+	.row.no-gutter .offset-4,
+	.col.offset-4.no-gutter {		margin-left: 320px; }
+
+	.offset-5 {						margin-left: 410px; }
+	.row.no-gutter .offset-5,
+	.col.offset-5.no-gutter {		margin-left: 400px; }
+
+	.offset-6 {						margin-left: 490px; }
+	.row.no-gutter .offset-6,
+	.col.offset-6.no-gutter {		margin-left: 480px; }
+	
+	.offset-7 {						margin-left: 570px; }
+	.row.no-gutter .offset-7,
+	.col.offset-7.no-gutter {		margin-left: 560px; }
+	
+	.offset-8 {						margin-left: 650px; }
+	.row.no-gutter .offset-8,
+	.col.offset-8.no-gutter {		margin-left: 640px; }
+	
+	.offset-9 {						margin-left: 730px; }
+	.row.no-gutter .offset-9,
+	.col.offset-9.no-gutter {		margin-left: 720px; }
+	
+	.offset-10 {					margin-left: 810px; }
+	.row.no-gutter .offset-10,
+	.col.offset-10.no-gutter {		margin-left: 800px; }
+	
+	.offset-11 {					margin-left: 890px; }
+	.row.no-gutter .offset-11,
+	.col.offset-11.no-gutter {		margin-left: 880px; }
+
+}
+/**
+ * --------------------------------------------------	
+ * DESKTOP 1200
+ * --------------------------------------------------
+ */
+@media only screen and (min-width: 1230px) {
+/* 
+ 	Columns:
+
+ 	total width    1230 px
+	columns        1200 px
+	outer padding   15 px per side
+	column width    70 px
+	column padding  15 px per side
+	column gutter   30 px
+	--
+	12 columns total
+*/
+	.col {							margin: 0 15px; }
+	.col.no-gutter,
+	.row.no-gutter .col {			margin: 0; }
+	
+	/* 1 col */
+	.col-1,
+	.span-1,
+	.one {							width: 70px; }
+	
+	.col-1.no-gutter,
+	.span-1.no-gutter,
+	.one.no-gutter,
+	
+	.row.no-gutter .col-1,
+	.row.no-gutter .span-1,
+	.row.no-gutter .one	 {			width: 100px; }
+	
+	/* 2 cols */
+	.col-2,
+	.span-2,
+	.two {							width: 170px; }
+
+	.col-2.no-gutter,
+	.span-2.no-gutter,
+	.two.no-gutter,
+	
+	.row.no-gutter .col-2,
+	.row.no-gutter .span-2,
+	.row.no-gutter .two	 { 			width: 200px; }
+		
+	/* 3 cols / 1/4 */
+	.col-3,
+	.col-1-4,
+	.span-3,
+	.span-1-4,
+	.three,
+	.one-quarter { 					width: 270px; }
+
+	.col-3.no-gutter,
+	.col-1-4.no-gutter,
+	.span-3.no-gutter,
+	.span-1-4.no-gutter,
+	.three.no-gutter,
+	.one-quarter.no-gutter,
+	
+	.row.no-gutter .col-3,
+	.row.no-gutter .col-1-4,
+	.row.no-gutter .span-3,
+	.row.no-gutter .span-1-4,
+	.row.no-gutter .three,
+	.row.no-gutter .one-quarter { 	width: 300px; }
+
+	/* 4 cols / 1/3 */
+	.col-4,
+	.col-1-3,
+	.span-4,
+	.span-1-3,
+	.four,
+	.one-third {					width: 370px; }
+
+	.col-4.no-gutter,
+	.col-1-3.no-gutter,
+	.span-4.no-gutter,
+	.span-1-3.no-gutter,
+	.four.no-gutter,
+	.one-third.no-gutter,
+	
+	.row.no-gutter .col-4,
+	.row.no-gutter .col-1-3,
+	.row.no-gutter .span-4,
+	.row.no-gutter .span-1-3,
+	.row.no-gutter .four,
+	.row.no-gutter .one-third { 	width: 400px; }
+	
+	/* 5 cols */
+	.col-5,
+	.span-5,
+	.five {							width: 470px; }
+	
+	.col-5.no-gutter,
+	.span-5.no-gutter,
+	.five.no-gutter,
+	
+	.row.no-gutter .col-5,
+	.row.no-gutter .span-5,
+	.row.no-gutter .five	 { 		width: 500px; }
+	
+	/* 6 cols / 1/2 */
+	.col-6,
+	.col-1-2,
+	.span-6,
+	.span-1-2,
+	.six,
+	.half {							width: 570px; }
+
+	.col-6.no-gutter,
+	.col-1-2.no-gutter,
+	.span-6.no-gutter,
+	.span-1-2.no-gutter,
+	.six.no-gutter,
+	.half.no-gutter,
+	
+	.row.no-gutter .col-6,
+	.row.no-gutter .col-1-2,
+	.row.no-gutter .span-6,
+	.row.no-gutter .span-1-2,
+	.row.no-gutter .six,
+	.row.no-gutter .half { 			width: 600px; }
+
+	/* 7 cols */
+	.col-7,
+	.span-7,
+	.seven {						width: 670px; }
+
+	.col-7.no-gutter,
+	.span-7.no-gutter,
+	.seven.no-gutter,
+	
+	.row.no-gutter .col-7,
+	.row.no-gutter .span-7,
+	.row.no-gutter .seven	 { 		width: 700px; }
+	
+	/* 8 cols / 2/3 */
+	.col-8,
+	.col-2-3,
+	.span-8,
+	.span-2-3,
+	.eight,
+	.two-thirds {					width: 770px; }
+
+	.col-8.no-gutter,
+	.col-2-3.no-gutter,
+	.span-8.no-gutter,
+	.span-2-3.no-gutter,
+	.eight.no-gutter,
+	.two-thirds.no-gutter,
+	
+	.row.no-gutter .col-8,
+	.row.no-gutter .col-2-3,
+	.row.no-gutter .span-8,
+	.row.no-gutter .span-2-3,
+	.row.no-gutter .eight,
+	.row.no-gutter .two-thirds { 	width: 800px; }
+	
+	/* 9 cols / 3/4 */
+	.col-9,
+	.col-3-4,
+	.span-9,
+	.span-3-4,
+	.nine,
+	.three-quarters {				width: 870px; }
+
+	.col-9.no-gutter,
+	.col-3-4.no-gutter,
+	.span-9.no-gutter,
+	.span-3-4.no-gutter,
+	.nine.no-gutter,
+	.three-quarters.no-gutter,
+	
+	.row.no-gutter .col-9,
+	.row.no-gutter .col-3-4,
+	.row.no-gutter .span-9,
+	.row.no-gutter .span-3-4,
+	.row.no-gutter .nine,
+	.row.no-gutter .three-quarters {width: 900px; }
+	
+	/* 10 cols */
+	.col-10,
+	.span-10,
+	.ten {							width: 970px; }
+
+	.col-10.no-gutter,
+	.span-10.no-gutter,
+	.ten.no-gutter,
+	
+	.row.no-gutter .col-10,
+	.row.no-gutter .span-10,
+	.row.no-gutter .ten { 			width: 1000px; }
+	
+	/* 11 cols */
+	.col-11,
+	.span-11,
+	.eleven {						width: 1070px; }
+
+	.col-11.no-gutter,
+	.span-11.no-gutter,
+	.eleven.no-gutter,
+	
+	.row.no-gutter .col-11,
+	.row.no-gutter .span-11,
+	.row.no-gutter .eleven	 { 		width: 1100px; }
+	
+	/* 12 cols / full width */
+	.col-12,
+	.span-12,
+	.span-all,
+	.twelve,
+	.all,
+	.full {							width: 1170px; }
+	
+	.col-12.no-gutter,
+	.span-12.no-gutter,
+	.span-all.no-gutter,
+	.twelve.no-gutter,
+	.all.no-gutter,
+	.full.no-gutter,
+	
+	.row.no-gutter .col-12,
+	.row.no-gutter .span-12,
+	.row.no-gutter .span-all,
+	.row.no-gutter .twelve,
+	.row.no-gutter .all,
+	.row.no-gutter .full { 	  		width: 1200px; }
+	
+	/* offsets */
+	.offset-1 {						margin-left: 115px; }
+	.row.no-gutter .offset-1,
+	.col.offset-1.no-gutter {		margin-left: 100px; }
+
+	.offset-2 {						margin-left: 215px; }
+	.row.no-gutter .offset-2,
+	.col.offset-2.no-gutter {		margin-left: 200px; }
+
+	.offset-3 {						margin-left: 315px; }
+	.row.no-gutter .offset-3,
+	.col.offset-3.no-gutter {		margin-left: 300px; }
+	
+	.offset-4 {						margin-left: 415px; }
+	.row.no-gutter .offset-4,
+	.col.offset-4.no-gutter {		margin-left: 400px; }
+
+	.offset-5 {						margin-left: 515px; }
+	.row.no-gutter .offset-5,
+	.col.offset-5.no-gutter {		margin-left: 500px; }
+
+	.offset-6 {						margin-left: 615px; }
+	.row.no-gutter .offset-6,
+	.col.offset-6.no-gutter {		margin-left: 600px; }
+	
+	.offset-7 {						margin-left: 715px; }
+	.row.no-gutter .offset-7,
+	.col.offset-7.no-gutter {		margin-left: 700px; }
+	
+	.offset-8 {						margin-left: 815px; }
+	.row.no-gutter .offset-8,
+	.col.offset-8.no-gutter {		margin-left: 800px; }
+	
+	.offset-9 {						margin-left: 915px; }
+	.row.no-gutter .offset-9,
+	.col.offset-9.no-gutter {		margin-left: 900px; }
+	
+	.offset-10 {					margin-left: 1015px; }
+	.row.no-gutter .offset-10,
+	.col.offset-10.no-gutter {		margin-left: 1000px; }
+	
+	.offset-11 {					margin-left: 1115px; }
+	.row.no-gutter .offset-11,
+	.col.offset-11.no-gutter {		margin-left: 1100px; }
+
+}
+/**
+ * ##################################################
+ * ##################################################
+ * 	
+ * BASIC 2 COLUMN LAYOUT
+ *  
+ */
+/**
+ * -------------------------------------------------- 
+ * MOBILE & UP
+ * --------------------------------------------------
+ */
+/* sidebar */
+#secondary {
+	margin-top: 1em;
+}
+/* sidebar navigation/link list */
+#secondary ul {
+	margin-left: 0;
+}
+#secondary li {
+	margin-bottom: 0.5em;
+	list-style-type: none;
+}
+#secondary nav a {
+	display: block;
+}
+/**
+ * --------------------------------------------------	
+ * TABLET PORTRAIT 768
+ * --------------------------------------------------
+ */
+@media only screen and (min-width: 768px) {
+	#main {
+		float: left;
+	}
+	#secondary { 
+		margin-top: 0;
+		float: right;
+	}
+	/* smaller font sizes for common elements in sidebar */
+	#secondary h2,
+	#secondary p,
+	#secondary li {
+		font-size: 1.2em;
+		line-height: 1.8em;
+	}
+	#secondary h2 {
+		text-transform: uppercase;
+	}
+}
+/**
+ * ##################################################
+ * ##################################################
+ * 	
+ * COLOR
+ *  
+ */
+/**
+ * -------------------------------------------------- 
+ * MOBILE & UP
+ * --------------------------------------------------
+ */
+body {
+	color: #333;
+	background-color: #fff;
+}
+h1, h2, h3, h4, h5, h6, th, th a, legend {
+	color: #333;
+}
+a, a:link, a:active, a:visited {
+	color: #33c;
+}
+a:hover, a:focus {
+	color: #66c;
+}
+body>header p a,
+body>header p a:link,
+body>header p a:active,
+body>header p a:visited {
+	color: #333;
+}
+body>header p a:hover, body>header p a:focus {
+	color: #66c;
+}
+/* main navigation
+ * btn style
+ * secondary nav */
+body>header nav a, 
+a.btn {
+	color: #1A1A1A;
+	background-color: #DADADA;
+}
+body>header nav a:link,
+body>header nav a:active,
+body>header nav a:visited {
+	color: #1A1A1A;
+}
+body>header nav a:hover,
+body>header nav a:focus,
+a.btn:hover,
+a.btn:focus,
+input.btn:hover,
+input.btn:focus {
+	color: #fff;
+	background-color: #333;
+}
+body>header nav li {
+	margin-bottom: 0.25em;
+}
+/**
+ * -------------------------------------------------- 
+ * MOBILE LANDSCAPE / 7" TABLET PORTRAIT
+ * --------------------------------------------------
+ */
+@media only screen and (min-width: 480px) {
+	/* main navigation */
+	body>header nav a {
+		background: none;
+	}
+	body>header nav li {
+		margin-bottom: 0;
+	}
+	/* keep things lined up vertically
+	   accounts for padding and background color on a:hover */
+	body>header nav .first a { 
+		margin-left: -0.5em;
+	}
+}
+/**
+ * --------------------------------------------------	
+ * TABLET PORTRAIT 768
+ * --------------------------------------------------
+ */
+@media only screen and (min-width: 768px) {
+	/* for solid color header and footer */
+	html,
+	body>header,
+	body>footer {
+		background-color: #eaeaea;
+	}
+	body>footer,
+	body>footer p,
+	body>footer a,
+	body>footer a:link,
+	body>footer a:active,
+	body>footer a:visited {
+		color: #666;
+	}
+}
+#skiplink a:active,
+#skiplink a:focus {
+	border: 0.2em solid #ccc;
+	background-color: #dadada;
+}
+abbr[title] {
+	border-bottom: 0.1em dotted #888;
+}
+/* forms */
+input, select, textarea {
+	border: 0.1em solid #eaeaea;
+}
+input[type="radio"], input[type="checkbox"] {
+	border: none;
+}
+input:hover, input:focus, input:active, 
+textarea:hover, textarea:focus, textarea:active, 
+select:hover, select:focus, select:active, 
+input.btn:hover, input.btn:focus {
+	border-color: #ccc;
+}
+.req {
+	color: red;
+}
+/* other */
+.comment {
+	margin-bottom: -0.1em;
+	border-bottom: 0.1em solid #eaeaea;
+}
+.author {
+	color: #333;
+}
+/**
+ * ##################################################
+ * ##################################################
+ * 	
+ * IE
+ *  
+ */
+.ie {}
+.ie9 {}
+.ie8 {}
+.ie7 {}
+.lte-ie9 {}
+.lt-ie9 {}
+.lt-ie8 {}
+textarea {
+	overflow: auto;
+}
+/* 
+ * IE8 doesn't support media queries. Link to an alternate style sheet with conditional comments
+ * and include desktop styles if desired. Otherwise, IE8 gets the mobile version.
+ * 
+ * */
+/**
+ * ##################################################
+ * ##################################################
+ * 	
+ * GRID IMAGE
+ *  
+ */
+/* 
+ * Display a grid image two different ways.
+ * 
+ * 1. Display a repeating grid overlay:
+ * 
+ * - Uncomment in main document: <!-- <div id="grid"></div> -->
+ * - Uncomment the following.
+ * 
+ *  */
+
+html {
+   position: relative;
+}
+#grid {
+   width: 100%;
+   height: 100%;
+   position: absolute;
+   top: 0;
+   left: 0;
+}
+
+/**
+ * --------------------------------------------------	
+ * TABLET PORTRAIT 768
+ * --------------------------------------------------
+ */
+@media only screen and (min-width: 768px) {
+	#grid {
+		background: url('../images/768-grid.png') repeat-y center top;
+	}
+}
+/**
+ * --------------------------------------------------	
+ * DESKTOP 960
+ * --------------------------------------------------
+ */
+@media only screen and (min-width: 980px) {
+	#grid {
+		background: url('../images/960-grid.png') repeat-y center top;
+	}
+}
+/**
+ * --------------------------------------------------	
+ * DESKTOP 1200
+ * --------------------------------------------------
+ */
+@media only screen and (min-width: 1230px) {
+	#grid {
+		background: url('../images/1200-grid.png') repeat-y center top;
+	}
+}
+
+/* 
+ * 2. Display a grid background image:
+ * 
+ * - Uncomment the following.
+ * - Add any major layout elements with background colors to the first rule.
+ * 
+ * */
+/*
+html, body, body>header, body>footer {
+	background-color: transparent;
+}
+*/
+/**
+ * --------------------------------------------------	
+ * TABLET PORTRAIT 768
+ * --------------------------------------------------
+ */
+@media only screen and (min-width: 768px) {
+	html {
+		/*background: url('../images/768-grid.png') repeat-y center top;*/
+	}
+}
+/**
+ * --------------------------------------------------	
+ * DESKTOP 960
+ * --------------------------------------------------
+ */
+@media only screen and (min-width: 980px) {
+	html {
+		/*background: url('../images/960-grid.png') repeat-y center top;*/
+	}
+}
+/**
+ * --------------------------------------------------	
+ * DESKTOP 1200
+ * --------------------------------------------------
+ */
+@media only screen and (min-width: 1230px) {
+	html {
+		/*background: url('../images/1200-grid.png') repeat-y center top;*/
+	}
+}
+/**
+ * ##################################################
+ * ##################################################
+ * 	
+ * OTHER OPTIONS
+ *  
+ */
+/* 
+ * Logo: image replacement option 
+ * - specify width, height, and source of image
+ * */
+/*
+body>header p {
+	margin: 0;
+	width: 000px;
+	height: 000px;
+	position: relative;
+	overflow: hidden;
+}
+body>header p span {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	background-image: url(../img/your-logo.png);
+}
+*/

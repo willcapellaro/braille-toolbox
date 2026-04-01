@@ -1,0 +1,59 @@
+/*xs extra small*/
+
+body {
+	background-color: purple;
+	color: white;
+	font-family: 'Merriweather', sans-serif;
+}	
+
+
+h1, h2, h3 {
+ 	font-family: 'Francois One', sans-serif;
+}
+
+h1 { 
+	font-size: 3em; 
+}
+
+p { font-size: 1em; }
+
+
+
+/*small devices*/
+@media (min-width: 576px) { 
+
+body {
+	background-color: blue;
+}
+
+}
+
+/*medium devices*/
+@media (min-width: 992px) { 
+
+body {
+	background-color: green;
+}
+
+
+}
+
+/*large devices*/
+@media (min-width: 1200px) { 
+
+body {
+	background-color: yellow;
+}
+
+}
+
+/*extra large devices*/
+@media (min-width: 1200px) { 
+
+body {
+	background-color: orange;
+}
+
+
+
+}

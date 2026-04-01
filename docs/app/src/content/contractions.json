@@ -1,0 +1,21 @@
+{
+  "about": { "type": "whole_word" },
+  "above": { "type": "whole_word" },
+  "according": { "type": "whole_word" },
+  "across": { "type": "whole_word" },
+  "after": { "type": "whole_word" },
+  "afternoon": { "type": "whole_word" },
+  "afterward": { "type": "whole_word" },
+  "again": { "type": "whole_word" },
+  "against": { "type": "whole_word" },
+  "almost": { "type": "whole_word" },
+  "already": { "type": "whole_word" },
+  "also": { "type": "whole_word" },
+  "although": { "type": "whole_word" },
+  "altogether": { "type": "whole_word" },
+  "always": { "type": "whole_word" },
+  "⌂ance": { "type": "suffix" },
+  "and": { "type": "whole_word" },
+  "ar": { "type": "group_sign" },
+  "as": { "type": "whole_word" }
+}
