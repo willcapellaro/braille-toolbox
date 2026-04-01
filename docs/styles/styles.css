@@ -115,6 +115,32 @@ body {
   line-height: 1.9em;
 }
 
+body.write-page {
+  width: auto;
+  margin: 0;
+  padding: 0;
+  background: #f7f6f2;
+  color: #1f1f1f;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.6;
+}
+
+body.write-page * {
+  font-family: "Helvetica Neue", Arial, sans-serif;
+}
+
+.write-shell {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 3rem;
+}
+
+.write-shell h1 {
+  font-size: 2.2rem;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.01em;
+}
+
 .int_subtext {
   font-size: 50%;
   opacity: .7;
@@ -126,6 +152,73 @@ body {
   line-height: 140px;
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.write-form {
+  max-width: 900px;
+}
+
+.write-form textarea {
+  width: 100%;
+  min-height: 160px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  font-size: 0.95rem;
+}
+
+.write-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0.5rem 0 0.75rem;
+}
+
+.icon-button {
+  border: 1px solid #d0d0d0;
+  background: #fff;
+  color: #333;
+  border-radius: 999px;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.icon-button.is-active {
+  border-color: #6b6b6b;
+  color: #111;
+}
+
+.preview-label {
+  margin: 1rem 0 0.4rem;
+  font-weight: 600;
+}
+
+.braille-preview {
+  font-family: 'MyWebFont', Fallback, sans-serif;
+  font-size: 120px;
+  line-height: 1.05;
+  background: #fff;
+  border: 1px solid #e2e2e2;
+  border-radius: 10px;
+  padding: 16px;
+  min-height: 160px;
+  overflow-wrap: anywhere;
+}
+
+
 ul {
 	border-radius: 5px;
 	background-color: white;
@@ -136,6 +229,14 @@ ul {
 	box-shadow: 0 10px 20px rgba(0,0,0,0.09), 0 3px 3px rgba(0,0,0,0.15);
 	color: #222;
 	margin-bottom: 20px;
+}
+
+body.write-page ul {
+  list-style: disc;
+  background: transparent;
+  box-shadow: none;
+  padding: 0 0 0 1.2rem;
+  text-align: left;
 }
 
 .intronav { 
