@@ -204,15 +204,16 @@ export default function App() {
         </Box>
 
         <Routes>
+          <Route path="/" element={<QuickRefPage />} />
           <Route path="/quickref" element={<QuickRefPage />} />
-          <Route path="/intro" element={<Navigate to="/quickref" replace />} />
+          <Route path="/intro" element={<Navigate to="/" replace />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/decode" element={<Navigate to="/archive?tab=decode" replace />} />
           <Route path="/write" element={<Navigate to="/archive?tab=write" replace />} />
           <Route path="/braillewrite-help" element={<Navigate to="/archive?tab=braillewriter" replace />} />
           <Route path="/archive" element={<ArchivePage />} />
           <Route path="/admin" element={<AdminPage />} />
-          <Route path="*" element={<Navigate to="/quickref" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         <Box
           component="footer"
