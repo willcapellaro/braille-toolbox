@@ -162,7 +162,9 @@ export default function App() {
       <Container maxWidth="lg" sx={{ py: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
           <Typography variant="h5" component="p">
-            Braille Toolbox
+            <MuiLink component={RouterLink} to="/" underline="none" color="inherit">
+              Braille Toolbox
+            </MuiLink>
           </Typography>
           <IconButton size="small" onClick={e => setPopoverAnchor(e.currentTarget)} sx={{ color: 'text.primary' }}>
             <FontAwesomeIcon icon={faSliders} />

@@ -10,17 +10,23 @@
 <p>First, think of braille as the same alphabet that we use in English, but made for touch reading. Braille works by creating tactile shapes the blind can learn to read by touch. Each braille character, or <strong>cell</strong> is made of up to six dots in a two-by-three arrangement. </p>
 
 
-<ul class= "infostrip span2">
-  <li><div>[[br:id:dot]]</div><div>   </div><div>a braille dot </div><!-- Button trigger modal -->
-<!-- <button type="button " class="btn btn-light minibutton info-button" data-toggle="modal" data-target="#info-dot">
-  More
-</button> --></li>
-  <li><div>[[br:123456]]</div><div>   </div><div>a braille cell</div><!-- Button trigger modal -->
-<!-- <button type="button " class="btn btn-light minibutton info-button" data-toggle="modal" data-target="#info-cell">
-  More
-</button> --></li>
-<!--   <li><div>[[br:1235]]</div><div>   </div><div> the letter r  </div></li>
- --></ul>
+<ul class="infostrip span2">
+  <li><div>[[br:id:space]]</div><div>   </div><div>blank cell (space)</div></li>
+  <li><div>[[br:1]]</div><div>   </div><div>one dot (letter a)</div></li>
+  <li><div>[[br:123456]]</div><div>   </div><div>full cell (for)</div></li>
+</ul>
+
+<p>For reference, braille dots are numbered one to six, in two columns.</p>
+
+<ul class="infostrip span2">
+  <li><div>[[br:1]]</div><div>   </div><div>dot 1 (a)</div></li>
+  <li><div>[[br:2]]</div><div>   </div><div>dot 2 (comma)</div></li>
+  <li><div>[[br:3]]</div><div>   </div><div>dot 3 (apostrophe)</div></li>
+  <li><div>[[br:4]]</div><div>   </div><div>dot 4 (currency)</div></li>
+  <li><div>[[br:5]]</div><div>   </div><div>dot 5 (contraction prefix)</div></li>
+  <li><div>[[br:6]]</div><div>   </div><div>dot 6 (capitals)</div></li>
+  <li><div>[[br:135]]</div><div>   </div><div>dot 135 (letter o)</div></li>
+</ul>
 
 <h2 id="letters">Letters</h2>
 

@@ -105,10 +105,16 @@ export function resolveAsciiBrailleSpec(spec) {
     lookupId = lookupId || cell.id;
     symbol = symbol || cell.display?.primaryLabel || '';
     name = cell.display?.speechLabel || cell.display?.primaryLabel || name;
-    (cell.dotSets || []).forEach((ds) => {
-      dotSets.push(ds);
-      patterns.push(dotsToRenderPattern(ds));
-    });
+    if (cell.dotSets && cell.dotSets.length > 0) {
+      cell.dotSets.forEach((ds) => {
+        dotSets.push(ds);
+        patterns.push(dotsToRenderPattern(ds));
+      });
+    } else {
+      // Cell with no active dots (e.g. space) — still render a blank cell
+      dotSets.push('');
+      patterns.push(cell.dots || '000000');
+    }
   });
 
   if (patterns.length === 0) unresolved = true;
