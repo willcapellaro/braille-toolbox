@@ -1,0 +1,603 @@
+* {
+	font-family: 'Merriweather', sans-serif;
+}
+
+html {
+	scroll-behavior: smooth;
+}
+
+body {
+	width: 90%;
+	margin-left: auto;
+	margin-right: auto;
+  	font-family: "Overpass", "Segoe WP", "Segoe UI", Helvetica, Arial, sans-serif;
+  	background-color: whitesmoke;
+}
+
+/*these are to help show what breakpoint is being used*/
+.breakpointHint {
+	position: absolute;
+	font-size: 100px;
+	opacity: .0;
+	left: 50%;
+}
+
+.hintA {
+	opacity: .2;
+}
+
+.hintB {
+	opacity: 0;
+	left: 20%;
+}
+
+p {
+	max-width: 900px;
+	margin-left: auto;
+	margin-right: auto;
+	font-size: 2.5rem;
+	padding-bottom: 2rem;
+	padding-top: 2rem;
+}
+
+h1, h2, h3, h4, h5, h6 { 
+	text-align: center; 
+	text-transform: capitalize; 
+	margin-top: 4rem;
+	margin-bottom: 4rem;
+	max-width: 900;
+ 	font-family: 'Francois One', sans-serif;
+}
+
+h1 { font-size: 4rem;  }
+h2 { font-size: 3.25rem;  }
+h3 { font-size: 3rem;  }
+h4 { font-size: 2.25rem;  }
+h5 { font-size: 2rem;  }
+h6 { font-size: 1.5rem;  }
+
+a {
+	color: #b1b;
+}
+
+a:hover {
+	color: #b1b;
+	text-decoration: underline;
+}
+
+ul {
+	border-radius: 5px;
+	background-color: white;
+	list-style-type: none;
+	text-align: center;
+	font-weight: 500;
+	padding: 20px 10px 20px 10px;
+	box-shadow: 0 10px 20px rgba(0,0,0,0.09), 0 3px 3px rgba(0,0,0,0.15);
+	color: #222;
+	margin-bottom: 20px;
+}
+
+/*infostrips are the white boxes with purple piping, 
+these contain the braille translations.
+To look good on mobile, the default display is two items wide. 
+This will be overridden with some special classes below, 
+which show more items side by side*/
+.infostrip {
+	display: grid;
+  	grid-template-columns: repeat(2, 1fr);
+	justify-content: center;
+	font-size: 1rem;
+	border-top: 24px solid #b1b;
+	border-radius: 14px;
+/*	max-width: 900px;
+*/	margin-left: auto;
+	margin-right: auto;
+	grid-row-gap: 3rem;
+}
+
+.refgrid {
+	display: grid;
+  	grid-template-columns: repeat(2, 1fr);
+	justify-content: center;
+	font-size: 1rem;
+	border-top: 24px solid #b1b;
+	border-radius: 14px;
+/*	max-width: 900px;
+*/	margin-left: auto;
+	margin-right: auto;
+	grid-row-gap: 3rem;
+}
+
+/*within the info strip, this is the cluster of each braille image, 
+its letter translation (when available), and the word translation*/
+.infostrip li {
+	margin: 1rem;
+	display: grid;
+	grid-template-rows: 40px auto auto; /*image, letter translation, word translation*/
+	grid-row-gap: 2rem;
+	font-size: 2.25rem; 
+	/*1.25 on lg*/
+	text-align: center;
+	font-size: 3rem;
+}
+
+.refgrid li {
+	margin: 1rem;
+	display: grid;
+	grid-template-rows: 40px auto auto; /*image, letter translation, word translation*/
+	grid-row-gap: 2rem;
+	font-size: 2.25rem; 
+	/*1.25 on lg*/
+	text-align: center;
+	font-size: 3rem;
+/*	background-color: red;
+*/	width: 4rem;
+}
+
+/*braille images*/
+/*this are the braille characters as svgs files*/
+.infostrip li img {
+	margin-left: auto;
+	margin-right: auto;
+	border: 4px #E5E5E5 solid;
+	border-radius: 8px;
+	height: 300%;
+}
+
+.refgrid li img {
+	margin-left: auto;
+	margin-right: auto;
+	border: 4px #E5E5E5 solid;
+	border-radius: 8px;
+	height: 300%;
+}
+
+/*letter translation*/
+/*used on one some infostrips (contractions at the bottom), 
+this is the letter translation that sits
+below the image and above the word translation*/
+.infostrip li div:nth-child(2) {
+	font-family: 'Brailleblocks', Fallback, monospace;
+	opacity: .8;
+	padding-top: 4.5rem;
+	padding-bottom: 0rem;
+	line-height: 1;
+	font-size: 2.8rem;
+	/*1rem on lg*/
+}
+
+.refgrid li div:nth-child(2) {
+	font-family: 'Brailleblocks', Fallback, monospace;
+	opacity: .8;
+	padding-top: 4.5rem;
+	padding-bottom: 0rem;
+	line-height: 1;
+	font-size: 2.8rem;
+	/*1rem on lg*/
+}
+
+/*some infostrips contain 10 items, 
+and when space permits these should display as items 10 across,
+so they line up nicely with similar strips above and below.
+*/
+.ten {
+  	grid-template-columns: repeat(5, 1fr);
+}
+
+/*used for one infostrip with too much text*/
+.tenLong {
+  	grid-template-columns: repeat(3, 1fr);
+}
+
+/*used twice, this is for when an infostrip has a
+really long word translation that can't display more than one item long*/
+.singColOnMobile {
+	  grid-template-columns: repeat(1, 1fr);
+}
+
+/*sizing for custom hamburger icon*/
+.ham_icon {
+	height: 5em;
+	z-index: 10; /*included this, but it doesn't work, because sometimes 
+	the expanded menu cut off the graphic. I avoided the issue in some other way.*/
+	position: absolute;
+	right: 0em;
+	top: .5em;
+}
+
+/*all this nav stuff is very hacky, I'm not too familiar with bootstrap but need a nice accessible responsive nav*/
+nav {
+}
+
+.navbar {
+	padding: 0px;
+	margin: 0px;
+	margin-bottom: 2rem;	
+	padding-top: 1rem;
+	font-size: 3rem;
+}
+
+.navbar-brand {
+	border-bottom: solid 4px whitesmoke;
+	font-size: 3rem;
+}
+
+.navbar .container-fluid 
+{  	
+	padding: 0px;
+	margin: 0px;
+}
+
+.dropdown-menu {
+	font-size: 3rem;
+	background-color: whitesmoke;
+	border: none;
+	text-align: center;
+}
+
+.navbar-nav {
+	background-color: whitesmoke;
+	border: none;
+	box-shadow: none;
+}
+
+.active {
+	border: solid 10px #B1B;
+	border-radius: 10px;
+}
+
+.dropdown .active {
+	border: none;
+}
+
+/*skip content link for accessibility*/
+.skiplink {
+	color: whitesmoke;
+}
+
+.skiplink:focus {
+	padding: 6px 6px 2px 6px;
+	border-radius: 4px;
+	background-color: #b1b;
+	color: white;
+	outline: none;
+}
+
+/*scroll to top button that appears when the user scrolls down*/
+#scrolltop {
+	display: none; /* Hidden by default */
+	position: fixed; /* Fixed/sticky position */
+	bottom: 20px; /* Place the button at the bottom of the page */
+	right: 30px; /* Place the button 30px from the right */
+	z-index: 99; /* Make sure it does not overlap */
+	border: none; /* Remove borders */
+	outline: none; /* Remove outline */
+	background-color: #D1B; /* Set a background color */
+	color: white; /* Text color */
+	cursor: pointer; /* Add a mouse pointer on hover */
+	padding: 15px; /* Some padding */
+	border-radius: 10px; /* Rounded corners */
+	font-size: 3.125rem; /* Increase font size */
+	box-shadow: 0 10px 20px rgb(0 0 0 / 9%), 0 3px 3px rgb(0 0 0 / 15%);
+	transition: .2s;
+}
+
+#scrolltop:hover {
+  background-color: purple; 
+  transition: .2s;
+}
+
+/*this is for "read more" & "read less" button on some paragraphs*/
+.inline {
+	display: inline;
+	border-bottom: 1px solid;
+	background-color: white;
+	color: #D110B1;
+	float: right;
+	border: none;
+	background-color: whitesmoke;
+}
+.inline:hover {
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+#more,#more2 {
+	display: none;
+}
+
+/*line of legal at the bottom*/
+.legal {
+	margin-left: auto;
+	margin-right: auto;
+	left: 0;
+	right: 0;
+	text-align: center;
+	bottom: -100px;
+	opacity: .6;
+	font-size: 2rem;
+	margin-top: 100px;
+	margin-bottom: 50px;
+}
+
+
+
+/*@media only screen and (min-width: 1000px)  {  */
+
+/* - - - - - - - - - - - - - - - - - - 
+
+/*  
+
+
+ /$$$$$$$        /$$$$$$        /$$$$$$ 
+| $$__  $$      |_  $$_/       /$$__  $$
+| $$  \ $$        | $$        | $$  \__/
+| $$$$$$$         | $$        | $$ /$$$$
+| $$__  $$        | $$        | $$|_  $$
+| $$  \ $$        | $$        | $$  \ $$
+| $$$$$$$/       /$$$$$$      |  $$$$$$/
+|_______/       |______/       \______/ 
+                                                                                
+*/
+
+
+body {
+	margin: 0 auto;
+}
+
+p {
+	font-size: 1rem;
+	padding-bottom: .5rem;
+	padding-top: .5rem;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	margin-top: 2rem;
+	margin-bottom: 1rem;
+}
+
+h1 { font-size: 2.5rem;  }
+h2 { font-size: 2rem;  }
+h3 { font-size: 1.75rem;  }
+h4 { font-size: 1.5rem;  }
+h5 { font-size: 1rem;  }
+h6 { font-size: .8rem;  }
+
+/*these are to help show what breakpoint is being used*/
+.hintA {
+	opacity: .0;
+}
+
+.hintB {
+	opacity: .2;
+}
+
+.active {
+	border: none;
+	border-bottom: solid 5px #B1B;
+	border-radius: 0;
+}
+.dropdown .active {
+	border-bottom: none;
+}
+
+.dropdown-menu {
+	font-size: 1rem;
+	left: -1.25rem;
+	background-color: white;
+	border: 1px #ddd solid;
+	border-radius: 5px;
+	text-align: left;
+	padding: 1rem 0;
+	margin: 0;
+}
+
+/*infostrips are the white boxes with purple piping, 
+these contain the braille translations.
+To look good on desktop, the default is set to be a grid that fills with content automatically*/
+.infostrip {
+  	grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+	font-size: .65rem;
+	grid-gap: 0.5rem;
+	border-top: 7px solid #b1b;
+	border-radius: 5px;
+}
+
+.refgrid {
+  	grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+	font-size: .65rem;
+	grid-gap: 0.5rem;
+	border-top: 7px solid #b1b;
+	border-radius: 5px;
+}
+
+/*the next few are visual adjustments to the items so they display correctly on larger breakpoints */
+.infostrip li {
+	grid-row-gap: 0rem;
+	font-size: 1.25rem; 
+}
+
+.refgrid li {
+	grid-row-gap: 0rem;
+	font-size: 1.25rem; 
+}
+
+.infostrip li img {
+	border: 1px #E5E5E5 solid;
+	border-radius: 2px;
+	height: 2em;
+}
+
+.refgrid li img {
+	border: 1px #E5E5E5 solid;
+	border-radius: 2px;
+	height: 2em;
+}
+
+.infostrip li div:nth-child(2) {
+	font-size: 1rem;
+	padding-top: .5rem;
+}
+
+.refgrid li div:nth-child(2) {
+	font-size: 1rem;
+	padding-top: .5rem;
+}
+
+
+/*some infostrips contain 10 items, 
+and when space permits these should display as items 10 across,
+so they line up nicely with similar strips above and below.
+*/
+.ten {
+	display: grid;
+	grid-template-columns: repeat(10, 1fr);
+	justify-content: center;
+}
+
+.refgrid {
+	background-color: white;
+	box-shadow: 0 10px 20px rgba(0,0,0,0.09), 0 3px 3px rgba(0,0,0,0.15);
+}
+
+.refgrid ul {
+	box-shadow: none;
+	width: auto;
+	display: grid;
+	grid-template-columns: repeat(10, 60px) 40px repeat(2, 80px) 40px repeat(2, 80px);
+	grid-template-rows: auto auto auto auto;
+}
+
+.letters { 
+	grid-column-start: 0;
+	grid-column-end: 1;
+	grid-row-start: 0;
+	grid-row-end: 1;
+	display: grid;
+	grid-template-columns: repeat(10, 60px);
+	grid-template-rows: repeat(5, 200px);
+}
+
+.k, .l, .m, .n, .o, .p, .q, .r, .s, .t {
+	grid-row: 2 / 3;
+}
+
+.u, .v, .x, .y, .z, .w {
+	grid-row: 3 / 4;
+}
+
+.case1, .case2 {
+	grid-row: 4 / 5;
+}
+
+.case1 {
+	grid-column: 1 / 2;
+}
+
+.case2 {
+	grid-column: 2 / 3;
+}
+
+.uwSpacer {
+	grid-row: 3 / 4;
+	grid-column: 7 / 11;
+}
+
+.caseSpacer {
+	grid-row: 4 / 5;
+	grid-column: 3 / 4;
+}
+
+.centralSpacer {
+	grid-column: 11 / 12;
+	grid-row: 1 / 4; 
+}
+
+.lastSpacer {
+	grid-row: 4 / 5;
+	grid-column: 11 / 12;
+}
+
+
+/*.caseSpacer2 {
+	grid-row: 4 / 5;
+	grid-column: 3 / 10;
+}*/
+
+.pun1 {
+	grid-row: 4 / 5;
+}
+
+.pun2 {
+}
+
+.centralSpacer2 {
+	grid-column: 14 / 15;
+	grid-row: 1 / -1; 
+}
+
+
+/*.cases { 
+	grid-column-start: 0;
+	grid-column-end: 1;
+	grid-row-start: 1;
+	grid-row-end: 2;
+	display: grid;
+	grid-template-columns: repeat(10, 60px);
+}
+
+.punctuation { 
+	grid-column-start: 1;
+	grid-column-end: 2;
+	grid-row-start: 0;
+	grid-row-end: 1;
+	display: grid;
+	grid-template-columns: repeat(5, 60px);
+	grid-template-rows: repeat(5, 200px);
+}*/
+
+/*these are generally still too long to display 10-wide on desktop, but if an XXL breakpoint happes that woudl be nice*/
+.tenLong {
+	display: grid;
+  	grid-template-columns: repeat(5, 1fr);
+	justify-content: center;
+}
+
+.singColOnMobile {
+	  grid-template-columns: repeat(auto, 1fr);
+}
+
+/*all this nav stuff is very hacky, I'm not too familiar with bootstrap but need a nice accessible responsive nav*/
+nav {
+}
+
+.navbar {
+		font-size: 1.25rem;
+
+}
+
+.navbar-brand {
+	border-bottom: solid 4px whitesmoke;
+	font-size: 1.25rem;
+}
+
+
+/*scroll to top button that appears when the user scrolls down*/
+#scrolltop {
+	font-size: 1.25rem;
+}
+
+/*line of legal at the bottom*/
+.legal {
+	font-size: .688rem;
+}
+
+.smalltxt {
+font-size: .8rem;
+margin-top: .6em;
+
+}
+
+/*}*/
+
+
