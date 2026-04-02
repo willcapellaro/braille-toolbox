@@ -1,5 +1,6 @@
 import { Box, IconButton, Slider, Stack, TextField, Tooltip, Typography } from '@mui/material';
-import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faRightLeft } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
 
 export default function WritePage() {
@@ -39,7 +40,7 @@ export default function WritePage() {
               onClick={() => setIsFlipped((value) => !value)}
               size="small"
             >
-              <SwapHorizIcon fontSize="small" />
+              <FontAwesomeIcon icon={faRightLeft} />
             </IconButton>
           </Tooltip>
         </Box>

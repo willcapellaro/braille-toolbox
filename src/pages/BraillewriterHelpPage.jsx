@@ -10,9 +10,8 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import PauseIcon from '@mui/icons-material/Pause';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlay, faPause, faRotateLeft } from '@fortawesome/free-solid-svg-icons';
 const BraillewriterHelpPage = () => {
   const [text, setText] = useState('');
   const [lockText, setLockText] = useState(false);
@@ -226,7 +225,7 @@ const BraillewriterHelpPage = () => {
                 disabled={!text.trim() || isPlaying}
                 color="primary"
               >
-                <PlayArrowIcon />
+                <FontAwesomeIcon icon={faPlay} />
               </IconButton>
             </span>
           </Tooltip>
@@ -237,14 +236,14 @@ const BraillewriterHelpPage = () => {
                 disabled={!isPlaying && !isPaused}
                 color="primary"
               >
-                <PauseIcon />
+                <FontAwesomeIcon icon={faPause} />
               </IconButton>
             </span>
           </Tooltip>
           <Tooltip title="Restart">
             <span>
               <IconButton onClick={restart} disabled={!isPlaying && !isPaused} color="primary">
-                <RestartAltIcon />
+                <FontAwesomeIcon icon={faRotateLeft} />
               </IconButton>
             </span>
           </Tooltip>

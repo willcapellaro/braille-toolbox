@@ -2,8 +2,8 @@ import {
   Box, Button, Divider, IconButton, Paper, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, TextField, Typography,
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/Add';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import { getRawBrailleCells, getRawContractions } from '../content';
 
@@ -134,7 +134,7 @@ export default function AdminPage() {
         <Typography variant="h6">Braille Cells</Typography>
         <Button size="small" variant="contained" onClick={importCells}>Import JSON</Button>
         <Button size="small" variant="outlined" onClick={exportCells}>Export JSON</Button>
-        <Button size="small" startIcon={<AddIcon />} onClick={addCell}>Add row</Button>
+        <Button size="small" startIcon={<FontAwesomeIcon icon={faPlus} />} onClick={addCell}>Add row</Button>
       </Box>
 
       <TableContainer component={Paper} sx={{ maxHeight: '55vh', mb: 3 }}>
@@ -185,7 +185,7 @@ export default function AdminPage() {
                   />
                 </TableCell>
                 <TableCell sx={{ p: 0 }}>
-                  <IconButton size="small" onClick={() => removeCell(i)}><DeleteIcon fontSize="small" /></IconButton>
+                  <IconButton size="small" onClick={() => removeCell(i)}><FontAwesomeIcon icon={faTrash} /></IconButton>
                 </TableCell>
               </TableRow>
             ))}
@@ -225,7 +225,7 @@ export default function AdminPage() {
                   />
                 </TableCell>
                 <TableCell sx={{ p: 0 }}>
-                  <IconButton size="small" onClick={() => removeContraction(key)}><DeleteIcon fontSize="small" /></IconButton>
+                  <IconButton size="small" onClick={() => removeContraction(key)}><FontAwesomeIcon icon={faTrash} /></IconButton>
                 </TableCell>
               </TableRow>
             ))}
@@ -236,7 +236,7 @@ export default function AdminPage() {
       <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
         <TextField size="small" label="ID" value={newContrId} onChange={(e) => setNewContrId(e.target.value)} />
         <TextField size="small" label="Type" value={newContrType} onChange={(e) => setNewContrType(e.target.value)} />
-        <Button variant="outlined" size="small" startIcon={<AddIcon />} onClick={addContraction}>Add</Button>
+        <Button variant="outlined" size="small" startIcon={<FontAwesomeIcon icon={faPlus} />} onClick={addContraction}>Add</Button>
       </Box>
     </Box>
   );
