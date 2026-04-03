@@ -133,7 +133,7 @@ export default function BrailleInteractiveToken({
               color: 'text.primary',
               p: 0.25,
               width: '100%',
-              minHeight: { xs: 64, md: 74 },
+              minHeight: 'var(--bt-li-min-height, 64px)',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',

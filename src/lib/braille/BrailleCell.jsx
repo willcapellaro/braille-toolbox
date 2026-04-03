@@ -8,11 +8,11 @@ function dotIsRaised(pattern, index) {
   return pattern[index] === '1';
 }
 
-export default function BrailleCell({ pattern = '000000', size = 'md', label = 'Braille cell' }) {
+export default function BrailleCell({ pattern = '000000', size = 'md', label = 'Braille cell', style }) {
   const classes = `braille-cell braille-cell--${size}`;
 
   return (
-    <span className={classes} role="img" aria-label={label}>
+    <span className={classes} role="img" aria-label={label} style={style}>
       {[0, 1, 2, 3, 4, 5].map((index) => (
         <span
           key={index}

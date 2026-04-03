@@ -304,7 +304,8 @@ const markdownComponents = {
                 md: isGrid10 ? 'repeat(10, minmax(0, 1fr))' : 'repeat(4, minmax(0, 1fr))',
               }
             : undefined,
-          gap: isInfostrip ? 0.8 : 0,
+          rowGap: isInfostrip ? 'var(--bt-infostrip-row-gap, 0px)' : 0,
+          columnGap: isInfostrip ? 0.8 : 0,
         }}
         {...props}
       >
@@ -319,8 +320,8 @@ const markdownComponents = {
         display: 'flex',
         alignItems: 'center',
         gap: 0.75,
-        py: 0.2,
-        minHeight: 44,
+        py: 'var(--bt-li-py, 0px)',
+        minHeight: 'var(--bt-li-min-height, 36px)',
         flexWrap: 'wrap',
       }}
       {...props}
@@ -383,7 +384,7 @@ export default function QuickRefPage() {
   }, [sectionParam, showExplainer]);
 
   const renderCell = (id, key) => {
-    if (!id) return <Box key={key} sx={{ minHeight: { xs: 64, md: 74 } }} />;
+    if (!id) return <Box key={key} sx={{ minHeight: 'var(--bt-li-min-height, 64px)' }} />;
     return (
       <BrailleInteractiveToken
         key={key}
@@ -401,7 +402,7 @@ export default function QuickRefPage() {
         display: 'grid',
         gridTemplateColumns: { xs: 'repeat(5, minmax(0, 1fr))', md: 'repeat(10, minmax(0, 1fr))' },
         columnGap: { xs: 0.25, md: 0.9 },
-        rowGap: { xs: 0.45, md: 0.9 },
+        rowGap: 'var(--bt-infostrip-row-gap, 0px)',
       }}>
         {LETTER_GRID.flat().map((id, i) => renderCell(id, `alpha-${i}`))}
       </Box>
@@ -413,7 +414,7 @@ export default function QuickRefPage() {
         display: 'grid',
         gridTemplateColumns: { xs: 'repeat(5, minmax(0, 1fr))', md: 'repeat(10, minmax(0, 1fr))' },
         columnGap: { xs: 0.25, md: 0.9 },
-        rowGap: { xs: 0.45, md: 0.9 },
+        rowGap: 'var(--bt-infostrip-row-gap, 0px)',
       }}>
         {toGrid(PUNCTUATION_IDS).flat().map((id, i) => renderCell(id, `punct-${i}`))}
       </Box>
@@ -421,13 +422,18 @@ export default function QuickRefPage() {
       {/* ── Learn Braille (collapsed by default) ── */}
       <Divider sx={{ my: 3 }} />
 
-      {!showExplainer ? (
-        <Box sx={{ textAlign: 'center', py: 2 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, py: 2, flexWrap: 'wrap' }}>
+        {!showExplainer && (
           <Button variant="outlined" onClick={() => setShowExplainer(true)}>
-            Read more about braille  
+            Read more about braille
           </Button>
-        </Box>
-      ) : (
+        )}
+        <Button variant="outlined" component={RouterLink} to="/games/solitaire">
+          Play braille solitaire
+        </Button>
+      </Box>
+
+      {showExplainer && (
         <Box ref={explainerRef}>
           <ReactMarkdown rehypePlugins={[rehypeRaw]} components={markdownComponents}>
             {markdown}

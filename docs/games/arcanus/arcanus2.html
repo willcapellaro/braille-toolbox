@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+<title>Arcana Tactus — Battle</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=IM+Fell+English:ital@0;1&family=Space+Mono:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100vh;background:#060503;overflow:hidden;font-family:'Space Mono',monospace;}
+body::after{content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:9999}
+
+/* ── Battlefield ── */
+#battlefield{
+  width:100%;height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+  padding:8px 10px 12px;gap:4px;
+}
+
+/* ── Hands ── */
+.hand-zone{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;flex-shrink:0;}
+.card-slot{position:relative;border-radius:8px;transition:transform .25s ease,filter .25s ease,opacity .35s ease;}
+.card-slot svg{display:block;width:100%;height:100%;border-radius:8px;}
+.card-slot.player{width:88px;height:135px;cursor:pointer;}
+.card-slot.player:hover:not(.spent):not(.selected){transform:translateY(-8px);filter:brightness(1.18);}
+.card-slot.player.selected{transform:translateY(-14px);filter:drop-shadow(0 0 12px rgba(200,180,120,.6));}
+.card-slot.player.spent{opacity:.1;cursor:default;pointer-events:none;}
+.card-slot.enemy{width:70px;height:107px;cursor:default;transform:rotate(180deg);}
+.card-slot.enemy.spent{opacity:.1;transform:rotate(180deg);}
+
+/* ── Arena ── */
+#arena{
+  flex:1 1 0;min-height:0;
+  display:flex;align-items:center;justify-content:center;gap:12px;width:100%;
+}
+.arena-wrap{border-radius:10px;flex-shrink:0;}
+.arena-wrap svg{display:block;border-radius:10px;}
+#arena-enemy-wrap{width:100px;}
+#arena-enemy-wrap svg{width:100px;height:154px;}
+#arena-player-wrap{width:175px;position:relative;}
+#arena-player-wrap svg{width:175px;height:269px;}
+
+/* ── Controls ── */
+#controls{display:flex;flex-direction:column;align-items:center;gap:5px;width:100%;flex-shrink:0;}
+#mid-row{display:flex;align-items:center;justify-content:space-between;width:100%;gap:4px;}
+
+/* Resource bars */
+.res-group{display:flex;gap:7px;align-items:flex-end;}
+.res-col{display:flex;flex-direction:column;align-items:center;gap:2px;}
+.res-lbl{font-size:5.5px;letter-spacing:.5px;opacity:.4;text-transform:uppercase;}
+.res-track{width:9px;height:30px;background:rgba(255,255,255,.06);border-radius:3px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;}
+.res-fill{width:100%;transition:height .3s ease;border-radius:0 0 2px 2px;}
+.res-drain{width:100%;transition:height .3s ease;background:rgba(255,140,0,.5);}
+.res-cnt{font-size:6px;opacity:.42;}
+
+/* Center info */
+#mid-info{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;}
+#hp-row{display:flex;align-items:center;gap:8px;}
+.hp-set{display:flex;gap:4px;}
+.hp-pip{width:7px;height:7px;border-radius:50%;background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.2);transition:background .4s,border-color .4s;}
+.hp-pip.full{background:rgba(255,215,0,.65);border-color:rgba(255,215,0,.8);}
+#turn-label{font-size:6px;letter-spacing:2.5px;color:rgba(200,175,110,.32);text-transform:uppercase;}
+#message{font-size:7px;letter-spacing:.8px;color:rgba(200,175,110,.52);text-align:center;line-height:1.7;min-height:24px;max-width:200px;}
+
+/* Action bar */
+#action-bar{display:flex;flex-direction:column;align-items:center;gap:4px;min-height:38px;}
+#variant-preview{font-size:7.5px;letter-spacing:1.5px;color:rgba(200,175,110,.65);min-height:14px;text-align:center;transition:color .2s;}
+#action-btns{display:flex;gap:8px;}
+.act-btn{display:none;background:none;border:1px solid rgba(200,175,110,.22);color:rgba(200,175,110,.5);font-family:'Space Mono',monospace;font-size:7px;letter-spacing:2px;padding:5px 14px;border-radius:3px;cursor:pointer;transition:all .18s;}
+.act-btn.visible{display:block;}
+.act-btn:not(:disabled):hover{border-color:rgba(200,175,110,.6);color:rgba(200,175,110,.95);background:rgba(200,175,110,.06);}
+.act-btn:disabled{opacity:.2;cursor:default;}
+
+#btn-restart{display:none;background:none;border:1px solid rgba(200,175,110,.22);color:rgba(200,175,110,.45);font-family:'Space Mono',monospace;font-size:7px;letter-spacing:2px;padding:6px 20px;border-radius:3px;cursor:pointer;transition:all .18s;}
+#btn-restart:hover{border-color:rgba(200,175,110,.55);color:rgba(200,175,110,.9);background:rgba(200,175,110,.05);}
+
+/* Animations */
+@keyframes doShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.do-shake{animation:doShake .25s ease;}
+@keyframes bumpIn{0%{transform:scale(.84);opacity:0}65%{transform:scale(1.04)}100%{transform:scale(1);opacity:1}}
+.bump-in{animation:bumpIn .3s ease forwards;}
+@keyframes flashResult{0%{opacity:1;transform:translate(-50%,-50%) scale(1)}60%{opacity:1;transform:translate(-50%,-50%) scale(1.07)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.55)}}
+#result-text{font-family:'Cinzel Decorative',serif;font-size:44px;letter-spacing:4px;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0;pointer-events:none;z-index:200;}
+
+/* Card art animation keyframes */
+@keyframes drawIn   { to { stroke-dashoffset: 0; } }
+@keyframes fadeInEl { from { opacity: 0; } to { opacity: 1; } }
+
+.dot-hit{cursor:pointer;fill:transparent;}
+</style>
+</head>
+<body>
+
+<div id="battlefield">
+  <div id="enemy-hand" class="hand-zone">
+    <div class="card-slot enemy" id="e0"></div>
+    <div class="card-slot enemy" id="e1"></div>
+    <div class="card-slot enemy" id="e2"></div>
+  </div>
+
+  <div id="arena"></div>
+
+  <div id="controls">
+    <div id="mid-row">
+      <div id="res-enemy" class="res-group"></div>
+      <div id="mid-info">
+        <div id="hp-row">
+          <div id="hp-enemy-set" class="hp-set"></div>
+          <span id="turn-label">—</span>
+          <div id="hp-player-set" class="hp-set"></div>
+        </div>
+        <div id="message">—</div>
+        <div id="action-bar">
+          <div id="variant-preview"></div>
+          <div id="action-btns">
+            <button class="act-btn" id="btn-clear" onclick="clearDots()">Clear</button>
+            <button class="act-btn" id="btn-play"  onclick="confirmPlay()" disabled>Play</button>
+          </div>
+        </div>
+      </div>
+      <div id="res-player" class="res-group"></div>
+    </div>
+    <button id="btn-restart" onclick="restartGame()">Play Again</button>
+  </div>
+
+  <div id="player-hand" class="hand-zone">
+    <div class="card-slot player" id="p0" onclick="selectCard(0)"></div>
+    <div class="card-slot player" id="p1" onclick="selectCard(1)"></div>
+    <div class="card-slot player" id="p2" onclick="selectCard(2)"></div>
+  </div>
+</div>
+
+<div id="result-text"></div>
+
+<script>
+/* ════════════════════════════════════════════════════
+   CONFIG
+════════════════════════════════════════════════════ */
+
+const DP = {
+  1:{x:112,y:168}, 2:{x:112,y:218}, 3:{x:112,y:268},
+  4:{x:188,y:168}, 5:{x:188,y:218}, 6:{x:188,y:268}
+};
+
+const RES_MAX   = 4;
+const RES_TYPES = ['stone','pulp','metal'];
+const RES_INFO  = {
+  stone:{ label:'STN', col:'#b0a090' },
+  pulp: { label:'PLP', col:'#d4c898' },
+  metal:{ label:'MTL', col:'#90a8bc' },
+};
+
+const VARIANT = {
+  P:{ dots:[1,2,3,4], label:'Paper',    col:'#d4c898', glow:'212,200,152', beats:'R' },
+  R:{ dots:[1,2,3,5], label:'Rock',     col:'#b0a090', glow:'176,160,144', beats:'S' },
+  S:{ dots:[2,3,4],   label:'Scissors', col:'#90a8bc', glow:'144,168,188', beats:'P' },
+};
+
+const COST = {
+  P:{ pulp:2 },
+  R:{ stone:2 },
+  S:{ metal:2 },
+};
+
+/* Unraised dot appearance per variant context */
+const UNRAISED = {
+  P:{ fill:'rgba(40,38,35,.06)',   stroke:'rgba(40,38,35,.28)' },
+  R:{ fill:'rgba(200,175,110,.04)',stroke:'rgba(200,175,110,.12)' },
+  S:{ fill:'rgba(185,195,210,.05)',stroke:'rgba(185,195,210,.20)' },
+  _:{ fill:'rgba(200,175,110,.05)',stroke:'rgba(200,175,110,.16)' },
+};
+
+/* ════════════════════════════════════════════════════
+   STATE
+════════════════════════════════════════════════════ */
+let G;
+function freshState(){
+  return {
+    phase:'select', playerHand:[1,1,1], enemyHand:shuffled([1,1,1]),
+    playerHP:3, enemyHP:3,
+    playerRes:{stone:RES_MAX,pulp:RES_MAX,metal:RES_MAX},
+    enemyRes: {stone:RES_MAX,pulp:RES_MAX,metal:RES_MAX},
+    slot:null, raised:new Set(), queued:null, pPlayed:null, eCard:null,
+  };
+}
+function shuffled(a){ a=[...a]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a; }
+function rps(p,e){ return p===e?'draw':VARIANT[p].beats===e?'win':'lose'; }
+function variantFor(s){ for(const[k,v] of Object.entries(VARIANT)) if(v.dots.length===s.size&&v.dots.every(d=>s.has(d))) return k; return null; }
+function canAfford(who,v){ if(!v) return false; const res=G[who+'Res'],c=COST[v]||{}; return RES_TYPES.every(r=>(res[r]||0)>=(c[r]||0)); }
+function spend(who,v){ const c=COST[v]||{}; for(const r of RES_TYPES) G[who+'Res'][r]=Math.max(0,(G[who+'Res'][r]||0)-(c[r]||0)); }
+
+/* ════════════════════════════════════════════════════
+   SVG GENERATORS
+════════════════════════════════════════════════════ */
+
+function svgBack(){
+  return `<svg viewBox="0 0 300 460" xmlns="http://www.w3.org/2000/svg">
+<rect width="300" height="460" rx="20" fill="#0c0906"/>
+<rect x="8" y="8" width="284" height="444" rx="16" fill="none" stroke="rgba(200,175,110,.07)" stroke-width="1"/>
+<g stroke="rgba(200,175,110,.04)" stroke-width="1" fill="none">
+  <line x1="40" y1="40" x2="260" y2="420"/><line x1="260" y1="40" x2="40" y2="420"/>
+  <line x1="150" y1="40" x2="40" y2="420"/><line x1="150" y1="40" x2="260" y2="420"/>
+  <line x1="40" y1="230" x2="260" y2="230"/><line x1="150" y1="40" x2="150" y2="420"/>
+</g>
+<g transform="translate(150,230)" stroke="rgba(200,175,110,.07)" fill="none">
+  <circle r="40"/><circle r="26"/>
+  <path d="M0,-18 L4,-4 L18,0 L4,4 L0,18 L-4,4 L-18,0 L-4,-4Z" fill="rgba(200,175,110,.05)" stroke="none"/>
+</g>
+<text x="150" y="418" font-family="'IM Fell English',serif" font-style="italic"
+  font-size="8" fill="rgba(200,175,110,.07)" text-anchor="middle" letter-spacing="3">arcana tactus</text>
+</svg>`;
+}
+
+function svgArenaCard(){
+  let dots='',rings='',hits='';
+  for(let n=1;n<=6;n++){
+    const{x,y}=DP[n];
+    dots  +=`<circle id="d${n}" cx="${x}" cy="${y}" r="18"
+      fill="rgba(200,175,110,.05)" stroke="rgba(200,175,110,.16)" stroke-width="1"
+      style="transition:fill .16s,stroke .16s"/>`;
+    rings +=`<circle id="ar${n}" cx="${x}" cy="${y}" r="22"
+      fill="none" stroke="rgba(200,175,110,.8)" stroke-width="2"
+      opacity="0" style="pointer-events:none"/>`;
+    hits  +=`<circle class="dot-hit" cx="${x}" cy="${y}" r="26" data-n="${n}"/>`;
+  }
+  return `<svg id="arena-svg" viewBox="0 0 300 460" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <radialGradient id="aBg" cx="50%" cy="40%" r="65%">
+    <stop offset="0%" stop-color="#181410"/><stop offset="100%" stop-color="#070503"/>
+  </radialGradient>
+</defs>
+<rect width="300" height="460" rx="20" fill="url(#aBg)"/>
+<rect x="8" y="8" width="284" height="444" rx="16" fill="none" stroke="rgba(200,175,110,.14)" stroke-width="1.5"/>
+<g id="face-layer" opacity="0" style="pointer-events:none;transition:opacity .15s ease"></g>
+<g id="dot-layer">${dots}</g>
+<g id="ring-layer">${rings}</g>
+<g id="hit-layer">${hits}</g>
+</svg>`;
+}
+
+function svgEnemyReveal(type){
+  const v=VARIANT[type],c=v.col;
+  let dotHTML=v.dots.map(n=>{const{x,y}=DP[n];return`<circle cx="${x}" cy="${y}" r="18" fill="${c}" opacity=".52" stroke="${c}" stroke-width="1.4"/><circle cx="${x}" cy="${y}" r="18" fill="url(#eShine)"/>`;}).join('');
+  dotHTML+=[1,2,3,4,5,6].filter(n=>!v.dots.includes(n)).map(n=>{const{x,y}=DP[n];return`<circle cx="${x}" cy="${y}" r="18" fill="rgba(0,0,0,.4)" stroke="rgba(255,255,255,.04)" stroke-width="1"/>`;}).join('');
+  return `<svg viewBox="0 0 300 460" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <radialGradient id="eBg" cx="50%" cy="40%" r="65%"><stop offset="0%" stop-color="#181410"/><stop offset="100%" stop-color="#070503"/></radialGradient>
+  <radialGradient id="eShine" cx="32%" cy="28%" r="55%"><stop offset="0%" stop-color="#fff" stop-opacity=".25"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="300" height="460" rx="20" fill="url(#eBg)"/>
+<rect width="300" height="460" rx="20" fill="${c}" opacity=".09"/>
+<rect x="8" y="8" width="284" height="444" rx="16" fill="none" stroke="${c}" stroke-width="1.4" opacity=".32"/>
+${dotHTML}
+<text x="150" y="352" font-family="'Bebas Neue',sans-serif" font-size="12" fill="${c}" text-anchor="middle" letter-spacing="5" opacity=".45">${v.label.toUpperCase()}</text>
+</svg>`;
+}
+
+/* ════════════════════════════════════════════════════
+   RESOURCE BARS
+════════════════════════════════════════════════════ */
+
+function buildResGroup(who){
+  const id=who==='player'?'p':'e';
+  return RES_TYPES.map(r=>{const info=RES_INFO[r];return`<div class="res-col">
+<span class="res-lbl" style="color:${info.col}">${info.label}</span>
+<div class="res-track">
+  <div class="res-drain" id="vd-${r}-${id}" style="height:0%"></div>
+  <div class="res-fill"  id="vf-${r}-${id}" style="height:100%;background:${info.col}"></div>
+</div>
+<span class="res-cnt" id="vc-${r}-${id}">${RES_MAX}</span></div>`;}).join('');
+}
+function setResBar(r,id,current,drain=0){
+  const keep=Math.max(0,current-drain);
+  const f=document.getElementById(`vf-${r}-${id}`);
+  const d=document.getElementById(`vd-${r}-${id}`);
+  const c=document.getElementById(`vc-${r}-${id}`);
+  if(f)f.style.height=(keep/RES_MAX*100)+'%';
+  if(d)d.style.height=(Math.min(drain,current)/RES_MAX*100)+'%';
+  if(c)c.textContent=current;
+}
+function renderBars(who,drain={}){
+  const id=who==='player'?'p':'e';
+  const res=G[who+'Res'];
+  for(const r of RES_TYPES) setResBar(r,id,res[r],drain[r]||0);
+}
+function previewCost(variant,who){ renderBars(who,variant?(COST[variant]||{}):{});}
+
+/* ════════════════════════════════════════════════════
+   RENDER HELPERS
+════════════════════════════════════════════════════ */
+
+function renderHP(){
+  for(const who of['player','enemy']){
+    const hp=G[who+'HP'],el=document.getElementById(`hp-${who}-set`);
+    el.innerHTML='';
+    for(let i=0;i<3;i++){const p=document.createElement('div');p.className='hp-pip'+(i<hp?' full':'');el.appendChild(p);}
+  }
+}
+function renderHands(){
+  for(let i=0;i<3;i++){
+    const ps=document.getElementById('p'+i);
+    ps.innerHTML=G.playerHand[i]?svgBack():'';
+    ps.classList.toggle('spent',!G.playerHand[i]);
+    const es=document.getElementById('e'+i);
+    es.innerHTML=G.enemyHand[i]?svgBack():'';
+    es.classList.toggle('spent',!G.enemyHand[i]);
+  }
+}
+function setMsg(t) { document.getElementById('message').textContent=t; }
+function setTurn(t){ document.getElementById('turn-label').textContent=t; }
+function setActionButtons(showClear,showPlay,playEnabled,playLabel){
+  const bc=document.getElementById('btn-clear');
+  const bp=document.getElementById('btn-play');
+  bc.classList.toggle('visible',!!showClear);
+  bp.classList.toggle('visible',!!showPlay);
+  bp.disabled=!playEnabled;
+  if(playLabel) bp.textContent=playLabel;
+}
+function setVariantPreview(text,col){
+  const el=document.getElementById('variant-preview');
+  el.textContent=text||'';
+  el.style.color=col||'rgba(200,175,110,.65)';
+}
+
+/* ════════════════════════════════════════════════════
+   VARIANT ANIMATION SYSTEM
+════════════════════════════════════════════════════ */
+
+let _animId  = null;
+let _animGen = 0;       // incremented on every cancel; prevents stale callbacks
+let _animVariant = null;
+
+function cancelAnim(){
+  _animGen++;
+  if(_animId){ cancelAnimationFrame(_animId); _animId=null; }
+  const cnv=document.getElementById('rock-canvas');
+  if(cnv) cnv.remove();
+}
+
+function triggerVariantTransition(newV){
+  if(newV===_animVariant) return;
+  cancelAnim();
+  _animVariant=newV;
+  const fl=document.getElementById('face-layer');
+  if(!fl) return;
+  if(!newV){ fl.style.opacity='0'; fl.innerHTML=''; return; }
+  fl.style.opacity='1';
+  const gen=_animGen;
+  if(newV==='P') animatePaper(fl,gen);
+  else if(newV==='R') animateRock(fl,gen);
+  else if(newV==='S') animateScissors(fl,gen);
+}
+
+/* ── P · Paper (picks 1 of 3 styles randomly) ────────── */
+
+function animatePaper(fl,gen){
+  const style=Math.floor(Math.random()*3);
+  if(style===0)      fl.innerHTML=buildLooseLeaf();
+  else if(style===1) fl.innerHTML=buildLegalPad();
+  else             { fl.innerHTML=buildGraphPaperHTML(); startGraphReveal(gen); }
+}
+
+function buildLooseLeaf(){
+  /* Cream paper, cyan rules drawn left-to-right, magenta margin, 3 hole-punches */
+  const lines=[];
+  for(let y=75,i=0;y<=415;y+=28,i++){
+    const delay=(0.05+i*0.042).toFixed(2);
+    lines.push(`<line x1="15" y1="${y}" x2="285" y2="${y}"
+      stroke="#48c8d0" stroke-width="0.75"
+      style="stroke-dasharray:300;stroke-dashoffset:300;animation:drawIn .5s ease-out ${delay}s forwards"/>`);
+  }
+  return `<defs>
+  <mask id="llM">
+    <rect width="300" height="460" fill="white"/>
+    <circle cx="55" cy="130" r="14" fill="black"/>
+    <circle cx="55" cy="230" r="14" fill="black"/>
+    <circle cx="55" cy="330" r="14" fill="black"/>
+  </mask>
+</defs>
+<rect width="300" height="460" rx="20" fill="#f0ede4" mask="url(#llM)"
+  style="opacity:0;animation:fadeInEl .3s ease-out forwards"/>
+<g mask="url(#llM)">
+  ${lines.join('')}
+  <line x1="80" y1="50" x2="80" y2="418" stroke="#e0306e" stroke-width="1.2"
+    style="stroke-dasharray:400;stroke-dashoffset:400;animation:drawIn .65s ease-out .9s forwards"/>
+</g>
+<circle cx="55" cy="130" r="14" fill="none" stroke="rgba(130,120,110,.22)" stroke-width="1"/>
+<circle cx="55" cy="230" r="14" fill="none" stroke="rgba(130,120,110,.22)" stroke-width="1"/>
+<circle cx="55" cy="330" r="14" fill="none" stroke="rgba(130,120,110,.22)" stroke-width="1"/>`;
+}
+
+function buildLegalPad(){
+  /* School-bus yellow, blue-grey rules, gum-line at top, left margin column */
+  const lines=[];
+  for(let y=82,i=0;y<=412;y+=28,i++){
+    const delay=(0.08+i*0.046).toFixed(2);
+    lines.push(`<line x1="92" y1="${y}" x2="278" y2="${y}"
+      stroke="#7898c8" stroke-width="0.95"
+      style="stroke-dasharray:200;stroke-dashoffset:200;animation:drawIn .48s ease-out ${delay}s forwards"/>`);
+  }
+  return `<rect width="300" height="460" rx="20" fill="#f2d828"
+  style="opacity:0;animation:fadeInEl .22s ease-out forwards"/>
+<line x1="88" y1="55" x2="88" y2="418" stroke="#8098c0" stroke-width="1.2" opacity=".55"
+  style="stroke-dasharray:400;stroke-dashoffset:400;animation:drawIn .7s ease-out .06s forwards"/>
+<path d="M18,58 Q75,52 150,58 Q225,64 282,58" fill="none" stroke="#d4b820" stroke-width="2.5" stroke-linecap="round" opacity=".45"
+  style="opacity:0;animation:fadeInEl .2s ease-out .05s forwards"/>
+<path d="M18,62 Q75,56 150,62 Q225,68 282,62" fill="none" stroke="#e8cc28" stroke-width="1" opacity=".35"
+  style="opacity:0;animation:fadeInEl .2s ease-out .08s forwards"/>
+${lines.join('')}`;
+}
+
+function buildGraphPaperHTML(){
+  /* Pale grey-green with teal grid, revealed from centre outward via JS */
+  const hLines=[], vLines=[];
+  for(let y=0;y<=460;y+=10){
+    const major=(y%40===0);
+    hLines.push(`<line x1="0" y1="${y}" x2="300" y2="${y}"
+      stroke="${major?'#6090a8':'#c0d2c8'}" stroke-width="${major?.65:.2}"/>`);
+  }
+  for(let x=0;x<=300;x+=10){
+    const major=(x%40===0);
+    vLines.push(`<line x1="${x}" y1="0" x2="${x}" y2="460"
+      stroke="${major?'#6090a8':'#c0d2c8'}" stroke-width="${major?.65:.2}"/>`);
+  }
+  return `<defs>
+  <mask id="gpM"><circle id="gpRevC" cx="150" cy="230" r="0" fill="white"/></mask>
+</defs>
+<rect width="300" height="460" rx="20" fill="#dce8dc"/>
+<g mask="url(#gpM)">${hLines.join('')}${vLines.join('')}</g>
+<rect x="8" y="8" width="284" height="444" rx="16" fill="none" stroke="#5888a0" stroke-width="1" opacity=".32"/>`;
+}
+
+function startGraphReveal(gen){
+  let f=0; const TOTAL=85;
+  function step(){
+    if(_animGen!==gen) return;
+    const c=document.getElementById('gpRevC');
+    if(!c){ _animId=null; return; }
+    f++;
+    const t=f/TOTAL;
+    const e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+    c.setAttribute('r',(e*268).toFixed(1));
+    if(f<TOTAL){ _animId=requestAnimationFrame(step); }
+    else { _animId=null; }
+  }
+  _animId=requestAnimationFrame(step);
+}
+
+/* ── R · Rock (canvas magma → SVG basalt) ────────────── */
+
+function animateRock(fl,gen){
+  fl.innerHTML=`<rect width="300" height="460" rx="20" fill="#0d0a08"/>`;
+
+  const wrap=document.getElementById('arena-player-wrap');
+  if(!wrap) return;
+
+  const dpr=window.devicePixelRatio||1;
+  const W=175, H=269;
+  const cnv=document.createElement('canvas');
+  cnv.id='rock-canvas';
+  cnv.width=Math.round(W*dpr); cnv.height=Math.round(H*dpr);
+  Object.assign(cnv.style,{
+    position:'absolute',top:'0',left:'0',width:W+'px',height:H+'px',
+    borderRadius:'10px',pointerEvents:'none',zIndex:'4'
+  });
+  wrap.appendChild(cnv);
+  const ctx=cnv.getContext('2d');
+  ctx.scale(dpr,dpr);
+
+  /* Dot punch-through positions (SVG 300×460 → canvas 175×269) */
+  const sx=W/300, sy=H/460;
+  const DOTS=[1,2,3,4,5,6].map(n=>({x:DP[n].x*sx, y:DP[n].y*sy, r:22*sx}));
+
+  /* Magma convection cells */
+  const cells=Array.from({length:11},()=>({
+    x:Math.random()*W, y:Math.random()*H,
+    vx:(Math.random()-.5)*.55, vy:(Math.random()-.5)*.45,
+    r:30+Math.random()*52, ph:Math.random()*Math.PI*2
+  }));
+
+  let frame=0;
+  const COOL_START=68, TOTAL=148;
+  const lerp=(a,b,t)=>a+(b-a)*Math.max(0,Math.min(1,t));
+  const ease=(t)=>1-Math.pow(1-t,3);
+
+  function drawFrame(){
+    if(_animGen!==gen){ _animId=null; return; }
+    ctx.clearRect(0,0,W,H);
+    const coolP=frame<COOL_START?0:ease((frame-COOL_START)/(TOTAL-COOL_START));
+
+    /* Background */
+    ctx.fillStyle=`rgb(${Math.floor(lerp(88,16,coolP))},${Math.floor(lerp(20,12,coolP))},${Math.floor(lerp(5,10,coolP))})`;
+    ctx.fillRect(0,0,W,H);
+
+    /* Magma cells */
+    cells.forEach(c=>{
+      c.x+=c.vx; c.y+=c.vy; c.ph+=0.038;
+      if(c.x<-c.r)c.x=W+c.r; if(c.x>W+c.r)c.x=-c.r;
+      if(c.y<-c.r)c.y=H+c.r; if(c.y>H+c.r)c.y=-c.r;
+      const hot=(1-coolP)*(0.82+Math.sin(c.ph)*0.18);
+      if(hot<0.04) return;
+      const cr=c.r*(1-coolP*.65);
+      const grad=ctx.createRadialGradient(c.x,c.y,0,c.x,c.y,cr);
+      const r1=Math.floor(lerp(228,28,coolP)), g1=Math.floor(lerp(76,16,coolP));
+      grad.addColorStop(0,  `rgba(${r1},${g1},8,${.82*hot})`);
+      grad.addColorStop(.55,`rgba(${Math.floor(r1*.65)},${Math.floor(g1*.35)},4,${.48*hot})`);
+      grad.addColorStop(1,  'rgba(0,0,0,0)');
+      ctx.fillStyle=grad;
+      ctx.beginPath(); ctx.arc(c.x,c.y,cr,0,Math.PI*2); ctx.fill();
+    });
+
+    /* Cooling crust from edges */
+    if(coolP>.04){
+      const inset=Math.max(3,Math.min(W,H)*.45*(1-coolP));
+      const g2=ctx.createRadialGradient(W/2,H/2,inset,W/2,H/2,Math.max(W,H)*.88);
+      g2.addColorStop(0,'rgba(0,0,0,0)');
+      g2.addColorStop(1,`rgba(18,13,10,${coolP*.95})`);
+      ctx.fillStyle=g2; ctx.fillRect(0,0,W,H);
+    }
+
+    /* Punch transparent holes — braille dots show through from SVG below */
+    ctx.globalCompositeOperation='destination-out';
+    DOTS.forEach(d=>{
+      const gh=ctx.createRadialGradient(d.x,d.y,d.r*.5,d.x,d.y,d.r*1.5);
+      gh.addColorStop(0,'rgba(0,0,0,1)');
+      gh.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=gh;
+      ctx.beginPath(); ctx.arc(d.x,d.y,d.r*1.5,0,Math.PI*2); ctx.fill();
+    });
+    ctx.globalCompositeOperation='source-over';
+
+    frame++;
+    if(frame<TOTAL){ _animId=requestAnimationFrame(drawFrame); }
+    else{
+      _animId=null;
+      cnv.style.transition='opacity .65s ease';
+      cnv.style.opacity='0';
+      buildBasaltFace(fl);
+      setTimeout(()=>{ const c=document.getElementById('rock-canvas'); if(c)c.remove(); },700);
+    }
+  }
+  _animId=requestAnimationFrame(drawFrame);
+}
+
+function buildBasaltFace(fl){
+  fl.innerHTML=`
+<rect width="300" height="460" rx="20" fill="#141210"/>
+<g stroke="#222018" stroke-width="1.1" fill="none" opacity=".9">
+  <path d="M48,75 L90,140 L72,210 L118,268 L88,345"/>
+  <path d="M178,52 L208,118 L190,195 L224,272 L196,378"/>
+  <path d="M78,25 L130,98 L108,175"/>
+  <path d="M218,412 L160,340 L180,260"/>
+  <path d="M16,192 L70,215 L52,285 L100,320"/>
+  <path d="M244,148 L270,198 L248,260"/>
+  <path d="M142,388 L178,322 L160,250 L202,192 L168,120"/>
+  <path d="M28,315 L56,282 L40,234"/>
+  <path d="M252,88 L234,148 L255,195"/>
+</g>
+<g fill="rgba(255,255,240,.26)">
+  <ellipse cx="91" cy="140" rx="2.5" ry="1"   transform="rotate(32,91,140)"/>
+  <ellipse cx="197" cy="197" rx="3"   ry="1.2" transform="rotate(-25,197,197)"/>
+  <ellipse cx="57"  cy="281" rx="2"   ry=".8"  transform="rotate(52,57,281)"/>
+  <ellipse cx="233" cy="114" rx="2.2" ry=".9"  transform="rotate(-38,233,114)"/>
+  <ellipse cx="136" cy="337" rx="1.8" ry=".7"  transform="rotate(22,136,337)"/>
+  <ellipse cx="172" cy="80"  rx="2"   ry=".85" transform="rotate(-18,172,80)"/>
+  <ellipse cx="79"  cy="353" rx="1.5" ry=".6"  transform="rotate(45,79,353)"/>
+  <ellipse cx="250" cy="262" rx="2.2" ry=".9"  transform="rotate(-30,250,262)"/>
+  <ellipse cx="110" cy="58"  rx="1.8" ry=".7"  transform="rotate(10,110,58)"/>
+</g>
+<rect x="8" y="8" width="284" height="444" rx="16" fill="none" stroke="rgba(60,48,40,.7)" stroke-width="1.5"/>`;
+}
+
+/* ── S · Scissors (JS-driven SVG blade animation) ──────── */
+
+function animateScissors(fl,gen){
+  fl.innerHTML=`
+<rect width="300" height="460" rx="20" fill="#080c10"/>
+<defs>
+  <linearGradient id="sg1" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%"   stop-color="#9aaac0"/>
+    <stop offset="32%"  stop-color="#d2d6de"/>
+    <stop offset="54%"  stop-color="#8898a8"/>
+    <stop offset="100%" stop-color="#6a7888"/>
+  </linearGradient>
+  <linearGradient id="sg2" x1="100%" y1="0%" x2="0%" y2="100%">
+    <stop offset="0%"   stop-color="#6a7888"/>
+    <stop offset="46%"  stop-color="#8898a8"/>
+    <stop offset="68%"  stop-color="#d2d6de"/>
+    <stop offset="100%" stop-color="#9aaac0"/>
+  </linearGradient>
+</defs>
+<!-- blade1: upper-left → lower-right, cutting edge is upper-right side -->
+<g id="sblade1">
+  <path d="M 15,30 L 40,14 L 286,424 L 268,442 L 212,442 L 12,68 Z"
+    fill="url(#sg1)" stroke="rgba(255,255,255,.18)" stroke-width="0.9"/>
+  <!-- glint along the cutting edge -->
+  <line id="sglint" x1="27" y1="22" x2="277" y2="433"
+    stroke="white" stroke-width="4" stroke-linecap="round" opacity="0"/>
+</g>
+<!-- blade2: lower-right → upper-left, sits behind blade1 -->
+<g id="sblade2">
+  <path d="M 285,430 L 260,446 L 14,36 L 32,18 L 88,18 L 288,392 Z"
+    fill="url(#sg2)" stroke="rgba(255,255,255,.18)" stroke-width="0.9"/>
+</g>
+<!-- pivot hinge — above both blades -->
+<circle cx="150" cy="228" r="10" fill="#c8ccd4" stroke="#88929e" stroke-width="1.5"/>
+<circle cx="150" cy="228" r="5.5" fill="#a0a8b4"/>
+<circle cx="150" cy="228" r="2.5" fill="#c8ccd4" opacity=".6"/>
+<rect x="8" y="8" width="284" height="444" rx="16" fill="none" stroke="rgba(180,190,200,.07)" stroke-width="1"/>`;
+
+  const PX=150, PY=228;
+  let frame=0;
+  const SLIDE_END=82, CLOSE_PEAK=115, GLINT_F=112, OPEN_DONE=158, TOTAL=165;
+  let glintFired=false;
+
+  const lerp=(a,b,t)=>a+(b-a)*Math.max(0,Math.min(1,t));
+  const easeIO=(t)=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+  const easeOut=(t)=>1-Math.pow(1-t,3);
+
+  function step(){
+    if(_animGen!==gen){ _animId=null; return; }
+    const b1=document.getElementById('sblade1');
+    const b2=document.getElementById('sblade2');
+    if(!b1||!b2){ _animId=null; return; }
+
+    frame++;
+    let tx1=0,ty1=0,tx2=0,ty2=0,ang=0;
+
+    /* Phase 1: slide blades in from opposite corners */
+    if(frame<=SLIDE_END){
+      const t=easeIO(frame/SLIDE_END);
+      tx1=lerp(-290,0,t); ty1=lerp(-228,0,t);
+      tx2=lerp(290,0,t);  ty2=lerp(228,0,t);
+    }
+
+    /* Phase 2: close (slow start, builds speed, decelerates just before peak) */
+    if(frame>SLIDE_END&&frame<=CLOSE_PEAK){
+      const t=easeOut((frame-SLIDE_END)/(CLOSE_PEAK-SLIDE_END));
+      ang=lerp(0,-13,t);
+    }
+
+    /* Glint at near-peak speed */
+    if(frame===GLINT_F&&!glintFired){
+      glintFired=true;
+      const gl=document.getElementById('sglint');
+      if(gl){ gl.setAttribute('opacity','0.92'); setTimeout(()=>{ const g=document.getElementById('sglint'); if(g) g.setAttribute('opacity','0'); },70); }
+    }
+
+    /* Phase 3: ease back to resting position */
+    if(frame>CLOSE_PEAK&&frame<=OPEN_DONE){
+      const t=easeIO((frame-CLOSE_PEAK)/(OPEN_DONE-CLOSE_PEAK));
+      ang=lerp(-13,-7,t);
+    }
+    if(frame>OPEN_DONE) ang=-7;
+
+    b1.setAttribute('transform',`translate(${tx1.toFixed(1)},${ty1.toFixed(1)}) rotate(${ang.toFixed(2)},${PX},${PY})`);
+    b2.setAttribute('transform',`translate(${tx2.toFixed(1)},${ty2.toFixed(1)}) rotate(${(-ang).toFixed(2)},${PX},${PY})`);
+
+    if(frame<TOTAL){ _animId=requestAnimationFrame(step); }
+    else { _animId=null; }
+  }
+  _animId=requestAnimationFrame(step);
+}
+
+/* ════════════════════════════════════════════════════
+   DOT INTERACTION
+════════════════════════════════════════════════════ */
+
+function tapDot(n){
+  if(G.phase!=='dial') return;
+  if(G.raised.has(n)){ G.raised.delete(n); setRing(n,false); }
+  else                { G.raised.add(n);   setRing(n,true); }
+  onPatternChange();
+}
+
+function onPatternChange(){
+  const v=variantFor(G.raised);
+  G.queued=v;
+
+  /* Dot colours */
+  const ur=UNRAISED[v]||UNRAISED._;
+  const dotCol=v?VARIANT[v].col:'rgba(255,255,255,.72)';
+  for(let n=1;n<=6;n++){
+    const el=document.getElementById('d'+n);
+    if(!el) continue;
+    if(G.raised.has(n)){
+      el.setAttribute('fill',       dotCol);
+      el.setAttribute('fill-opacity','.48');
+      el.setAttribute('stroke',     dotCol);
+      el.setAttribute('stroke-opacity','1');
+      const r=document.getElementById('ar'+n);
+      if(r) r.setAttribute('stroke',v?VARIANT[v].col:'rgba(200,175,110,.8)');
+    } else {
+      el.setAttribute('fill',          ur.fill);
+      el.setAttribute('fill-opacity',  '1');
+      el.setAttribute('stroke',        ur.stroke);
+      el.setAttribute('stroke-opacity','1');
+    }
+  }
+
+  /* Trigger card art transition */
+  triggerVariantTransition(v);
+
+  /* Action bar */
+  if(v){
+    const affordable=canAfford('player',v);
+    const c=COST[v]||{};
+    const costStr=RES_TYPES.filter(r=>c[r]).map(r=>`${c[r]} ${RES_INFO[r].label}`).join(' · ');
+    setVariantPreview(`${VARIANT[v].label.toUpperCase()}  —  ${costStr}`,affordable?VARIANT[v].col:'rgba(200,80,50,.7)');
+    setActionButtons(true,true,affordable,`Play ${VARIANT[v].label}`);
+  } else {
+    const n=G.raised.size;
+    setVariantPreview(n>0?`${n} dot${n>1?'s':''} raised`:'');
+    setActionButtons(true,true,false,'Play');
+  }
+  previewCost(v,'player');
+}
+
+function setRing(n,on){
+  const r=document.getElementById('ar'+n);
+  if(!r) return;
+  if(on){
+    r.setAttribute('r','27'); r.setAttribute('opacity','1');
+    setTimeout(()=>r.setAttribute('r','22'),85);
+  } else {
+    r.setAttribute('opacity','0'); setTimeout(()=>r.setAttribute('r','22'),180);
+  }
+}
+
+/* ════════════════════════════════════════════════════
+   GAME PHASES
+════════════════════════════════════════════════════ */
+
+function selectCard(idx){
+  if(G.phase!=='select'&&G.phase!=='dial') return;
+  if(!G.playerHand[idx]) return;
+  if(G.slot===idx&&G.phase==='dial') return;
+
+  if(G.phase==='dial') for(const n of G.raised) setRing(n,false);
+  document.getElementById('p'+(G.slot??0)).classList.remove('selected');
+
+  cancelAnim(); _animVariant=null;
+  G.slot=idx; G.phase='dial'; G.raised.clear(); G.queued=null;
+  for(let i=0;i<3;i++) document.getElementById('p'+i).classList.toggle('selected',i===idx);
+
+  document.getElementById('arena').innerHTML=`
+    <div class="arena-wrap" id="arena-enemy-wrap">${svgBack()}</div>
+    <div class="arena-wrap bump-in" id="arena-player-wrap">${svgArenaCard()}</div>`;
+
+  document.querySelectorAll('.dot-hit').forEach(el=>{
+    el.addEventListener('click',()=>tapDot(+el.dataset.n));
+    el.addEventListener('touchend',e=>{e.preventDefault();tapDot(+el.dataset.n);});
+  });
+
+  setActionButtons(true,true,false,'Play');
+  setVariantPreview('');
+  previewCost(null,'player');
+  setTurn('Dial a variant');
+  setMsg('P=1·2·3·4   R=1·2·3·5   S=2·3·4');
+}
+
+function clearDots(){
+  if(G.phase!=='dial') return;
+  for(const n of G.raised) setRing(n,false);
+  G.raised.clear();
+  onPatternChange();
+}
+
+function confirmPlay(){
+  if(G.phase!=='dial'||!G.queued||!canAfford('player',G.queued)) return;
+  G.phase='wait'; G.pPlayed=G.queued;
+  document.querySelectorAll('.dot-hit').forEach(el=>el.style.pointerEvents='none');
+  setActionButtons(false,false,false,'');
+  setVariantPreview('');
+  spend('player',G.pPlayed); renderBars('player');
+  setTurn('Enemy Turn');
+  setMsg('Card locked. Enemy responds...');
+  setTimeout(enemyPlay,1400);
+}
+
+function enemyPlay(){
+  if(!G.enemyHand.some(Boolean)){ endGame(); return; }
+  const opts=Object.keys(VARIANT).filter(v=>canAfford('enemy',v));
+  G.eCard=opts.length?opts[Math.floor(Math.random()*opts.length)]:null;
+  if(G.eCard) spend('enemy',G.eCard);
+  renderBars('enemy');
+  const ae=document.getElementById('arena-enemy-wrap');
+  if(ae){ ae.innerHTML=G.eCard?svgEnemyReveal(G.eCard):svgBack(); ae.classList.add('bump-in'); }
+  setMsg(G.eCard?`Enemy plays ${VARIANT[G.eCard].label}!`:'Enemy forfeits — no resources.');
+  setTimeout(resolveRound,900);
+}
+
+function resolveRound(){
+  G.phase='resolve';
+  let txt,color,msg;
+  if(!G.eCard){
+    G.enemyHP--; txt='WIN'; color='#ffd700'; msg='Enemy had nothing to play. Round yours.';
+  } else {
+    const result=rps(G.pPlayed,G.eCard);
+    if(result==='win'){ G.enemyHP--; txt='WIN';  color='#ffd700'; msg=`${VARIANT[G.pPlayed].label} beats ${VARIANT[G.eCard].label}.`; }
+    else if(result==='lose'){ G.playerHP--; txt='LOSE'; color='#c84020'; msg=`${VARIANT[G.eCard].label} beats ${VARIANT[G.pPlayed].label}.`; }
+    else { txt='DRAW'; color='#888870'; msg=`Both played ${VARIANT[G.pPlayed].label}. Draw.`; }
+  }
+  renderHP(); flashResult(txt,color); setMsg(msg);
+  G.playerHand[G.slot]=0;
+  const ei=G.enemyHand.findIndex(Boolean); if(ei!==-1) G.enemyHand[ei]=0;
+  renderHands();
+  setTimeout(()=>{ if(G.playerHP<=0||G.enemyHP<=0||G.playerHand.every(v=>!v)) endGame(); else nextRound(); },2400);
+}
+
+function nextRound(){
+  G.phase='select'; G.slot=null; G.raised.clear(); G.pPlayed=null; G.eCard=null; G.queued=null;
+  cancelAnim(); _animVariant=null;
+  document.getElementById('arena').innerHTML='';
+  document.querySelectorAll('.card-slot.player').forEach(el=>el.classList.remove('selected'));
+  setActionButtons(false,false,false,'');
+  setVariantPreview('');
+  setTurn('Your Turn');
+  setMsg('Choose a card to play.');
+}
+
+function endGame(){
+  G.phase='over';
+  let txt,color,msg;
+  if(G.enemyHP<=0&&G.playerHP>0){txt='VICTORY';color='#ffd700';msg='You won the duel!';}
+  else if(G.playerHP<=0&&G.enemyHP>0){txt='DEFEAT';color='#c84020';msg='You were defeated.';}
+  else if(G.playerHP>G.enemyHP){txt='VICTORY';color='#ffd700';msg='You outlasted them!';}
+  else if(G.enemyHP>G.playerHP){txt='DEFEAT';color='#c84020';msg='The enemy prevailed.';}
+  else{txt='DRAW';color='#888870';msg='The duel ends even.';}
+  cancelAnim(); _animVariant=null;
+  setTurn('Game Over'); flashResult(txt,color); setMsg(msg);
+  setActionButtons(false,false,false,'');
+  setTimeout(()=>document.getElementById('btn-restart').style.display='block',2200);
+}
+
+function restartGame(){
+  document.getElementById('btn-restart').style.display='none';
+  cancelAnim(); _animVariant=null;
+  document.getElementById('arena').innerHTML='';
+  document.querySelectorAll('.card-slot.player').forEach(el=>el.classList.remove('selected'));
+  G=freshState();
+  renderHands(); renderHP(); renderBars('player'); renderBars('enemy');
+  setActionButtons(false,false,false,'');
+  setVariantPreview('');
+  setTurn('Your Turn'); setMsg('Choose a card to play.');
+}
+
+function flashResult(text,color){
+  const el=document.getElementById('result-text');
+  el.textContent=text; el.style.color=color;
+  el.style.textShadow=`0 0 22px ${color},0 0 50px ${color}`;
+  el.style.animation='none'; void el.offsetHeight;
+  el.style.animation='flashResult 2s ease forwards';
+}
+
+/* ── Init ─────────────────────────────────────────────── */
+(function init(){
+  G=freshState();
+  document.getElementById('res-enemy').innerHTML =buildResGroup('enemy');
+  document.getElementById('res-player').innerHTML=buildResGroup('player');
+  renderHands(); renderHP(); renderBars('player'); renderBars('enemy');
+  setTurn('Your Turn'); setMsg('Choose a card to play.');
+})();
+</script>
+</body>
+</html>

@@ -5,6 +5,7 @@ import {
   IconButton,
   Link as MuiLink,
   Popover,
+  Slider,
   ThemeProvider,
   ToggleButton,
   ToggleButtonGroup,
@@ -13,23 +14,32 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
-import { Link as RouterLink, Navigate, Route, Routes } from 'react-router-dom';
+import { Link as RouterLink, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { SolitaireSettingsProvider, useSolitaireSettings } from './context/SolitaireSettingsContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSun, faMoon, faCircleHalfStroke, faSliders } from '@fortawesome/free-solid-svg-icons';
+import { faSun, faMoon, faCircleHalfStroke, faSliders, faXmark } from '@fortawesome/free-solid-svg-icons';
 import AboutPage from './pages/AboutPage';
 import ArchivePage from './pages/ArchivePage';
-import BraillewriterHelpPage from './pages/BraillewriterHelpPage';
-import DotDecoderPage from './pages/DotDecoderPage';
 import QuickRefPage from './pages/QuickRefPage';
-import WritePage from './pages/WritePage';
 import AdminPage from './pages/AdminPage';
+import GamesPage from './pages/GamesPage';
+import SolitairePage from './pages/SolitairePage';
 import { INK, PAPER } from './theme/colors';
 
-const HEADING_FONT = '"Playfair Display", "Georgia", "Times New Roman", serif';
+// ── Color utilities ───────────────────────────────────────────────────────────
 
-function buildTheme(mode) {
-  const ink   = INK[mode];
-  const paper = PAPER[mode];
+function hexLuminance(hex) {
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+  return 0.299 * r + 0.587 * g + 0.114 * b;
+}
+
+// ── Theme ─────────────────────────────────────────────────────────────────────
+
+const FONT = 'var(--bt-font-family)';
+
+function buildTheme(mode, ink, paper) {
   return createTheme({
     palette: {
       mode,
@@ -47,20 +57,20 @@ function buildTheme(mode) {
       },
     },
     typography: {
-      fontFamily: HEADING_FONT,
-      h1: { fontFamily: HEADING_FONT, fontWeight: 800 },
-      h2: { fontFamily: HEADING_FONT, fontWeight: 800 },
-      h3: { fontFamily: HEADING_FONT, fontWeight: 700 },
-      h4: { fontFamily: HEADING_FONT, fontWeight: 700 },
-      h5: { fontFamily: HEADING_FONT, fontWeight: 700 },
-      h6: { fontFamily: HEADING_FONT, fontWeight: 600 },
-      subtitle1: { fontFamily: HEADING_FONT, fontWeight: 600 },
-      subtitle2: { fontFamily: HEADING_FONT, fontWeight: 600 },
-      body1: { fontFamily: HEADING_FONT },
-      body2: { fontFamily: HEADING_FONT },
-      caption: { fontFamily: HEADING_FONT },
-      button: { fontFamily: HEADING_FONT },
-      overline: { fontFamily: HEADING_FONT },
+      fontFamily: FONT,
+      h1: { fontFamily: FONT, fontWeight: 800 },
+      h2: { fontFamily: FONT, fontWeight: 800 },
+      h3: { fontFamily: FONT, fontWeight: 700 },
+      h4: { fontFamily: FONT, fontWeight: 700 },
+      h5: { fontFamily: FONT, fontWeight: 700 },
+      h6: { fontFamily: FONT, fontWeight: 600 },
+      subtitle1: { fontFamily: FONT, fontWeight: 600 },
+      subtitle2: { fontFamily: FONT, fontWeight: 600 },
+      body1: { fontFamily: FONT },
+      body2: { fontFamily: FONT },
+      caption: { fontFamily: FONT },
+      button: { fontFamily: FONT },
+      overline: { fontFamily: FONT },
     },
     components: {
       MuiCssBaseline: {
@@ -71,47 +81,154 @@ function buildTheme(mode) {
             --bt-paper: ${PAPER.light};
             --bt-border: transparent;
             --bt-dot-border: transparent;
+            --bt-font-family: "Playfair Display", "Georgia", "Times New Roman", serif;
+            --bt-infostrip-row-gap: 0px;
+            --bt-li-py: 0px;
+            --bt-li-min-height: 36px;
           }
           @media (prefers-color-scheme: dark) {
-            :root {
-              --bt-ink: ${INK.dark};
-              --bt-paper: ${PAPER.dark};
-            }
+            :root { --bt-ink: ${INK.dark}; --bt-paper: ${PAPER.dark}; }
           }
-          html[data-theme="light"] {
-            --bt-ink: ${INK.light};
-            --bt-paper: ${PAPER.light};
-          }
-          html[data-theme="dark"] {
-            --bt-ink: ${INK.dark};
-            --bt-paper: ${PAPER.dark};
-          }
+          html[data-theme="light"] { --bt-ink: ${INK.light}; --bt-paper: ${PAPER.light}; }
+          html[data-theme="dark"]  { --bt-ink: ${INK.dark};  --bt-paper: ${PAPER.dark};  }
           html[data-contrast="subtle"]    { --bt-border: color-mix(in srgb, var(--bt-ink) 15%, transparent); }
           html[data-contrast="medium"]    { --bt-border: color-mix(in srgb, var(--bt-ink) 40%, transparent); }
           html[data-contrast="high"]      { --bt-border: var(--bt-ink); }
           html[data-dot-contrast="subtle"] { --bt-dot-border: color-mix(in srgb, var(--bt-ink) 15%, transparent); }
           html[data-dot-contrast="medium"] { --bt-dot-border: color-mix(in srgb, var(--bt-ink) 40%, transparent); }
           html[data-dot-contrast="high"]   { --bt-dot-border: var(--bt-ink); }
+          html[data-font="serif"] { --bt-font-family: "Playfair Display", "Georgia", "Times New Roman", serif; }
+          html[data-font="sans"]  { --bt-font-family: "Source Sans 3", "Helvetica Neue", Arial, sans-serif; }
+          html[data-font="slab"]  { --bt-font-family: "Bitter", Georgia, serif; }
+          html[data-font="mono"]  { --bt-font-family: "JetBrains Mono", "Courier New", monospace; }
+          html[data-row-gap="0"] { --bt-infostrip-row-gap: 0px;  --bt-li-py: 0px;  --bt-li-min-height: 36px; }
+          html[data-row-gap="1"] { --bt-infostrip-row-gap: 4px;  --bt-li-py: 2px;  --bt-li-min-height: 40px; }
+          html[data-row-gap="2"] { --bt-infostrip-row-gap: 8px;  --bt-li-py: 4px;  --bt-li-min-height: 48px; }
+          html[data-row-gap="3"] { --bt-infostrip-row-gap: 14px; --bt-li-py: 7px;  --bt-li-min-height: 56px; }
+          html[data-row-gap="4"] { --bt-infostrip-row-gap: 22px; --bt-li-py: 11px; --bt-li-min-height: 68px; }
         `,
       },
-      MuiDivider: {
-        styleOverrides: { root: { borderColor: 'var(--bt-border)' } },
-      },
-      MuiTab: {
-        styleOverrides: { root: { color: ink, '&.Mui-selected': { color: ink } } },
-      },
-      MuiTabs: {
-        styleOverrides: { indicator: { backgroundColor: ink } },
-      },
+      MuiDivider: { styleOverrides: { root: { borderColor: 'var(--bt-border)' } } },
+      MuiTab:     { styleOverrides: { root: { color: ink, '&.Mui-selected': { color: ink } } } },
+      MuiTabs:    { styleOverrides: { indicator: { backgroundColor: ink } } },
     },
   });
 }
 
+// ── Color swatch (circle <input type="color">) ────────────────────────────────
 
+function ColorSwatch({ value, onChange, title }) {
+  return (
+    <Box
+      component="input"
+      type="color"
+      title={title}
+      value={value}
+      onChange={onChange}
+      sx={{
+        WebkitAppearance: 'none',
+        appearance: 'none',
+        width: 18,
+        height: 18,
+        border: '1.5px solid',
+        borderColor: 'divider',
+        borderRadius: '50%',
+        p: 0,
+        cursor: 'pointer',
+        flexShrink: 0,
+        '&::-webkit-color-swatch-wrapper': { p: 0, borderRadius: '50%' },
+        '&::-webkit-color-swatch': { border: 'none', borderRadius: '50%' },
+        '&::-moz-color-swatch': { border: 'none', borderRadius: '50%' },
+      }}
+    />
+  );
+}
 
+// ── Solitaire settings popover (rendered inside AppShell so it can use context) ──
+
+function SolitairePopover() {
+  const [anchor, setAnchor] = useState(null);
+  const sol = useSolitaireSettings();
+  if (!sol) return null;
+
+  return (
+    <>
+      <IconButton size="small" onClick={e => setAnchor(e.currentTarget)} sx={{ color: 'text.primary' }} title="Card settings">
+        ♠
+      </IconButton>
+      <Popover
+        open={Boolean(anchor)}
+        anchorEl={anchor}
+        onClose={() => setAnchor(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 1.5, minWidth: 240 }}>
+          <Typography variant="caption">Card outline</Typography>
+          <ToggleButtonGroup exclusive size="small" value={sol.cardOutline} onChange={sol.setCardOutline}>
+            <ToggleButton value="never">Never</ToggleButton>
+            <ToggleButton value="hover">Hover</ToggleButton>
+            <ToggleButton value="always">Always</ToggleButton>
+          </ToggleButtonGroup>
+          <Typography variant="caption">Cell bounds</Typography>
+          <ToggleButtonGroup exclusive size="small" value={sol.cellBounds} onChange={sol.setCellBounds}>
+            <ToggleButton value="never">Never</ToggleButton>
+            <ToggleButton value="hover">Hover</ToggleButton>
+            <ToggleButton value="always">Always</ToggleButton>
+          </ToggleButtonGroup>
+          <Typography variant="caption">Braille dots</Typography>
+          <ToggleButtonGroup exclusive size="small" value={sol.brailleDots} onChange={sol.setBrailleDots}>
+            <ToggleButton value="hover">Hover</ToggleButton>
+            <ToggleButton value="always">Always</ToggleButton>
+          </ToggleButtonGroup>
+          <Typography variant="caption">Unraised dots</Typography>
+          <ToggleButtonGroup exclusive size="small" value={sol.unraisedDots} onChange={sol.setUnraisedDots}>
+            <ToggleButton value="never">Never</ToggleButton>
+            <ToggleButton value="hover">Hover</ToggleButton>
+            <ToggleButton value="always">Always</ToggleButton>
+          </ToggleButtonGroup>
+          <Typography variant="caption">Print overlay</Typography>
+          <ToggleButtonGroup exclusive size="small" value={sol.printOverlay} onChange={sol.setPrintOverlay}>
+            <ToggleButton value="never">Never</ToggleButton>
+            <ToggleButton value="hover">Hover</ToggleButton>
+          </ToggleButtonGroup>
+          {sol.printOverlay !== 'never' && (<>
+            <Typography variant="caption">Print style</Typography>
+            <ToggleButtonGroup exclusive size="small" value={sol.printStyle} onChange={sol.setPrintStyle}>
+              <ToggleButton value="exact">Exact</ToggleButton>
+              <ToggleButton value="ortho">Ortho</ToggleButton>
+            </ToggleButtonGroup>
+          </>)}
+          <Typography variant="caption">Suit color</Typography>
+          <ToggleButtonGroup exclusive size="small" value={sol.suitColor} onChange={sol.setSuitColor}>
+            <ToggleButton value="off">Off</ToggleButton>
+            <ToggleButton value="on">On</ToggleButton>
+          </ToggleButtonGroup>
+          <Typography variant="caption">Drop hints</Typography>
+          <ToggleButtonGroup exclusive size="small" value={sol.dropHints} onChange={sol.setDropHints}>
+            <ToggleButton value="off">Off</ToggleButton>
+            <ToggleButton value="on">On</ToggleButton>
+          </ToggleButtonGroup>
+        </Box>
+      </Popover>
+    </>
+  );
+}
+
+// ── App ───────────────────────────────────────────────────────────────────────
 
 export default function App() {
+  return (
+    <SolitaireSettingsProvider>
+      <AppShell />
+    </SolitaireSettingsProvider>
+  );
+}
+
+function AppShell() {
+  const location = useLocation();
   const prefersDark = useMediaQuery('(prefers-color-scheme: dark)');
+
   const [modeSetting, setModeSetting] = useState(() => {
     try { return localStorage.getItem('bt-theme') || 'auto'; } catch { return 'auto'; }
   });
@@ -121,22 +238,61 @@ export default function App() {
   const [dotContrast, setDotContrast] = useState(() => {
     try { return localStorage.getItem('bt-dot-contrast') || 'subtle'; } catch { return 'subtle'; }
   });
+  const [rowGap, setRowGap] = useState(() => {
+    try { return Number(localStorage.getItem('bt-row-gap')) || 0; } catch { return 0; }
+  });
+  const [typeSize, setTypeSize] = useState(() => {
+    try { return Number(localStorage.getItem('bt-type-size') ?? 1); } catch { return 1; }
+  });
+  const [font, setFont] = useState(() => {
+    try { return localStorage.getItem('bt-font') || 'serif'; } catch { return 'serif'; }
+  });
+  const [customInk, setCustomInk] = useState(() => {
+    try { return localStorage.getItem('bt-custom-ink') || null; } catch { return null; }
+  });
+  const [customPaper, setCustomPaper] = useState(() => {
+    try { return localStorage.getItem('bt-custom-paper') || null; } catch { return null; }
+  });
   const [popoverAnchor, setPopoverAnchor] = useState(null);
 
-  const resolvedMode = modeSetting === 'auto' ? (prefersDark ? 'dark' : 'light') : modeSetting;
-  const theme = useMemo(() => buildTheme(resolvedMode), [resolvedMode]);
+  const hasCustom = Boolean(customInk || customPaper);
 
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', resolvedMode);
-  }, [resolvedMode]);
+  // MUI mode (light|dark). Custom mode derives from paper luminance so MUI gets the right base.
+  const resolvedMode = useMemo(() => {
+    if (modeSetting === 'auto') return prefersDark ? 'dark' : 'light';
+    if (modeSetting === 'custom') {
+      const paper = customPaper || PAPER.light;
+      return hexLuminance(paper) > 0.5 ? 'light' : 'dark';
+    }
+    return modeSetting;
+  }, [modeSetting, prefersDark, customPaper]);
 
-  useEffect(() => {
-    document.documentElement.setAttribute('data-contrast', contrast);
-  }, [contrast]);
+  // Effective colors sent to MUI + CSS vars.
+  // custom → use saved values directly.
+  // auto/light/dark + saved custom → hue-skew the default toward the custom hue.
+  // no custom → plain defaults.
+  const effectiveInk   = modeSetting === 'custom' ? (customInk   || INK[resolvedMode])   : INK[resolvedMode];
+  const effectivePaper = modeSetting === 'custom' ? (customPaper || PAPER[resolvedMode]) : PAPER[resolvedMode];
 
+  const theme = useMemo(
+    () => buildTheme(resolvedMode, effectiveInk, effectivePaper),
+    [resolvedMode, effectiveInk, effectivePaper],
+  );
+
+  useEffect(() => { document.documentElement.setAttribute('data-theme', resolvedMode); }, [resolvedMode]);
+  useEffect(() => { document.documentElement.setAttribute('data-contrast', contrast); }, [contrast]);
+  useEffect(() => { document.documentElement.setAttribute('data-dot-contrast', dotContrast); }, [dotContrast]);
+  useEffect(() => { document.documentElement.setAttribute('data-row-gap', rowGap); }, [rowGap]);
+  useEffect(() => { document.documentElement.setAttribute('data-type-size', typeSize); }, [typeSize]);
+  useEffect(() => { document.documentElement.setAttribute('data-font', font); }, [font]);
+
+  // Push effective colors into CSS vars so braille cells and other non-MUI elements stay in sync.
   useEffect(() => {
-    document.documentElement.setAttribute('data-dot-contrast', dotContrast);
-  }, [dotContrast]);
+    document.documentElement.style.setProperty('--bt-ink', effectiveInk);
+    document.documentElement.style.setProperty('--bt-paper', effectivePaper);
+  }, [effectiveInk, effectivePaper]);
+
+  // ── Handlers ──
 
   const handleModeChange = (_, val) => {
     if (!val) return;
@@ -156,19 +312,58 @@ export default function App() {
     try { localStorage.setItem('bt-dot-contrast', val); } catch {}
   };
 
+  const handleRowGapChange    = (_, val) => { setRowGap(val);   try { localStorage.setItem('bt-row-gap', val); }   catch {} };
+  const handleTypeSizeChange  = (_, val) => { setTypeSize(val); try { localStorage.setItem('bt-type-size', val); } catch {} };
+
+  const handleFontChange = (_, val) => {
+    if (!val) return;
+    setFont(val);
+    try { localStorage.setItem('bt-font', val); } catch {}
+  };
+
+  const handleCustomInkChange = (e) => {
+    const val = e.target.value;
+    setModeSetting('custom');
+    setCustomInk(val);
+    try { localStorage.setItem('bt-custom-ink', val); localStorage.setItem('bt-theme', 'custom'); } catch {}
+  };
+
+  const handleCustomPaperChange = (e) => {
+    const val = e.target.value;
+    setModeSetting('custom');
+    setCustomPaper(val);
+    try { localStorage.setItem('bt-custom-paper', val); localStorage.setItem('bt-theme', 'custom'); } catch {}
+  };
+
+  const handleClearCustomColors = () => {
+    setCustomInk(null);
+    setCustomPaper(null);
+    if (modeSetting === 'custom') setModeSetting('auto');
+    try {
+      localStorage.removeItem('bt-custom-ink');
+      localStorage.removeItem('bt-custom-paper');
+      if (modeSetting === 'custom') localStorage.setItem('bt-theme', 'auto');
+    } catch {}
+  };
+
+  // ── Render ──
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Container maxWidth="lg" sx={{ py: 2 }}>
+      <Container maxWidth="lg" sx={{ py: 2, minWidth: 0 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
           <Typography variant="h5" component="p">
             <MuiLink component={RouterLink} to="/" underline="none" color="inherit">
               Braille Toolbox
             </MuiLink>
           </Typography>
-          <IconButton size="small" onClick={e => setPopoverAnchor(e.currentTarget)} sx={{ color: 'text.primary' }}>
-            <FontAwesomeIcon icon={faSliders} />
-          </IconButton>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            {location.pathname.startsWith('/games/solitaire') && <SolitairePopover />}
+            <IconButton size="small" onClick={e => setPopoverAnchor(e.currentTarget)} sx={{ color: 'text.primary' }}>
+              <FontAwesomeIcon icon={faSliders} />
+            </IconButton>
+          </Box>
           <Popover
             open={Boolean(popoverAnchor)}
             anchorEl={popoverAnchor}
@@ -177,11 +372,32 @@ export default function App() {
             transformOrigin={{ vertical: 'top', horizontal: 'right' }}
           >
             <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 1.5, minWidth: 260 }}>
-              <Typography variant="caption">Theme</Typography>
+
+              {/* Theme label + swatches */}
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Typography variant="caption">Theme</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                  {hasCustom && (
+                    <IconButton
+                      size="small"
+                      onClick={handleClearCustomColors}
+                      title="Clear custom colors"
+                      sx={{ p: 0.25, color: 'text.secondary', '&:hover': { color: 'text.primary' } }}
+                    >
+                      <FontAwesomeIcon icon={faXmark} style={{ fontSize: '0.65rem' }} />
+                    </IconButton>
+                  )}
+                  <ColorSwatch value={customInk   || INK[resolvedMode]}   onChange={handleCustomInkChange}   title="Ink color" />
+                  <ColorSwatch value={customPaper || PAPER[resolvedMode]} onChange={handleCustomPaperChange} title="Paper color" />
+                </Box>
+              </Box>
+
+              {/* Mode segmented control */}
               <ToggleButtonGroup exclusive size="small" value={modeSetting} onChange={handleModeChange}>
                 <ToggleButton value="auto"><FontAwesomeIcon icon={faCircleHalfStroke} />&nbsp;Auto</ToggleButton>
-                <ToggleButton value="light"><FontAwesomeIcon icon={faSun} />&nbsp;Light</ToggleButton>
-                <ToggleButton value="dark"><FontAwesomeIcon icon={faMoon} />&nbsp;Dark</ToggleButton>
+                <ToggleButton value="light"><FontAwesomeIcon icon={faSun} /></ToggleButton>
+                <ToggleButton value="dark"><FontAwesomeIcon icon={faMoon} /></ToggleButton>
+                <ToggleButton value="custom">Custom</ToggleButton>
               </ToggleButtonGroup>
 
               <Typography variant="caption">Interface contrast</Typography>
@@ -199,6 +415,25 @@ export default function App() {
                 <ToggleButton value="medium">Medium</ToggleButton>
                 <ToggleButton value="high">High</ToggleButton>
               </ToggleButtonGroup>
+
+              <Typography variant="caption">Row spacing</Typography>
+              <Box sx={{ px: 1 }}>
+                <Slider size="small" min={0} max={4} step={1} marks value={rowGap} onChange={handleRowGapChange} aria-label="Row spacing" />
+              </Box>
+
+              <Typography variant="caption">Type size</Typography>
+              <Box sx={{ px: 1 }}>
+                <Slider size="small" min={0} max={5} step={1} marks value={typeSize} onChange={handleTypeSizeChange} aria-label="Type size" />
+              </Box>
+
+              <Typography variant="caption">Font</Typography>
+              <ToggleButtonGroup exclusive size="small" value={font} onChange={handleFontChange}>
+                <ToggleButton value="serif">Serif</ToggleButton>
+                <ToggleButton value="sans">Sans</ToggleButton>
+                <ToggleButton value="slab">Slab</ToggleButton>
+                <ToggleButton value="mono">Mono</ToggleButton>
+              </ToggleButtonGroup>
+
             </Box>
           </Popover>
         </Box>
@@ -213,15 +448,17 @@ export default function App() {
           <Route path="/braillewrite-help" element={<Navigate to="/archive?tab=braillewriter" replace />} />
           <Route path="/archive" element={<ArchivePage />} />
           <Route path="/admin" element={<AdminPage />} />
+          <Route path="/games" element={<GamesPage />} />
+          <Route path="/games/solitaire" element={<SolitairePage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+
         <Box
           component="footer"
           sx={{
             borderTop: 1,
             borderColor: 'divider',
-            mt: 4,
-            pt: 2,
+            mt: 4, pt: 2,
             display: 'flex',
             flexWrap: 'wrap',
             gap: 2,
@@ -233,20 +470,9 @@ export default function App() {
             © 2026 Will Capellaro & Braille Toolbox
           </Typography>
           <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-            <MuiLink component={RouterLink} to="/about" underline="hover">
-              About
-            </MuiLink>
-            <MuiLink component={RouterLink} to="/archive" underline="hover">
-              Archive
-            </MuiLink>
-            <MuiLink
-              href="https://willcapellaro1.typeform.com/to/oPcfuyiL"
-              underline="hover"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Feedback
-            </MuiLink>
+            <MuiLink component={RouterLink} to="/about" underline="hover">About</MuiLink>
+            <MuiLink component={RouterLink} to="/archive" underline="hover">Archive</MuiLink>
+            <MuiLink href="https://willcapellaro1.typeform.com/to/oPcfuyiL" underline="hover" target="_blank" rel="noreferrer">Feedback</MuiLink>
           </Box>
         </Box>
       </Container>

@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Arcana Tactus</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=IM+Fell+English:ital@0;1&family=Space+Mono:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{
+  width:100%;min-height:100vh;
+  background:#0a0806;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+body::after{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:9999;
+}
+
+/* Card wrapper — needed for absolutely-positioned transition elements */
+#card-wrap {
+  position: relative;
+  width: 300px;
+  height: 460px;
+  border-radius: 20px;
+  transition: filter 0.8s ease;
+}
+#card-wrap.glow-W { filter: drop-shadow(0 0 28px rgba(255,200,0,.4)) drop-shadow(0 0 70px rgba(180,120,0,.2)); }
+#card-wrap.glow-C { filter: drop-shadow(0 0 28px rgba(220,20,10,.45)) drop-shadow(0 0 70px rgba(180,0,0,.22)); }
+#card-wrap.glow-X { filter: drop-shadow(0 0 28px rgba(100,60,255,.4)) drop-shadow(0 0 70px rgba(50,20,180,.22)); }
+
+#card-svg {
+  width: 300px;
+  height: 460px;
+  border-radius: 20px;
+  display: block;
+  cursor: default;
+  overflow: hidden;
+}
+
+/* ── W transition: ink wash canvas overlay ── */
+#ink-canvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 300px; height: 460px;
+  border-radius: 20px;
+  pointer-events: none;
+  z-index: 6;
+}
+
+/* ── C transition: shatter shards ── */
+.shard {
+  position: absolute;
+  pointer-events: none;
+  z-index: 7;
+  will-change: transform, opacity;
+}
+
+/* ── X transition: gravitational SVG overlay ── */
+#x-lens {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+  border-radius: 20px;
+  opacity: 0;
+}
+
+/* wrong shake */
+@keyframes wrongShake {
+  0%,100%{ transform: translateX(0); }
+  25%{ transform: translateX(-6px); }
+  75%{ transform: translateX(6px); }
+}
+.shake { animation: wrongShake 0.28s ease; }
+
+.dot-hit { cursor: pointer; fill: transparent; }
+</style>
+</head>
+<body>
+
+<div id="card-wrap">
+
+<!-- ── X gravitational lens overlay (SVG with animated feTurbulence) ── -->
+<svg id="x-lens" viewBox="0 0 300 460" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="gravLens" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+      <feTurbulence id="gravTurb" type="fractalNoise" baseFrequency="0.012 0.008"
+                    numOctaves="3" seed="8" result="turb"/>
+      <feDisplacementMap in="SourceGraphic" in2="turb" scale="0"
+                         xChannelSelector="R" yChannelSelector="G" id="gravDisplace"/>
+      <feGaussianBlur stdDeviation="0" id="gravBlur"/>
+    </filter>
+  </defs>
+  <!-- This layer sits over the X card art and distorts it during transition -->
+  <rect width="300" height="460" fill="black" id="x-lens-black" opacity="0"/>
+</svg>
+
+<!-- ── Ink canvas for W transition ── -->
+<canvas id="ink-canvas" width="300" height="460"></canvas>
+
+<!-- ── Main card SVG ── -->
+<svg id="card-svg" viewBox="0 0 300 460" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <clipPath id="cardClip"><rect width="300" height="460" rx="20"/></clipPath>
+
+  <!-- NEUTRAL -->
+  <radialGradient id="nBg" cx="50%" cy="40%" r="65%">
+    <stop offset="0%" stop-color="#1e1a14"/><stop offset="100%" stop-color="#0a0806"/>
+  </radialGradient>
+  <linearGradient id="nBrd" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%" stop-color="#3a3020" stop-opacity=".5"/>
+    <stop offset="50%" stop-color="#6a5830" stop-opacity=".3"/>
+    <stop offset="100%" stop-color="#2a2010" stop-opacity=".5"/>
+  </linearGradient>
+
+  <!-- W -->
+  <radialGradient id="wBg" cx="50%" cy="40%" r="65%">
+    <stop offset="0%" stop-color="#f0dea8"/><stop offset="50%" stop-color="#c8a060"/><stop offset="100%" stop-color="#7a4a18"/>
+  </radialGradient>
+  <linearGradient id="wG" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%" stop-color="#fff0a0"/><stop offset="35%" stop-color="#ffd700"/>
+    <stop offset="70%" stop-color="#b87a00"/><stop offset="100%" stop-color="#ffe066"/>
+  </linearGradient>
+  <radialGradient id="wP" cx="40%" cy="35%" r="65%">
+    <stop offset="0%" stop-color="#5080c8"/><stop offset="55%" stop-color="#0c2880"/><stop offset="100%" stop-color="#060e40"/>
+  </radialGradient>
+  <radialGradient id="wVig" cx="50%" cy="50%" r="70%">
+    <stop offset="55%" stop-color="transparent"/><stop offset="100%" stop-color="#1a0800" stop-opacity=".55"/>
+  </radialGradient>
+  <filter id="wEm" x="-5%" y="-5%" width="110%" height="110%">
+    <feGaussianBlur stdDeviation=".8" result="b"/>
+    <feSpecularLighting in="b" surfaceScale="4" specularConstant="1" specularExponent="16" lighting-color="#fffacd" result="s">
+      <fePointLight x="100" y="60" z="150"/>
+    </feSpecularLighting>
+    <feComposite in="s" in2="SourceGraphic" operator="in" result="se"/>
+    <feBlend in="SourceGraphic" in2="se" mode="screen"/>
+  </filter>
+  <radialGradient id="wDotShine" cx="32%" cy="28%" r="55%">
+    <stop offset="0%" stop-color="#fff" stop-opacity=".6"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="wd2" cx="35%" cy="30%" r="62%">
+    <stop offset="0%" stop-color="#ff8a60"/><stop offset="55%" stop-color="#cc2200"/><stop offset="100%" stop-color="#7a1000"/>
+  </radialGradient>
+  <radialGradient id="wd4" cx="35%" cy="30%" r="62%">
+    <stop offset="0%" stop-color="#80e8a0"/><stop offset="55%" stop-color="#0a7a30"/><stop offset="100%" stop-color="#024018"/>
+  </radialGradient>
+  <radialGradient id="wd5" cx="35%" cy="30%" r="62%">
+    <stop offset="0%" stop-color="#c070e8"/><stop offset="55%" stop-color="#6a0a9e"/><stop offset="100%" stop-color="#380060"/>
+  </radialGradient>
+  <radialGradient id="wd6" cx="35%" cy="30%" r="62%">
+    <stop offset="0%" stop-color="#fffacd"/><stop offset="45%" stop-color="#ffd700"/><stop offset="100%" stop-color="#9b6a00"/>
+  </radialGradient>
+
+  <!-- C -->
+  <linearGradient id="cBg" x1="10%" y1="0%" x2="90%" y2="100%">
+    <stop offset="0%" stop-color="#100000"/><stop offset="30%" stop-color="#7a0000"/>
+    <stop offset="55%" stop-color="#c80000"/><stop offset="80%" stop-color="#880000"/>
+    <stop offset="100%" stop-color="#080000"/>
+  </linearGradient>
+  <radialGradient id="cSh" cx="28%" cy="22%" r="65%">
+    <stop offset="0%" stop-color="#ff5050" stop-opacity=".3"/><stop offset="100%" stop-color="transparent"/>
+  </radialGradient>
+  <linearGradient id="cSw" x1="0%" y1="0%" x2="100%" y2="28%">
+    <stop offset="0%"  stop-color="#fff" stop-opacity="0"/>
+    <stop offset="28%" stop-color="#fff" stop-opacity=".82"/>
+    <stop offset="56%" stop-color="#fff" stop-opacity="1"/>
+    <stop offset="78%" stop-color="#fff" stop-opacity=".48"/>
+    <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+  </linearGradient>
+  <filter id="cGl" x="-25%" y="-25%" width="150%" height="150%">
+    <feGaussianBlur stdDeviation="8" result="b"/>
+    <feColorMatrix type="matrix" values="1 0 0 0 .15  0 0 0 0 0  0 0 0 0 0  0 0 0 .65 0" in="b" result="c"/>
+    <feMerge><feMergeNode in="c"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <linearGradient id="cBot" x1="0%" y1="0%" x2="100%" y2="0%">
+    <stop offset="0%" stop-color="#440000"/><stop offset="30%" stop-color="#aa0000"/>
+    <stop offset="55%" stop-color="#ff5050" stop-opacity=".65"/>
+    <stop offset="80%" stop-color="#880000"/><stop offset="100%" stop-color="#220000"/>
+  </linearGradient>
+  <radialGradient id="cd1" cx="35%" cy="30%" r="62%">
+    <stop offset="0%" stop-color="#ff7070"/><stop offset="55%" stop-color="#e51010"/><stop offset="100%" stop-color="#8a0000"/>
+  </radialGradient>
+  <radialGradient id="cDotShine" cx="32%" cy="28%" r="55%">
+    <stop offset="0%" stop-color="#fff" stop-opacity=".55"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+  </radialGradient>
+
+  <!-- X -->
+  <radialGradient id="xBg" cx="50%" cy="42%" r="72%">
+    <stop offset="0%" stop-color="#070318"/><stop offset="50%" stop-color="#02010c"/><stop offset="100%" stop-color="#000003"/>
+  </radialGradient>
+  <radialGradient id="xPl" cx="36%" cy="33%" r="58%">
+    <stop offset="0%" stop-color="#18163a"/><stop offset="35%" stop-color="#080620"/>
+    <stop offset="70%" stop-color="#030110"/><stop offset="100%" stop-color="#000"/>
+  </radialGradient>
+  <radialGradient id="xLm" cx="30%" cy="28%" r="55%">
+    <stop offset="0%"  stop-color="#2838a0" stop-opacity=".48"/>
+    <stop offset="65%" stop-color="#101858" stop-opacity=".14"/>
+    <stop offset="100%" stop-color="transparent"/>
+  </radialGradient>
+  <radialGradient id="xAt" cx="50%" cy="50%" r="52%">
+    <stop offset="76%"  stop-color="transparent"/>
+    <stop offset="88%"  stop-color="#2818a0" stop-opacity=".36"/>
+    <stop offset="100%" stop-color="#4028c0" stop-opacity=".11"/>
+  </radialGradient>
+  <linearGradient id="xRg" x1="0%" y1="0%" x2="100%" y2="35%">
+    <stop offset="0%"  stop-color="#2a1850" stop-opacity="0"/>
+    <stop offset="22%" stop-color="#6840b0" stop-opacity=".5"/>
+    <stop offset="50%" stop-color="#b090f0" stop-opacity=".8"/>
+    <stop offset="78%" stop-color="#5030a0" stop-opacity=".46"/>
+    <stop offset="100%" stop-color="#180c38" stop-opacity="0"/>
+  </linearGradient>
+  <filter id="xAF" x="-15%" y="-15%" width="130%" height="130%">
+    <feGaussianBlur stdDeviation="4" result="b"/>
+    <feColorMatrix type="matrix" values=".2 0 0 0 0  0 0 0 0 0  .5 0 1 0 0  0 0 0 .8 0" in="b" result="c"/>
+    <feMerge><feMergeNode in="c"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <filter id="xMG" x="-30%" y="-30%" width="160%" height="160%">
+    <feGaussianBlur stdDeviation="3" result="b"/>
+    <feColorMatrix type="matrix" values=".2 0 0 0 0  .1 0 0 0 0  .6 0 1 0 0  0 0 0 .7 0" in="b" result="c"/>
+    <feMerge><feMergeNode in="c"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <filter id="xSt">
+    <feTurbulence type="fractalNoise" baseFrequency=".72" numOctaves="1" seed="17" result="n"/>
+    <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 14 -10" in="n" result="s"/>
+    <feComposite in="s" in2="SourceGraphic" operator="in"/>
+  </filter>
+  <clipPath id="xFC"><rect x="0" y="198" width="300" height="265"/></clipPath>
+  <radialGradient id="xd13" cx="35%" cy="30%" r="62%">
+    <stop offset="0%" stop-color="#a0c8ff"/><stop offset="55%" stop-color="#2060c0"/><stop offset="100%" stop-color="#050a30"/>
+  </radialGradient>
+  <radialGradient id="xd46" cx="35%" cy="30%" r="62%">
+    <stop offset="0%" stop-color="#c0a0ff"/><stop offset="55%" stop-color="#6020c0"/><stop offset="100%" stop-color="#1a0050"/>
+  </radialGradient>
+  <radialGradient id="xDotShine" cx="32%" cy="28%" r="55%">
+    <stop offset="0%" stop-color="#fff" stop-opacity=".5"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+  </radialGradient>
+</defs>
+
+<g clip-path="url(#cardClip)">
+
+  <!-- NEUTRAL -->
+  <g id="g-neutral">
+    <rect width="300" height="460" fill="url(#nBg)"/>
+    <rect x="9" y="9" width="282" height="442" rx="15" fill="none" stroke="url(#nBrd)" stroke-width="1"/>
+    <circle cx="112" cy="168" r="18" fill="rgba(255,255,255,.045)" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
+    <circle cx="112" cy="218" r="18" fill="rgba(255,255,255,.045)" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
+    <circle cx="112" cy="268" r="18" fill="rgba(255,255,255,.045)" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
+    <circle cx="188" cy="168" r="18" fill="rgba(255,255,255,.045)" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
+    <circle cx="188" cy="218" r="18" fill="rgba(255,255,255,.045)" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
+    <circle cx="188" cy="268" r="18" fill="rgba(255,255,255,.045)" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
+    <text x="150" y="405" font-family="'IM Fell English',serif" font-style="italic" font-size="9" fill="rgba(255,255,255,.1)" text-anchor="middle" letter-spacing="3">arcana tactus</text>
+  </g>
+
+  <!-- W -->
+  <g id="g-W" opacity="0">
+    <rect width="300" height="460" fill="url(#wBg)"/>
+    <rect width="300" height="460" fill="url(#wVig)"/>
+    <rect x="7"  y="7"  width="286" height="446" rx="16" fill="none" stroke="url(#wG)" stroke-width="2.2"/>
+    <rect x="13" y="13" width="274" height="434" rx="12" fill="none" stroke="#880000" stroke-width="1"/>
+    <rect x="18" y="18" width="264" height="424" rx="10" fill="none" stroke="url(#wG)" stroke-width="2.8" filter="url(#wEm)"/>
+    <rect x="23" y="23" width="254" height="414" rx="8"  fill="none" stroke="#1a3fa8" stroke-width="1"/>
+    <rect x="27" y="27" width="246" height="406" rx="7"  fill="none" stroke="url(#wG)" stroke-width=".7"/>
+    <path d="M48,36 C85,25 130,46 160,33 C190,20 240,43 265,35" fill="none" stroke="#0a5e20" stroke-width="1.5"/>
+    <ellipse cx="85" cy="31" rx="7" ry="3.2" fill="#0a7a30" transform="rotate(-22,85,31)"/>
+    <ellipse cx="130" cy="42" rx="8" ry="3.2" fill="#cc2200" transform="rotate(18,130,42)"/>
+    <ellipse cx="185" cy="29" rx="7" ry="3.2" fill="#0a7a30" transform="rotate(-14,185,29)"/>
+    <ellipse cx="238" cy="37" rx="7" ry="3.2" fill="#ffd700" transform="rotate(11,238,37)" opacity=".9"/>
+    <circle cx="108" cy="33" r="2.8" fill="#cc2200"/>
+    <circle cx="158" cy="27" r="2.3" fill="#ffd700" opacity=".9"/>
+    <circle cx="210" cy="35" r="2.8" fill="#1a3fa8"/>
+    <path d="M48,424 C85,435 130,414 160,427 C190,440 240,417 265,425" fill="none" stroke="#0a5e20" stroke-width="1.5"/>
+    <ellipse cx="85" cy="429" rx="7" ry="3.2" fill="#0a7a30" transform="rotate(22,85,429)"/>
+    <ellipse cx="130" cy="419" rx="8" ry="3.2" fill="#cc2200" transform="rotate(-18,130,419)"/>
+    <circle cx="108" cy="427" r="2.8" fill="#cc2200"/>
+    <circle cx="210" cy="423" r="2.8" fill="#1a3fa8"/>
+    <path d="M35,55 C24,95 42,145 30,185 C18,225 38,275 28,315 C20,345 34,385 32,415" fill="none" stroke="#0a5e20" stroke-width="1.5"/>
+    <path d="M265,55 C276,95 258,145 270,185 C282,225 262,275 272,315 C280,345 266,385 268,415" fill="none" stroke="#0a5e20" stroke-width="1.5"/>
+    <g filter="url(#wEm)">
+      <g transform="translate(44,44)"><circle r="16" fill="#0c2880"/><circle r="12" fill="none" stroke="url(#wG)" stroke-width="1.5"/><path d="M0,-10 L2.2,-2.2 L10,0 L2.2,2.2 L0,10 L-2.2,2.2 L-10,0 L-2.2,-2.2Z" fill="url(#wG)"/><circle r="3.2" fill="#ffd700"/></g>
+      <g transform="translate(256,44)"><circle r="16" fill="#7a0000"/><circle r="12" fill="none" stroke="url(#wG)" stroke-width="1.5"/><path d="M0,-10 L2.2,-2.2 L10,0 L2.2,2.2 L0,10 L-2.2,2.2 L-10,0 L-2.2,-2.2Z" fill="url(#wG)"/><circle r="3.2" fill="#ffd700"/></g>
+      <g transform="translate(44,416)"><circle r="16" fill="#024018"/><circle r="12" fill="none" stroke="url(#wG)" stroke-width="1.5"/><path d="M0,-10 L2.2,-2.2 L10,0 L2.2,2.2 L0,10 L-2.2,2.2 L-10,0 L-2.2,-2.2Z" fill="url(#wG)"/><circle r="3.2" fill="#ffd700"/></g>
+      <g transform="translate(256,416)"><circle r="16" fill="#380060"/><circle r="12" fill="none" stroke="url(#wG)" stroke-width="1.5"/><path d="M0,-10 L2.2,-2.2 L10,0 L2.2,2.2 L0,10 L-2.2,2.2 L-10,0 L-2.2,-2.2Z" fill="url(#wG)"/><circle r="3.2" fill="#ffd700"/></g>
+    </g>
+    <rect x="48" y="55" width="204" height="272" rx="5" fill="url(#wP)"/>
+    <rect x="48" y="55" width="204" height="272" rx="5" fill="none" stroke="url(#wG)" stroke-width="1.8"/>
+    <text x="150" y="196" font-family="'Cinzel Decorative',serif" font-size="115" fill="none" stroke="rgba(255,215,0,.055)" stroke-width="1" text-anchor="middle" dominant-baseline="middle">W</text>
+    <g stroke="url(#wG)" stroke-width=".9" fill="none" opacity=".42">
+      <path d="M52,65 L248,65 M52,65 L52,72 L59,72 L59,65 M70,65 L70,72 L77,72 L77,65 M88,65 L88,72 L95,72 L95,65 M106,65 L106,72 L113,72 L113,65 M124,65 L124,72 L131,72 L131,65 M142,65 L142,72 L149,72 L149,65 M160,65 L160,72 L167,72 L167,65 M178,65 L178,72 L185,72 L185,65 M196,65 L196,72 L203,72 L203,65 M214,65 L214,72 L221,72 L221,65 M232,65 L232,72 L239,72 L239,65 M52,72 L248,72"/>
+      <path d="M52,319 L248,319 M52,319 L52,312 L59,312 L59,319 M70,319 L70,312 L77,312 L77,319 M88,319 L88,312 L95,312 L95,319 M106,319 L106,312 L113,312 L113,319 M124,319 L124,312 L131,312 L131,319 M142,319 L142,312 L149,312 L149,319 M160,319 L160,312 L167,312 L167,319 M178,319 L178,312 L185,312 L185,319 M196,319 L196,312 L203,312 L203,319 M214,319 L214,312 L221,312 L221,319 M232,319 L232,312 L239,312 L239,319 M52,312 L248,312"/>
+    </g>
+    <path d="M118,215 C135,204 160,192 178,188" fill="none" stroke="url(#wG)" stroke-width="1.3" stroke-dasharray="5,3.5" opacity=".45"/>
+    <path d="M178,208 L178,225" fill="none" stroke="url(#wG)" stroke-width="1.8" opacity=".5"/>
+    <path d="M178,253 L178,267" fill="none" stroke="url(#wG)" stroke-width="1.8" opacity=".5"/>
+    <path d="M128,240 L172,240" fill="none" stroke="url(#wG)" stroke-width="1.2" stroke-dasharray="4,3" opacity=".4"/>
+    <circle cx="150" cy="212" r="2.6" fill="url(#wG)" opacity=".55"/>
+    <circle cx="150" cy="267" r="2.6" fill="url(#wG)" opacity=".55"/>
+    <path d="M84,352 Q98,345 150,348 Q202,345 216,352 Q202,360 150,357 Q98,360 84,352Z" fill="url(#wG)" filter="url(#wEm)"/>
+    <text x="150" y="355" font-family="'IM Fell English',Georgia,serif" font-size="8.5" font-weight="bold" fill="#2a0800" text-anchor="middle" dominant-baseline="middle" letter-spacing="2.5">W · 2 4 5 6</text>
+    <text x="150" y="378" font-family="'IM Fell English',serif" font-style="italic" font-size="7.5" fill="#7a4000" text-anchor="middle" letter-spacing="1.8" opacity=".45">TACTUS · EST · VISUS</text>
+    <circle cx="112" cy="168" r="18" fill="rgba(0,0,20,.45)" stroke="rgba(255,215,0,.12)" stroke-width="1"/>
+    <circle cx="112" cy="268" r="18" fill="rgba(0,0,20,.45)" stroke="rgba(255,215,0,.12)" stroke-width="1"/>
+    <g id="wd-2"><circle cx="112" cy="218" r="21" fill="url(#wG)" opacity=".9"/><circle cx="112" cy="218" r="18" fill="url(#wd2)"/><circle cx="112" cy="218" r="12" fill="none" stroke="url(#wG)" stroke-width="1.4"/><path d="M112,207 C118,211 118,225 112,229 C106,225 106,211 112,207" fill="none" stroke="#ffd700" stroke-width="1.2" opacity=".65"/><circle cx="112" cy="218" r="4.5" fill="#ffd700"/><circle cx="112" cy="218" r="18" fill="url(#wDotShine)"/></g>
+    <g id="wd-4"><circle cx="188" cy="168" r="21" fill="url(#wG)" opacity=".9"/><circle cx="188" cy="168" r="18" fill="url(#wd4)"/><circle cx="188" cy="168" r="12" fill="none" stroke="url(#wG)" stroke-width="1.4"/><ellipse cx="188" cy="168" rx="4" ry="8" fill="#ffd700" opacity=".75"/><ellipse cx="188" cy="168" rx="4" ry="8" fill="#ffd700" opacity=".75" transform="rotate(60,188,168)"/><ellipse cx="188" cy="168" rx="4" ry="8" fill="#ffd700" opacity=".75" transform="rotate(120,188,168)"/><circle cx="188" cy="168" r="4" fill="#ffd700"/><circle cx="188" cy="168" r="18" fill="url(#wDotShine)"/></g>
+    <g id="wd-5"><circle cx="188" cy="218" r="21" fill="url(#wG)" opacity=".9"/><circle cx="188" cy="218" r="18" fill="url(#wd5)"/><circle cx="188" cy="218" r="12" fill="none" stroke="url(#wG)" stroke-width="1.4"/><path d="M188,207 L190,215 L198,218 L190,221 L188,229 L186,221 L178,218 L186,215Z" fill="#ffd700" opacity=".8"/><circle cx="188" cy="218" r="4.5" fill="#ffd700"/><circle cx="188" cy="218" r="18" fill="url(#wDotShine)"/></g>
+    <g id="wd-6"><circle cx="188" cy="268" r="23" fill="url(#wG)" opacity=".85"/><circle cx="188" cy="268" r="18" fill="url(#wd6)"/><circle cx="188" cy="268" r="14" fill="none" stroke="rgba(120,80,0,.6)" stroke-width="1.5"/><circle cx="188" cy="268" r="9" fill="none" stroke="url(#wG)" stroke-width="1"/><path d="M185,261 L191,261 L193,265 L197,265 L197,271 L193,271 L191,275 L185,275 L183,271 L179,271 L179,265 L183,265Z" fill="rgba(100,60,0,.6)"/><circle cx="188" cy="268" r="4.5" fill="#fff8c0"/><circle cx="188" cy="268" r="18" fill="url(#wDotShine)"/></g>
+  </g>
+
+  <!-- C -->
+  <g id="g-C" opacity="0">
+    <rect width="300" height="460" fill="url(#cBg)"/>
+    <rect width="300" height="460" fill="url(#cSh)"/>
+    <g stroke="#ff1010" stroke-width=".3" opacity=".1">
+      <line x1="0" y1="70"  x2="300" y2="70"/><line x1="0" y1="98"  x2="300" y2="98"/>
+      <line x1="0" y1="126" x2="300" y2="126"/><line x1="0" y1="154" x2="300" y2="154"/>
+      <line x1="0" y1="182" x2="300" y2="182"/><line x1="0" y1="210" x2="300" y2="210"/>
+      <line x1="0" y1="238" x2="300" y2="238"/><line x1="0" y1="266" x2="300" y2="266"/>
+      <line x1="0" y1="294" x2="300" y2="294"/><line x1="0" y1="322" x2="300" y2="322"/>
+    </g>
+    <path d="M138,46 L162,46 L165,56 C176,60 185,68 186,80 L188,100 C192,110 193,122 192,136 L193,156 C196,166 196,176 194,188 C200,198 202,210 200,224 L202,246 C205,262 206,278 204,294 L202,318 C204,334 202,348 200,362 L198,386 C196,400 191,410 186,418 L182,430 L118,430 L114,418 C109,410 104,400 102,386 L100,362 C98,348 96,334 98,318 L96,294 C94,278 95,262 98,246 L100,224 C98,210 100,198 106,188 C104,176 104,166 107,156 L108,136 C107,122 108,110 112,100 L114,80 C115,68 124,60 135,56Z" fill="url(#cBot)" opacity=".13"/>
+    <path d="M136,76 C134,98 132,128 133,160 C134,198 136,236 136,272" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="7" stroke-linecap="round"/>
+    <rect x="0" y="56" width="300" height="14" fill="white" opacity=".06"/>
+    <rect x="0" y="53" width="300" height="5" fill="white" opacity=".14"/>
+    <rect x="0" y="393" width="300" height="14" fill="white" opacity=".06"/>
+    <rect x="0" y="408" width="300" height="5" fill="white" opacity=".14"/>
+    <text x="150" y="96" font-family="'IM Fell English',serif" font-style="italic" font-size="19" fill="white" text-anchor="middle" opacity=".8" letter-spacing="2">Classic</text>
+    <text x="150" y="200" font-family="'Cinzel Decorative',serif" font-size="76" fill="none" stroke="rgba(255,255,255,.04)" stroke-width="1.1" text-anchor="middle" dominant-baseline="middle">C</text>
+    <path d="M18,190 C40,146 82,122 124,128 C166,134 196,154 208,172 C222,194 218,222 198,240 C172,262 136,268 102,258 C72,248 46,228 30,206" fill="none" stroke="url(#cSw)" stroke-width="20" stroke-linecap="round" filter="url(#cGl)"/>
+    <path d="M208,172 C234,156 268,158 292,168 C298,171 302,178 301,186" fill="none" stroke="url(#cSw)" stroke-width="9" stroke-linecap="round" opacity=".5"/>
+    <path d="M20,187 C42,146 82,123 124,129 C165,135 194,154 206,171" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M38,430 C85,420 118,416 150,416 C182,416 215,420 262,430" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="1.1"/>
+    <text x="150" y="447" font-family="'Bebas Neue',sans-serif" font-size="9" fill="rgba(255,255,255,.26)" text-anchor="middle" letter-spacing="4">C · 1  4</text>
+    <circle cx="112" cy="218" r="18" fill="rgba(0,0,0,.35)" stroke="rgba(200,0,0,.1)" stroke-width="1"/>
+    <circle cx="112" cy="268" r="18" fill="rgba(0,0,0,.35)" stroke="rgba(200,0,0,.1)" stroke-width="1"/>
+    <circle cx="188" cy="218" r="18" fill="rgba(0,0,0,.35)" stroke="rgba(200,0,0,.1)" stroke-width="1"/>
+    <circle cx="188" cy="268" r="18" fill="rgba(0,0,0,.35)" stroke="rgba(200,0,0,.1)" stroke-width="1"/>
+    <g id="cd-1"><circle cx="112" cy="168" r="22" fill="rgba(220,10,10,.35)"/><circle cx="112" cy="168" r="18" fill="url(#cd1)"/><circle cx="112" cy="168" r="12" fill="none" stroke="rgba(255,180,180,.5)" stroke-width="1.3"/><circle cx="112" cy="168" r="18" fill="url(#cDotShine)"/></g>
+    <g id="cd-4"><circle cx="188" cy="168" r="22" fill="rgba(220,10,10,.35)"/><circle cx="188" cy="168" r="18" fill="url(#cd1)"/><circle cx="188" cy="168" r="12" fill="none" stroke="rgba(255,180,180,.5)" stroke-width="1.3"/><circle cx="188" cy="168" r="18" fill="url(#cDotShine)"/></g>
+  </g>
+
+  <!-- X -->
+  <g id="g-X" opacity="0">
+    <rect width="300" height="460" fill="url(#xBg)"/>
+    <rect width="300" height="460" fill="rgba(255,255,255,.88)" filter="url(#xSt)" opacity=".15"/>
+    <g fill="white">
+      <circle cx="22" cy="36" r="1.1" opacity=".82"/><circle cx="50" cy="14" r=".8" opacity=".62"/>
+      <circle cx="82" cy="30" r="1.4" opacity=".72"/><circle cx="135" cy="19" r=".7" opacity=".58"/>
+      <circle cx="188" cy="36" r="1.0" opacity=".78"/><circle cx="238" cy="13" r=".85" opacity=".62"/>
+      <circle cx="272" cy="44" r="1.2" opacity=".72"/><circle cx="14" cy="113" r=".7" opacity=".48"/>
+      <circle cx="12" cy="203" r=".75" opacity=".52"/><circle cx="295" cy="223" r=".9" opacity=".62"/>
+      <circle cx="20" cy="253" r="1.1" opacity=".52"/><circle cx="292" cy="268" r=".7" opacity=".48"/>
+      <ellipse cx="242" cy="52" rx="16" ry="4.5" fill="rgba(140,120,210,.09)" transform="rotate(-28,242,52)"/>
+    </g>
+    <ellipse cx="150" cy="198" rx="100" ry="20" fill="none" stroke="url(#xRg)" stroke-width="7" transform="rotate(-7,150,198)" opacity=".6"/>
+    <ellipse cx="150" cy="198" rx="113" ry="24" fill="none" stroke="url(#xRg)" stroke-width="3.5" transform="rotate(-7,150,198)" opacity=".36"/>
+    <rect x="0" y="198" width="300" height="265" fill="url(#xBg)"/>
+    <circle cx="150" cy="186" r="84" fill="url(#xPl)"/>
+    <circle cx="150" cy="186" r="84" fill="url(#xLm)"/>
+    <ellipse cx="145" cy="170" rx="64" ry="6.5" fill="rgba(70,45,150,.1)" transform="rotate(-4,145,170)"/>
+    <ellipse cx="155" cy="188" rx="57" ry="5.2" fill="rgba(50,28,118,.13)" transform="rotate(3,155,188)"/>
+    <path d="M150,102 C190,102 234,138 234,186 C234,234 190,270 150,270 Z" fill="black" opacity=".46"/>
+    <circle cx="150" cy="186" r="84" fill="url(#xAt)" filter="url(#xAF)"/>
+    <circle cx="150" cy="186" r="84" fill="none" stroke="#3020a0" stroke-width="2.2" opacity=".4"/>
+    <ellipse cx="150" cy="198" rx="100" ry="20" fill="none" stroke="url(#xRg)" stroke-width="7" transform="rotate(-7,150,198)" opacity=".7" clip-path="url(#xFC)"/>
+    <ellipse cx="150" cy="198" rx="113" ry="24" fill="none" stroke="url(#xRg)" stroke-width="3.5" transform="rotate(-7,150,198)" opacity=".46" clip-path="url(#xFC)"/>
+    <g filter="url(#xMG)">
+      <circle cx="46" cy="140" r="9.5" fill="#070318"/>
+      <circle cx="46" cy="140" r="9.5" fill="none" stroke="rgba(110,90,190,.46)" stroke-width="1.4"/>
+      <circle cx="258" cy="106" r="6.5" fill="#040212"/>
+      <circle cx="258" cy="106" r="6.5" fill="none" stroke="rgba(90,70,170,.36)" stroke-width="1.1"/>
+    </g>
+    <g font-family="'Space Mono',monospace" fill="rgba(110,90,210,.56)" font-size="7" letter-spacing=".3">
+      <text x="16" y="308">MASS    6.8 M⊕</text>
+      <text x="16" y="320">DIST    500–1000 AU</text>
+      <text x="16" y="332">PERIOD  10–20 KYR</text>
+      <text x="16" y="344">TYPE    SUPER-EARTH</text>
+      <text x="16" y="356">STATUS  UNCONFIRMED</text>
+      <line x1="12" y1="362" x2="185" y2="362" stroke="rgba(100,80,200,.2)" stroke-width=".7"/>
+    </g>
+    <text x="150" y="392" font-family="'Space Mono',monospace" font-size="9.5" fill="rgba(170,150,255,.6)" text-anchor="middle" letter-spacing="3">PLANET  X</text>
+    <text x="150" y="408" font-family="'Space Mono',monospace" font-size="7" fill="rgba(110,90,180,.36)" text-anchor="middle" letter-spacing="2">X · 1 3 4 6</text>
+    <circle cx="112" cy="218" r="18" fill="rgba(0,0,8,.5)" stroke="rgba(80,60,180,.1)" stroke-width="1"/>
+    <circle cx="188" cy="218" r="18" fill="rgba(0,0,8,.5)" stroke="rgba(80,60,180,.1)" stroke-width="1"/>
+    <g id="xd-1"><circle cx="112" cy="168" r="22" fill="rgba(40,80,200,.4)"/><circle cx="112" cy="168" r="18" fill="url(#xd13)"/><circle cx="112" cy="168" r="11" fill="none" stroke="rgba(180,200,255,.45)" stroke-width="1.3"/><path d="M112,161 C116,162 119,165 119,168 C119,172 116,175 112,176 C114,174 116,171 116,168 C116,165 114,162 112,161Z" fill="rgba(255,255,255,.14)"/><circle cx="112" cy="168" r="18" fill="url(#xDotShine)"/></g>
+    <g id="xd-3"><circle cx="112" cy="268" r="22" fill="rgba(80,30,200,.4)"/><circle cx="112" cy="268" r="18" fill="url(#xd46)"/><circle cx="112" cy="268" r="11" fill="none" stroke="rgba(200,180,255,.45)" stroke-width="1.3"/><path d="M112,261 C116,262 119,265 119,268 C119,272 116,275 112,276 C114,274 116,271 116,268 C116,265 114,262 112,261Z" fill="rgba(255,255,255,.14)"/><circle cx="112" cy="268" r="18" fill="url(#xDotShine)"/></g>
+    <g id="xd-4"><circle cx="188" cy="168" r="22" fill="rgba(40,80,200,.4)"/><circle cx="188" cy="168" r="18" fill="url(#xd13)"/><circle cx="188" cy="168" r="11" fill="none" stroke="rgba(180,200,255,.45)" stroke-width="1.3"/><path d="M188,161 C192,162 195,165 195,168 C195,172 192,175 188,176 C190,174 192,171 192,168 C192,165 190,162 188,161Z" fill="rgba(255,255,255,.14)"/><circle cx="188" cy="168" r="18" fill="url(#xDotShine)"/></g>
+    <g id="xd-6"><circle cx="188" cy="268" r="22" fill="rgba(80,30,200,.4)"/><circle cx="188" cy="268" r="18" fill="url(#xd46)"/><circle cx="188" cy="268" r="11" fill="none" stroke="rgba(200,180,255,.45)" stroke-width="1.3"/><path d="M188,261 C192,262 195,265 195,268 C195,272 192,275 188,276 C190,274 192,271 192,268 C192,265 190,262 188,261Z" fill="rgba(255,255,255,.14)"/><circle cx="188" cy="268" r="18" fill="url(#xDotShine)"/></g>
+  </g>
+
+  <!-- Rings -->
+  <g id="g-rings" style="pointer-events:none">
+    <circle id="ring-1" cx="112" cy="168" r="22" fill="none" stroke="white" stroke-width="2.5" opacity="0"/>
+    <circle id="ring-2" cx="112" cy="218" r="22" fill="none" stroke="white" stroke-width="2.5" opacity="0"/>
+    <circle id="ring-3" cx="112" cy="268" r="22" fill="none" stroke="white" stroke-width="2.5" opacity="0"/>
+    <circle id="ring-4" cx="188" cy="168" r="22" fill="none" stroke="white" stroke-width="2.5" opacity="0"/>
+    <circle id="ring-5" cx="188" cy="218" r="22" fill="none" stroke="white" stroke-width="2.5" opacity="0"/>
+    <circle id="ring-6" cx="188" cy="268" r="22" fill="none" stroke="white" stroke-width="2.5" opacity="0"/>
+  </g>
+
+  <!-- Hit circles — always last -->
+  <circle class="dot-hit" id="hit-1" cx="112" cy="168" r="24" data-n="1"/>
+  <circle class="dot-hit" id="hit-2" cx="112" cy="218" r="24" data-n="2"/>
+  <circle class="dot-hit" id="hit-3" cx="112" cy="268" r="24" data-n="3"/>
+  <circle class="dot-hit" id="hit-4" cx="188" cy="168" r="24" data-n="4"/>
+  <circle class="dot-hit" id="hit-5" cx="188" cy="218" r="24" data-n="5"/>
+  <circle class="dot-hit" id="hit-6" cx="188" cy="268" r="24" data-n="6"/>
+</g>
+</svg>
+</div><!-- /card-wrap -->
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   SPELL LOGIC
+═══════════════════════════════════════════════════════ */
+const SPELLS = { W:[2,4,5,6], C:[1,4], X:[1,3,4,6] };
+const RING_COL = {
+  W:{ 2:'rgba(255,120,80,.95)', 4:'rgba(100,240,130,.95)', 5:'rgba(190,80,240,.95)', 6:'rgba(255,215,0,.95)' },
+  C:{ 1:'rgba(255,90,70,.95)', 4:'rgba(255,100,80,.95)' },
+  X:{ 1:'rgba(130,190,255,.95)', 3:'rgba(180,140,255,.95)', 4:'rgba(130,190,255,.95)', 6:'rgba(180,140,255,.95)' },
+};
+const raised = new Set();
+let current = null;
+let transitioning = false;
+
+function isValidPrefix(set) {
+  if (!set.size) return true;
+  return Object.values(SPELLS).some(req => [...set].every(d => req.includes(d)));
+}
+function spellFor(set) {
+  for (const [k,v] of Object.entries(SPELLS))
+    if (v.length === set.size && v.every(d => set.has(d))) return k;
+  return null;
+}
+
+/* ═══════════════════════════════════════════════════════
+   RING FEEDBACK
+═══════════════════════════════════════════════════════ */
+function setRing(n, on) {
+  const r = document.getElementById('ring-' + n);
+  if (!r) return;
+  if (on) {
+    const col = (current && RING_COL[current]?.[n]) || 'rgba(255,255,255,.55)';
+    r.setAttribute('stroke', col);
+    r.setAttribute('r', '29');
+    r.setAttribute('opacity', '1');
+    setTimeout(() => r.setAttribute('r', '23'), 10);
+  } else {
+    r.setAttribute('opacity', '0');
+    setTimeout(() => r.setAttribute('r', '22'), 200);
+  }
+}
+function updateRings() { for (let n=1;n<=6;n++) setRing(n, raised.has(n)); }
+
+/* ═══════════════════════════════════════════════════════
+   W TRANSITION — INK WASH
+   Simulated ink bleeding across parchment via canvas.
+   Dozens of translucent warm blobs expand from random
+   points, then the vellum layer crossfades in underneath.
+═══════════════════════════════════════════════════════ */
+function transitionInW(onDone) {
+  const canvas = document.getElementById('ink-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = 300, H = 460;
+  ctx.clearRect(0, 0, W, H);
+  canvas.style.opacity = '1';
+
+  // Seed blobs — clustered toward dot positions
+  const seeds = [
+    {x:112,y:218},{x:188,y:168},{x:188,y:218},{x:188,y:268},
+    {x:60,y:80},{x:240,y:90},{x:150,y:230},{x:80,y:380},{x:220,y:350},
+    {x:30,y:200},{x:270,y:200},{x:150,y:420},{x:150,y:50}
+  ];
+  const blobs = seeds.map(s => ({
+    x: s.x + (Math.random()-0.5)*60,
+    y: s.y + (Math.random()-0.5)*60,
+    r: 2 + Math.random()*8,
+    maxR: 80 + Math.random()*120,
+    speed: 1.8 + Math.random()*2.2,
+    // warm ink colours — sepia, amber, umber
+    h: 28 + Math.floor(Math.random()*18),
+    s: 55 + Math.floor(Math.random()*25),
+    l: 18 + Math.floor(Math.random()*22),
+    a: 0.12 + Math.random()*0.22,
+  }));
+
+  let frame = 0;
+  const totalFrames = 52;
+
+  function drawFrame() {
+    ctx.clearRect(0, 0, W, H);
+    // draw each blob as a radial gradient blob
+    blobs.forEach(b => {
+      if (b.r < b.maxR) b.r = Math.min(b.maxR, b.r + b.speed * (1 - b.r/b.maxR*0.5) * 2.5);
+      const grad = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r);
+      const col = `hsla(${b.h},${b.s}%,${b.l}%,`;
+      grad.addColorStop(0,   col + (b.a * 1.4) + ')');
+      grad.addColorStop(0.4, col + b.a + ')');
+      grad.addColorStop(0.8, col + (b.a * 0.4) + ')');
+      grad.addColorStop(1,   col + '0)');
+      ctx.beginPath();
+      ctx.ellipse(b.x, b.y, b.r, b.r * (0.7 + Math.random()*0.5), Math.random()*Math.PI, 0, Math.PI*2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+    });
+
+    frame++;
+    const progress = frame / totalFrames;
+
+    if (frame === 18) {
+      // Vellum card fades in under the ink wash
+      document.getElementById('g-W').style.transition = 'opacity 0.55s ease';
+      document.getElementById('g-W').style.opacity = '1';
+      document.getElementById('g-neutral').style.transition = 'opacity 0.4s ease';
+      document.getElementById('g-neutral').style.opacity = '0';
+    }
+
+    if (frame < totalFrames) {
+      // Fade canvas out in second half
+      if (progress > 0.55) canvas.style.opacity = String(1 - (progress - 0.55) / 0.45);
+      requestAnimationFrame(drawFrame);
+    } else {
+      canvas.style.opacity = '0';
+      ctx.clearRect(0, 0, W, H);
+      onDone();
+    }
+  }
+  requestAnimationFrame(drawFrame);
+}
+
+function transitionOutW(onDone) {
+  // Ink washes back — reverse blob grow, card darkens
+  const gW = document.getElementById('g-W');
+  gW.style.transition = 'opacity 0.35s ease';
+  gW.style.opacity = '0';
+  setTimeout(onDone, 380);
+}
+
+/* ═══════════════════════════════════════════════════════
+   C TRANSITION — CARBONATION SHATTER
+   The neutral card cracks into ~40 polygon shards that
+   explode outward with staggered timing and spin,
+   revealing the red card beneath.
+═══════════════════════════════════════════════════════ */
+function transitionInC(onDone) {
+  const wrap = document.getElementById('card-wrap');
+  const CARD_W = 300, CARD_H = 460;
+  const COLS = 7, ROWS = 10;
+  const sw = CARD_W / COLS, sh = CARD_H / ROWS;
+
+  // Fade neutral out
+  document.getElementById('g-neutral').style.transition = 'opacity 0.1s';
+  document.getElementById('g-neutral').style.opacity = '0';
+
+  const shards = [];
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const x = c * sw, y = r * sh;
+      const cx = x + sw/2 - CARD_W/2;
+      const cy = y + sh/2 - CARD_H/2;
+      const dist = Math.sqrt(cx*cx + cy*cy);
+      const angle = Math.atan2(cy, cx);
+      const delay = dist * 0.9 + Math.random() * 80;
+      const speed = 180 + Math.random() * 200;
+      const spin = (Math.random() - 0.5) * 720;
+
+      const el = document.createElement('div');
+      el.className = 'shard';
+      // Use a snapshot colour from the neutral card — dark warm
+      const shade = Math.floor(10 + Math.random() * 20);
+      el.style.cssText = `
+        left:${x}px; top:${y}px;
+        width:${sw + 1}px; height:${sh + 1}px;
+        background: hsl(30,${shade}%,${shade}%);
+        border-radius: ${Math.random() > 0.5 ? '2px' : '0'};
+        transform: translate(0,0) rotate(0deg);
+        opacity: 1;
+        transition: transform ${speed}ms cubic-bezier(0.2,0,0.8,1) ${delay}ms,
+                    opacity ${speed*0.6}ms ease-in ${delay + speed*0.3}ms;
+      `;
+      wrap.appendChild(el);
+      shards.push({ el, angle, delay, speed, spin });
+    }
+  }
+
+  // Show red card immediately under shards
+  document.getElementById('g-C').style.transition = 'none';
+  document.getElementById('g-C').style.opacity = '1';
+
+  // Trigger shard explosion after one frame
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    shards.forEach(s => {
+      const tx = Math.cos(s.angle) * (280 + Math.random()*180);
+      const ty = Math.sin(s.angle) * (280 + Math.random()*180);
+      s.el.style.transform = `translate(${tx}px, ${ty}px) rotate(${s.spin}deg)`;
+      s.el.style.opacity = '0';
+    });
+  }));
+
+  setTimeout(() => {
+    shards.forEach(s => s.el.remove());
+    onDone();
+  }, 900);
+}
+
+function transitionOutC(onDone) {
+  // Shards implode back in — same grid, contract inward
+  const wrap = document.getElementById('card-wrap');
+  const CARD_W = 300, CARD_H = 460;
+  const COLS = 7, ROWS = 10;
+  const sw = CARD_W / COLS, sh = CARD_H / ROWS;
+
+  document.getElementById('g-C').style.transition = 'opacity 0.15s ease 0.35s';
+  document.getElementById('g-C').style.opacity = '0';
+
+  const shards = [];
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const x = c * sw, y = r * sh;
+      const cx = x + sw/2 - CARD_W/2;
+      const cy = y + sh/2 - CARD_H/2;
+      const dist = Math.sqrt(cx*cx + cy*cy);
+      const angle = Math.atan2(cy, cx);
+      const tx = Math.cos(angle) * (200 + Math.random()*120);
+      const ty = Math.sin(angle) * (200 + Math.random()*120);
+      const spin = (Math.random()-0.5)*540;
+
+      const el = document.createElement('div');
+      el.className = 'shard';
+      const shade = Math.floor(10 + Math.random()*20);
+      el.style.cssText = `
+        left:${x}px; top:${y}px;
+        width:${sw+1}px; height:${sh+1}px;
+        background:hsl(30,${shade}%,${shade}%);
+        transform:translate(${tx}px,${ty}px) rotate(${spin}deg);
+        opacity:0;
+        transition: transform 380ms cubic-bezier(0.4,0,0.2,1) ${Math.random()*60}ms,
+                    opacity 200ms ease ${Math.random()*40}ms;
+      `;
+      wrap.appendChild(el);
+      shards.push(el);
+    }
+  }
+
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    shards.forEach(el => {
+      el.style.transform = 'translate(0,0) rotate(0deg)';
+      el.style.opacity = '1';
+    });
+  }));
+
+  setTimeout(() => {
+    shards.forEach(el => el.remove());
+    onDone();
+  }, 520);
+}
+
+/* ═══════════════════════════════════════════════════════
+   X TRANSITION — GRAVITATIONAL PULL
+   The screen-space warps as if mass is collapsing inward.
+   JS animates the SVG feTurbulence displacement map,
+   scaling from 0→120→0, with the card fading through
+   a deep-space black at peak distortion.
+═══════════════════════════════════════════════════════ */
+function transitionInX(onDone) {
+  const lens = document.getElementById('x-lens');
+  const black = document.getElementById('x-lens-black');
+  const displace = document.getElementById('gravDisplace');
+  const blur = document.getElementById('gravBlur');
+
+  lens.style.opacity = '1';
+  lens.style.filter = 'url(#gravLens)';
+
+  const gNeutral = document.getElementById('g-neutral');
+  const gX = document.getElementById('g-X');
+
+  let t = 0;
+  const dur = 100; // frames
+
+  function step() {
+    t++;
+    const p = t / dur;
+    // Ease: ramp up, plateau, ramp down
+    const envelope = p < 0.35
+      ? p / 0.35
+      : p < 0.65
+        ? 1
+        : 1 - (p - 0.65) / 0.35;
+
+    const scale = envelope * 140;
+    displace.setAttribute('scale', scale);
+    blur.setAttribute('stdDeviation', envelope * 6);
+    black.setAttribute('opacity', (envelope * 0.92).toFixed(3));
+
+    // At peak — swap layers
+    if (t === 50) {
+      gNeutral.style.transition = 'none';
+      gNeutral.style.opacity = '0';
+      gX.style.transition = 'none';
+      gX.style.opacity = '1';
+    }
+
+    if (t < dur) {
+      requestAnimationFrame(step);
+    } else {
+      // Clean up
+      displace.setAttribute('scale', '0');
+      blur.setAttribute('stdDeviation', '0');
+      black.setAttribute('opacity', '0');
+      lens.style.opacity = '0';
+      onDone();
+    }
+  }
+  requestAnimationFrame(step);
+}
+
+function transitionOutX(onDone) {
+  const lens = document.getElementById('x-lens');
+  const black = document.getElementById('x-lens-black');
+  const displace = document.getElementById('gravDisplace');
+  const blur = document.getElementById('gravBlur');
+  const gX = document.getElementById('g-X');
+
+  lens.style.opacity = '1';
+  let t = 0;
+  const dur = 70;
+
+  function step() {
+    t++;
+    const p = t / dur;
+    const envelope = p < 0.5 ? p / 0.5 : 1 - (p - 0.5) / 0.5;
+    displace.setAttribute('scale', envelope * 110);
+    blur.setAttribute('stdDeviation', envelope * 5);
+    black.setAttribute('opacity', (envelope * 0.9).toFixed(3));
+    if (t === 35) {
+      gX.style.transition = 'none';
+      gX.style.opacity = '0';
+    }
+    if (t < dur) {
+      requestAnimationFrame(step);
+    } else {
+      displace.setAttribute('scale', '0');
+      blur.setAttribute('stdDeviation', '0');
+      black.setAttribute('opacity', '0');
+      lens.style.opacity = '0';
+      onDone();
+    }
+  }
+  requestAnimationFrame(step);
+}
+
+/* ═══════════════════════════════════════════════════════
+   NEUTRAL TRANSITION — burn to black
+═══════════════════════════════════════════════════════ */
+function transitionToNeutral(prev, onDone) {
+  const prevEl = document.getElementById('g-' + prev);
+  prevEl.style.transition = 'opacity 0.4s ease';
+  prevEl.style.opacity = '0';
+  setTimeout(() => {
+    const n = document.getElementById('g-neutral');
+    n.style.transition = 'opacity 0.35s ease';
+    n.style.opacity = '1';
+    onDone();
+  }, 420);
+}
+
+/* ═══════════════════════════════════════════════════════
+   ORCHESTRATOR
+═══════════════════════════════════════════════════════ */
+function switchTo(spell) {
+  if (transitioning) return;
+  transitioning = true;
+
+  const wrap = document.getElementById('card-wrap');
+  const prev = current;
+  current = spell;
+
+  // Update outer glow
+  wrap.classList.remove('glow-W','glow-C','glow-X');
+  if (spell) wrap.classList.add('glow-' + spell);
+
+  function finish() {
+    transitioning = false;
+    updateRings();
+  }
+
+  // No previous spell — just coming from neutral
+  if (!prev) {
+    document.getElementById('g-neutral').style.opacity = '1'; // ensure visible
+    if (spell === 'W') transitionInW(finish);
+    else if (spell === 'C') transitionInC(finish);
+    else if (spell === 'X') transitionInX(finish);
+    return;
+  }
+
+  // Going back to neutral
+  if (!spell) {
+    if (prev === 'W') transitionOutW(() => { document.getElementById('g-neutral').style.transition='opacity 0.35s'; document.getElementById('g-neutral').style.opacity='1'; finish(); });
+    else if (prev === 'C') transitionOutC(() => { document.getElementById('g-neutral').style.transition='opacity 0.35s'; document.getElementById('g-neutral').style.opacity='1'; finish(); });
+    else if (prev === 'X') transitionOutX(() => { document.getElementById('g-neutral').style.transition='opacity 0.35s'; document.getElementById('g-neutral').style.opacity='1'; finish(); });
+    return;
+  }
+
+  // Spell to spell — exit prev then enter next
+  function enterNext() {
+    if (spell === 'W') transitionInW(finish);
+    else if (spell === 'C') transitionInC(finish);
+    else if (spell === 'X') transitionInX(finish);
+  }
+
+  if (prev === 'W') transitionOutW(enterNext);
+  else if (prev === 'C') transitionOutC(enterNext);
+  else if (prev === 'X') transitionOutX(enterNext);
+}
+
+/* ═══════════════════════════════════════════════════════
+   TAP
+═══════════════════════════════════════════════════════ */
+function tap(n) {
+  if (transitioning) return;
+  if (raised.has(n)) {
+    raised.delete(n);
+    setRing(n, false);
+  } else {
+    raised.add(n);
+    if (!isValidPrefix(raised)) {
+      raised.delete(n);
+      const svg = document.getElementById('card-svg');
+      svg.classList.add('shake');
+      setTimeout(() => svg.classList.remove('shake'), 290);
+      return;
+    }
+    setRing(n, true);
+  }
+  const spell = spellFor(raised);
+  if (spell !== current) switchTo(spell);
+  else updateRings();
+}
+
+document.querySelectorAll('.dot-hit').forEach(el => {
+  el.addEventListener('click', () => tap(+el.dataset.n));
+  el.addEventListener('touchend', e => { e.preventDefault(); tap(+el.dataset.n); });
+});
+</script>
+</body>
+</html>
