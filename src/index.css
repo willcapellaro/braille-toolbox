@@ -20,6 +20,13 @@ body,
   min-height: 100%;
 }
 
+html:fullscreen        .app-header-bar,
+html:-webkit-full-screen .app-header-bar,
+html:fullscreen        .app-footer-bar,
+html:-webkit-full-screen .app-footer-bar {
+  display: none !important;
+}
+
 body {
   font-family: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
 }

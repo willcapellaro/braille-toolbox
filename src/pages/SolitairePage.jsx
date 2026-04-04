@@ -1,5 +1,7 @@
-import { useReducer, useState } from 'react';
-import { Box, Button, Collapse, Divider, Typography } from '@mui/material';
+import { useEffect, useReducer, useRef, useState } from 'react';
+import { Box, Button, Collapse, Divider, IconButton, Typography } from '@mui/material';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExpand, faCompress } from '@fortawesome/free-solid-svg-icons';
 import { dotsToPattern } from '../content';
 import BrailleCell from '../lib/braille/BrailleCell';
 import { useSolitaireSettings } from '../context/SolitaireSettingsContext.jsx';
@@ -522,11 +524,83 @@ function Legend() {
   );
 }
 
+// ── Game select screen ────────────────────────────────────────────────────────
+
+const GAME_LIST = [
+  { id: 'klondike',     name: 'Klondike',      caption: 'The classic. Seven columns, draw one.',      pattern: '/patterns/klondike.svg',      available: true  },
+  { id: 'freecell',     name: 'FreeCell',       caption: 'All cards face-up. Every move counts.',      pattern: '/patterns/freecell.svg',      available: false },
+  { id: 'lady-jane',    name: 'Lady Jane',      caption: 'Patience for two full decks.',               pattern: '/patterns/lady-jane.svg',     available: false },
+  { id: 'forty-thieves',name: 'Forty Thieves',  caption: 'Two decks. Forty columns. Rarely won.',      pattern: '/patterns/forty-thieves.svg', available: false },
+];
+
+const SELECT_CARD_W = 120;
+const SELECT_CARD_H = 185;
+
+function GameSelectCard({ name, caption, pattern, available, onClick }) {
+  return (
+    <Box
+      onClick={available ? onClick : undefined}
+      sx={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1,
+        cursor: available ? 'pointer' : 'default',
+        opacity: available ? 1 : 0.45,
+        '&:hover .game-card-back': available ? { borderColor: 'text.primary' } : {},
+      }}
+    >
+      <Box
+        className="game-card-back"
+        sx={{
+          width: SELECT_CARD_W, height: SELECT_CARD_H,
+          border: '1.5px solid', borderColor: 'divider',
+          borderRadius: '8px', bgcolor: 'background.paper',
+          backgroundImage: `url('${pattern}')`,
+          backgroundSize: '20% 20%',
+          transition: 'border-color 0.15s',
+        }}
+      />
+      <Typography variant="subtitle2" sx={{ textAlign: 'center' }}>{name}</Typography>
+      <Typography variant="caption" sx={{ opacity: 0.6, textAlign: 'center', maxWidth: SELECT_CARD_W + 20 }}>
+        {caption}
+      </Typography>
+      {!available && <Typography variant="caption" sx={{ opacity: 0.35, fontSize: '10px' }}>Coming soon</Typography>}
+    </Box>
+  );
+}
+
+function GameSelectScreen({ onSelect }) {
+  return (
+    <Box sx={{ py: 3 }}>
+      <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
+        {GAME_LIST.map(g => (
+          <GameSelectCard key={g.id} {...g} onClick={() => onSelect(g.id)} />
+        ))}
+      </Box>
+    </Box>
+  );
+}
+
+// ── Page ──────────────────────────────────────────────────────────────────────
+
 export default function SolitairePage() {
   const [state, dispatch] = useReducer(reducer, null, deal);
+  const [gamePhase, setGamePhase] = useState('select'); // 'select' | 'playing'
   const [showLegend, setShowLegend] = useState(false);
+  const [showRules, setShowRules] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const containerRef = useRef(null);
   const sol = useSolitaireSettings();
   const won = isWon(state.foundations);
+
+  useEffect(() => {
+    const handler = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener('fullscreenchange', handler);
+    return () => document.removeEventListener('fullscreenchange', handler);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+    else document.exitFullscreen();
+  };
 
   const wasteTop = state.waste[state.waste.length - 1] ?? null;
   const wasteSelected = state.selected?.source === 'waste';
@@ -540,18 +614,21 @@ export default function SolitairePage() {
     ? state.foundations.map(pile => canPlaceOnFoundation(movingCard, pile))
     : Array(4).fill(false);
 
+  if (gamePhase === 'select') {
+    return <GameSelectScreen onSelect={() => { dispatch({ type: 'DEAL' }); setGamePhase('playing'); }} />;
+  }
+
   return (
-    <Box sx={{ pb: 4 }}>
-      <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 2, mb: 2, flexWrap: 'wrap' }}>
-        <Typography variant="h5" component="h1">Braille Solitaire</Typography>
+    <Box ref={containerRef} sx={{ pb: 4 }}>
+      {/* ── Controls row ── */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, flexWrap: 'wrap' }}>
         <Button size="small" variant="outlined" onClick={() => dispatch({ type: 'DEAL' })}>New game</Button>
-        <Button size="small" onClick={() => setShowLegend(v => !v)} sx={{ opacity: 0.6 }}>
-          {showLegend ? 'Hide legend' : 'Legend'}
-        </Button>
+        <Button size="small" sx={{ opacity: 0.6 }} onClick={() => setGamePhase('select')}>Games</Button>
+        <Box sx={{ flex: 1 }} />
+        <IconButton size="small" onClick={toggleFullscreen} title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'} sx={{ color: 'text.primary' }}>
+          <FontAwesomeIcon icon={isFullscreen ? faCompress : faExpand} style={{ fontSize: '0.85rem' }} />
+        </IconButton>
       </Box>
-      <Collapse in={showLegend}>
-        <Legend />
-      </Collapse>
 
       {won && (
         <Box sx={{ mb: 2, p: 1.5, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
@@ -561,26 +638,19 @@ export default function SolitairePage() {
 
       {/* ── Top row: stock / waste / foundations ── */}
       <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
-
-        {/* Stock */}
         <Box onClick={() => dispatch({ type: 'DRAW' })} sx={{ cursor: 'pointer' }}>
           {state.stock.length > 0
             ? <PlayingCard card={state.stock[state.stock.length - 1]} faceDown sol={sol} />
             : <EmptySlot onClick={() => dispatch({ type: 'DRAW' })} />
           }
         </Box>
-
-        {/* Waste */}
         <Box onClick={() => wasteTop && dispatch({ type: 'SELECT_WASTE' })}>
           {wasteTop
             ? <PlayingCard card={wasteTop} selected={wasteSelected} sol={sol} onClick={() => dispatch({ type: 'SELECT_WASTE' })} />
             : <EmptySlot />
           }
         </Box>
-
         <Box sx={{ flex: 1, minWidth: 8 }} />
-
-        {/* Foundations */}
         {state.foundations.map((pile, i) => (
           <Box key={i} onClick={() => dispatch({ type: 'SELECT_FOUNDATION', pile: i })}>
             {pile.length > 0
@@ -600,16 +670,25 @@ export default function SolitairePage() {
         ))}
       </Box>
 
-      <Divider sx={{ mt: 2, mb: 2 }} />
-
-      {/* ── Rules ── */}
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75 }}>
-        <Typography variant="subtitle2">How to play</Typography>
-        <Typography variant="body2"><strong>Goal.</strong> Move all 52 cards onto the four foundation piles, one per suit, built up from Ace to King.</Typography>
-        <Typography variant="body2"><strong>Tableau.</strong> Build columns down in alternating colors (red on black, black on red). Click a face-down card to flip it. Click a face-up card to select it, then click a valid destination to move it — along with any cards stacked below. Only a King may start an empty column.</Typography>
-        <Typography variant="body2"><strong>Stock & waste.</strong> Click the stock (left) to turn over one card at a time onto the waste pile. The top waste card is always available to play. When the stock runs out, click the empty slot to flip the waste back.</Typography>
-        <Typography variant="body2"><strong>Foundations.</strong> Each foundation starts with an Ace and builds up by suit (A → 2 → … → Q → K). Click a selected card, then click the matching foundation to place it.</Typography>
+      {/* ── Bottom: legend + rules toggles ── */}
+      <Divider sx={{ mt: 2, mb: 1 }} />
+      <Box sx={{ display: 'flex', gap: 1, mb: 0.5 }}>
+        <Button size="small" sx={{ opacity: 0.6 }} onClick={() => setShowLegend(v => !v)}>
+          {showLegend ? 'Hide legend' : 'Legend'}
+        </Button>
+        <Button size="small" sx={{ opacity: 0.6 }} onClick={() => setShowRules(v => !v)}>
+          {showRules ? 'Hide rules' : 'Rules'}
+        </Button>
       </Box>
+      <Collapse in={showLegend}><Legend /></Collapse>
+      <Collapse in={showRules}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75, pt: 1 }}>
+          <Typography variant="body2"><strong>Goal.</strong> Move all 52 cards onto the four foundation piles, one per suit, built up from Ace to King.</Typography>
+          <Typography variant="body2"><strong>Tableau.</strong> Build columns down in alternating colors (red on black, black on red). Click a face-down card to flip it. Click a face-up card to select it, then click a valid destination to move it — along with any cards stacked below. Only a King may start an empty column.</Typography>
+          <Typography variant="body2"><strong>Stock & waste.</strong> Click the stock (left) to turn over one card at a time onto the waste pile. The top waste card is always available to play. When the stock runs out, click the empty slot to flip the waste back.</Typography>
+          <Typography variant="body2"><strong>Foundations.</strong> Each foundation starts with an Ace and builds up by suit (A → 2 → … → Q → K). Click a selected card, then click the matching foundation to place it.</Typography>
+        </Box>
+      </Collapse>
     </Box>
   );
 }

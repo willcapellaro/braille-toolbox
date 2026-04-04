@@ -14,6 +14,7 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
+import { TypeAnimation } from 'react-type-animation';
 import { Link as RouterLink, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { SolitaireSettingsProvider, useSolitaireSettings } from './context/SolitaireSettingsContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -225,6 +226,9 @@ export default function App() {
   );
 }
 
+const BASE_TITLE = 'Braille Toolbox';
+const SOL_TITLE  = 'Braille Solitaire';
+
 function AppShell() {
   const location = useLocation();
   const prefersDark = useMediaQuery('(prefers-color-scheme: dark)');
@@ -346,16 +350,42 @@ function AppShell() {
     } catch {}
   };
 
+  const isSolitaire = location.pathname.startsWith('/games/solitaire');
+
+  // animState drives which TypeAnimation sequence to play; changing it remounts the component.
+  const [animState, setAnimState] = useState(() => isSolitaire ? 'init-sol' : 'init-base');
+  useEffect(() => {
+    setAnimState(isSolitaire ? 'to-sol' : 'to-base');
+  }, [isSolitaire]);
+
+  const titleSequences = {
+    'init-base': [BASE_TITLE],
+    'init-sol':  [BASE_TITLE, 300, SOL_TITLE],
+    'to-sol':    [BASE_TITLE, 300, SOL_TITLE],
+    'to-base':   [SOL_TITLE,  300, BASE_TITLE],
+  };
+
   // ── Render ──
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Container maxWidth="lg" sx={{ py: 2, minWidth: 0 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-          <Typography variant="h5" component="p">
+      <Container maxWidth="lg" sx={{
+        py: 2, minWidth: 0,
+        '@media (min-width: 2560px)': { maxWidth: 1600, px: 6 },
+        '@media (min-width: 3840px)': { maxWidth: 2200, px: 10 },
+      }}>
+        <Box className="app-header-bar" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+          <Typography variant="h5" component="p" sx={{ minWidth: '12ch' }}>
             <MuiLink component={RouterLink} to="/" underline="none" color="inherit">
-              Braille Toolbox
+              <TypeAnimation
+                key={animState}
+                sequence={titleSequences[animState]}
+                speed={65}
+                deletionSpeed={75}
+                cursor={false}
+                repeat={0}
+              />
             </MuiLink>
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -455,6 +485,7 @@ function AppShell() {
 
         <Box
           component="footer"
+          className="app-footer-bar"
           sx={{
             borderTop: 1,
             borderColor: 'divider',
