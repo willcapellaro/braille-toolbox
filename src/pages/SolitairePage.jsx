@@ -597,6 +597,13 @@ export default function SolitairePage() {
     return () => document.removeEventListener('fullscreenchange', handler);
   }, []);
 
+  useEffect(() => {
+    const cl = document.documentElement.classList;
+    if (sol?.noScroll === 'on') cl.add('sol-no-scroll');
+    else cl.remove('sol-no-scroll');
+    return () => cl.remove('sol-no-scroll');
+  }, [sol?.noScroll]);
+
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) document.documentElement.requestFullscreen();
     else document.exitFullscreen();
@@ -619,7 +626,7 @@ export default function SolitairePage() {
   }
 
   return (
-    <Box ref={containerRef} sx={{ pb: 4 }}>
+    <Box ref={containerRef} className={sol?.noSelect === 'on' ? 'sol-no-select' : undefined} sx={{ pb: 4 }}>
       {/* ── Controls row ── */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, flexWrap: 'wrap' }}>
         <Button size="small" variant="outlined" onClick={() => dispatch({ type: 'DEAL' })}>New game</Button>

@@ -11,6 +11,8 @@ const DEFAULTS = {
   unraisedDots: 'never',
   suitColor:    'off',
   dropHints:    'on',
+  noSelect:     'on',
+  noScroll:     'off',
 };
 
 function load(key, def) {
@@ -29,6 +31,8 @@ export function SolitaireSettingsProvider({ children }) {
   const [unraisedDots, setUnraisedDots] = useState(() => load('bt-sol-unraised',   DEFAULTS.unraisedDots));
   const [suitColor,    setSuitColor]    = useState(() => load('bt-sol-suit',       DEFAULTS.suitColor));
   const [dropHints,    setDropHints]    = useState(() => load('bt-sol-drophints',  DEFAULTS.dropHints));
+  const [noSelect,     setNoSelect]     = useState(() => load('bt-sol-noselect',   DEFAULTS.noSelect));
+  const [noScroll,     setNoScroll]     = useState(() => load('bt-sol-noscroll',   DEFAULTS.noScroll));
 
   const set = (setter, key) => (_, v) => {
     if (v == null) return;
@@ -45,6 +49,8 @@ export function SolitaireSettingsProvider({ children }) {
       unraisedDots, setUnraisedDots: set(setUnraisedDots, 'bt-sol-unraised'),
       suitColor,    setSuitColor:    set(setSuitColor,    'bt-sol-suit'),
       dropHints,    setDropHints:    set(setDropHints,    'bt-sol-drophints'),
+      noSelect,     setNoSelect:     set(setNoSelect,     'bt-sol-noselect'),
+      noScroll,     setNoScroll:     set(setNoScroll,     'bt-sol-noscroll'),
     }}>
       {children}
     </SolitaireSettingsContext.Provider>

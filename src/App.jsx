@@ -210,6 +210,16 @@ function SolitairePopover() {
             <ToggleButton value="off">Off</ToggleButton>
             <ToggleButton value="on">On</ToggleButton>
           </ToggleButtonGroup>
+          <Typography variant="caption">Text selection</Typography>
+          <ToggleButtonGroup exclusive size="small" value={sol.noSelect} onChange={sol.setNoSelect}>
+            <ToggleButton value="off">Allow</ToggleButton>
+            <ToggleButton value="on">Disable</ToggleButton>
+          </ToggleButtonGroup>
+          <Typography variant="caption">Page scroll</Typography>
+          <ToggleButtonGroup exclusive size="small" value={sol.noScroll} onChange={sol.setNoScroll}>
+            <ToggleButton value="off">Allow</ToggleButton>
+            <ToggleButton value="on">Disable</ToggleButton>
+          </ToggleButtonGroup>
         </Box>
       </Popover>
     </>

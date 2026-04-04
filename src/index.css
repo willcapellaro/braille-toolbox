@@ -20,11 +20,25 @@ body,
   min-height: 100%;
 }
 
-html:fullscreen        .app-header-bar,
+/* In fullscreen, hide the site header/footer but keep the game controls row */
+html:fullscreen         .app-header-bar,
 html:-webkit-full-screen .app-header-bar,
-html:fullscreen        .app-footer-bar,
+html:fullscreen         .app-footer-bar,
 html:-webkit-full-screen .app-footer-bar {
   display: none !important;
+}
+
+/* Disable text selection when game setting is active */
+.sol-no-select {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Disable scroll when game setting is active */
+html.sol-no-scroll,
+html.sol-no-scroll body {
+  overflow: hidden !important;
+  touch-action: none;
 }
 
 body {
