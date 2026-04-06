@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Container,
   CssBaseline,
   IconButton,
@@ -13,12 +14,13 @@ import {
   createTheme,
   useMediaQuery,
 } from '@mui/material';
-import { useEffect, useMemo, useState } from 'react';
-import { TypeAnimation } from 'react-type-animation';
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
+
 import { Link as RouterLink, Navigate, Route, Routes, useLocation } from 'react-router-dom';
-import { SolitaireSettingsProvider, useSolitaireSettings } from './context/SolitaireSettingsContext';
+import { SolitaireSettingsProvider } from './context/SolitaireSettingsContext';
+import SolitaireSettingsButton from './components/SolitaireSettingsButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSun, faMoon, faCircleHalfStroke, faSliders, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faSun, faMoon, faCircleHalfStroke, faSliders, faXmark, faExpand, faCompress } from '@fortawesome/free-solid-svg-icons';
 import AboutPage from './pages/AboutPage';
 import ArchivePage from './pages/ArchivePage';
 import QuickRefPage from './pages/QuickRefPage';
@@ -145,86 +147,18 @@ function ColorSwatch({ value, onChange, title }) {
   );
 }
 
-// ── Solitaire settings popover (rendered inside AppShell so it can use context) ──
 
-function SolitairePopover() {
-  const [anchor, setAnchor] = useState(null);
-  const sol = useSolitaireSettings();
-  if (!sol) return null;
+// ── Site settings context (lets SolitairePage open the sliders popover) ──────
 
-  return (
-    <>
-      <IconButton size="small" onClick={e => setAnchor(e.currentTarget)} sx={{ color: 'text.primary' }} title="Card settings">
-        ♠
-      </IconButton>
-      <Popover
-        open={Boolean(anchor)}
-        anchorEl={anchor}
-        onClose={() => setAnchor(null)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-      >
-        <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 1.5, minWidth: 240 }}>
-          <Typography variant="caption">Card outline</Typography>
-          <ToggleButtonGroup exclusive size="small" value={sol.cardOutline} onChange={sol.setCardOutline}>
-            <ToggleButton value="never">Never</ToggleButton>
-            <ToggleButton value="hover">Hover</ToggleButton>
-            <ToggleButton value="always">Always</ToggleButton>
-          </ToggleButtonGroup>
-          <Typography variant="caption">Cell bounds</Typography>
-          <ToggleButtonGroup exclusive size="small" value={sol.cellBounds} onChange={sol.setCellBounds}>
-            <ToggleButton value="never">Never</ToggleButton>
-            <ToggleButton value="hover">Hover</ToggleButton>
-            <ToggleButton value="always">Always</ToggleButton>
-          </ToggleButtonGroup>
-          <Typography variant="caption">Braille dots</Typography>
-          <ToggleButtonGroup exclusive size="small" value={sol.brailleDots} onChange={sol.setBrailleDots}>
-            <ToggleButton value="hover">Hover</ToggleButton>
-            <ToggleButton value="always">Always</ToggleButton>
-          </ToggleButtonGroup>
-          <Typography variant="caption">Unraised dots</Typography>
-          <ToggleButtonGroup exclusive size="small" value={sol.unraisedDots} onChange={sol.setUnraisedDots}>
-            <ToggleButton value="never">Never</ToggleButton>
-            <ToggleButton value="hover">Hover</ToggleButton>
-            <ToggleButton value="always">Always</ToggleButton>
-          </ToggleButtonGroup>
-          <Typography variant="caption">Print overlay</Typography>
-          <ToggleButtonGroup exclusive size="small" value={sol.printOverlay} onChange={sol.setPrintOverlay}>
-            <ToggleButton value="never">Never</ToggleButton>
-            <ToggleButton value="hover">Hover</ToggleButton>
-          </ToggleButtonGroup>
-          {sol.printOverlay !== 'never' && (<>
-            <Typography variant="caption">Print style</Typography>
-            <ToggleButtonGroup exclusive size="small" value={sol.printStyle} onChange={sol.setPrintStyle}>
-              <ToggleButton value="exact">Exact</ToggleButton>
-              <ToggleButton value="ortho">Ortho</ToggleButton>
-            </ToggleButtonGroup>
-          </>)}
-          <Typography variant="caption">Suit color</Typography>
-          <ToggleButtonGroup exclusive size="small" value={sol.suitColor} onChange={sol.setSuitColor}>
-            <ToggleButton value="off">Off</ToggleButton>
-            <ToggleButton value="on">On</ToggleButton>
-          </ToggleButtonGroup>
-          <Typography variant="caption">Drop hints</Typography>
-          <ToggleButtonGroup exclusive size="small" value={sol.dropHints} onChange={sol.setDropHints}>
-            <ToggleButton value="off">Off</ToggleButton>
-            <ToggleButton value="on">On</ToggleButton>
-          </ToggleButtonGroup>
-          <Typography variant="caption">Text selection</Typography>
-          <ToggleButtonGroup exclusive size="small" value={sol.noSelect} onChange={sol.setNoSelect}>
-            <ToggleButton value="off">Allow</ToggleButton>
-            <ToggleButton value="on">Disable</ToggleButton>
-          </ToggleButtonGroup>
-          <Typography variant="caption">Page scroll</Typography>
-          <ToggleButtonGroup exclusive size="small" value={sol.noScroll} onChange={sol.setNoScroll}>
-            <ToggleButton value="off">Allow</ToggleButton>
-            <ToggleButton value="on">Disable</ToggleButton>
-          </ToggleButtonGroup>
-        </Box>
-      </Popover>
-    </>
-  );
-}
+export const SiteSettingsContext = createContext(null);
+export function useSiteSettings() { return useContext(SiteSettingsContext); }
+
+const GAME_NAME_MAP = {
+  klondike: 'Klondike',
+  freecell: 'FreeCell',
+  'lady-jane': 'Lady Jane',
+  'forty-thieves': 'Forty Thieves',
+};
 
 // ── App ───────────────────────────────────────────────────────────────────────
 
@@ -238,6 +172,40 @@ export default function App() {
 
 const BASE_TITLE = 'Braille Toolbox';
 const SOL_TITLE  = 'Braille Solitaire';
+
+// Custom typewriter: never remounts; on target change, backspaces to the common prefix then retypes.
+function useTypewriter(target, typeMs = 55, deleteMs = 40, initialDelay = 150) {
+  const [displayed, setDisplayed] = useState('');
+  const displayedRef = useRef('');
+  const targetRef = useRef(target);
+  const timerRef = useRef(null);
+  const startedRef = useRef(false);
+
+  useEffect(() => {
+    targetRef.current = target;
+    clearTimeout(timerRef.current);
+    function tick() {
+      const cur = displayedRef.current;
+      const tgt = targetRef.current;
+      if (cur === tgt) return;
+      if (cur.length > 0 && !tgt.startsWith(cur)) {
+        displayedRef.current = cur.slice(0, -1);
+        setDisplayed(displayedRef.current);
+        timerRef.current = setTimeout(tick, deleteMs);
+      } else if (cur.length < tgt.length) {
+        displayedRef.current = tgt.slice(0, cur.length + 1);
+        setDisplayed(displayedRef.current);
+        timerRef.current = setTimeout(tick, typeMs);
+      }
+    }
+    const delay = startedRef.current ? 0 : initialDelay;
+    startedRef.current = true;
+    timerRef.current = setTimeout(tick, delay);
+    return () => clearTimeout(timerRef.current);
+  }, [target, typeMs, deleteMs, initialDelay]);
+
+  return displayed;
+}
 
 function AppShell() {
   const location = useLocation();
@@ -282,9 +250,6 @@ function AppShell() {
   }, [modeSetting, prefersDark, customPaper]);
 
   // Effective colors sent to MUI + CSS vars.
-  // custom → use saved values directly.
-  // auto/light/dark + saved custom → hue-skew the default toward the custom hue.
-  // no custom → plain defaults.
   const effectiveInk   = modeSetting === 'custom' ? (customInk   || INK[resolvedMode])   : INK[resolvedMode];
   const effectivePaper = modeSetting === 'custom' ? (customPaper || PAPER[resolvedMode]) : PAPER[resolvedMode];
 
@@ -300,7 +265,6 @@ function AppShell() {
   useEffect(() => { document.documentElement.setAttribute('data-type-size', typeSize); }, [typeSize]);
   useEffect(() => { document.documentElement.setAttribute('data-font', font); }, [font]);
 
-  // Push effective colors into CSS vars so braille cells and other non-MUI elements stay in sync.
   useEffect(() => {
     document.documentElement.style.setProperty('--bt-ink', effectiveInk);
     document.documentElement.style.setProperty('--bt-paper', effectivePaper);
@@ -362,22 +326,39 @@ function AppShell() {
 
   const isSolitaire = location.pathname.startsWith('/games/solitaire');
 
-  // animState drives which TypeAnimation sequence to play; changing it remounts the component.
-  const [animState, setAnimState] = useState(() => isSolitaire ? 'init-sol' : 'init-base');
+  const [solPhase, setSolPhase] = useState('select'); // 'select' | 'playing'
+  const [solGameId, setSolGameId] = useState('klondike');
+
+  // Reset to select screen whenever user leaves the solitaire route
   useEffect(() => {
-    setAnimState(isSolitaire ? 'to-sol' : 'to-base');
+    if (!isSolitaire) setSolPhase('select');
   }, [isSolitaire]);
 
-  const titleSequences = {
-    'init-base': [BASE_TITLE],
-    'init-sol':  [BASE_TITLE, 300, SOL_TITLE],
-    'to-sol':    [BASE_TITLE, 300, SOL_TITLE],
-    'to-base':   [SOL_TITLE,  300, BASE_TITLE],
+  const gameName = GAME_NAME_MAP[solGameId] ?? 'Solitaire';
+  const titleTarget = !isSolitaire ? BASE_TITLE
+    : solPhase === 'playing' ? `Braille ${gameName}`
+    : 'Braille Games';
+  const titleText = useTypewriter(titleTarget);
+
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  useEffect(() => {
+    const handler = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener('fullscreenchange', handler);
+    return () => document.removeEventListener('fullscreenchange', handler);
+  }, []);
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+    else document.exitFullscreen();
   };
 
   // ── Render ──
 
   return (
+    <SiteSettingsContext.Provider value={{
+      openSiteSettings: (el) => setPopoverAnchor(el),
+      solPhase, setSolPhase,
+      solGameId, setSolGameId,
+    }}>
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Container maxWidth="lg" sx={{
@@ -386,21 +367,28 @@ function AppShell() {
         '@media (min-width: 3840px)': { maxWidth: 2200, px: 10 },
       }}>
         <Box className="app-header-bar" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-          <Typography variant="h5" component="p" sx={{ minWidth: '12ch' }}>
-            <MuiLink component={RouterLink} to="/" underline="none" color="inherit">
-              <TypeAnimation
-                key={animState}
-                sequence={titleSequences[animState]}
-                speed={65}
-                deletionSpeed={75}
-                cursor={false}
-                repeat={0}
-              />
-            </MuiLink>
-          </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-            {location.pathname.startsWith('/games/solitaire') && <SolitairePopover />}
-            <IconButton size="small" onClick={e => setPopoverAnchor(e.currentTarget)} sx={{ color: 'text.primary' }}>
+          {/* Left: title + optional All Games button */}
+          <Box className="app-header-title" sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: '16ch' }}>
+            <Typography variant="h5" component="p">
+              <MuiLink component={RouterLink} to="/" underline="none" color="inherit">
+                {titleText}
+              </MuiLink>
+            </Typography>
+            {isSolitaire && solPhase === 'playing' && (
+              <Button size="small" sx={{ opacity: 0.6, flexShrink: 0 }} onClick={() => setSolPhase('select')}>
+                All Games
+              </Button>
+            )}
+          </Box>
+          {/* Right: icons — fullscreen + game settings only on solitaire, site settings always */}
+          <Box className="app-header-icons" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            {isSolitaire && (
+              <IconButton size="small" onClick={toggleFullscreen} sx={{ color: 'text.primary' }} title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}>
+                <FontAwesomeIcon icon={isFullscreen ? faCompress : faExpand} />
+              </IconButton>
+            )}
+            {isSolitaire && <SolitaireSettingsButton />}
+            <IconButton size="small" onClick={e => setPopoverAnchor(e.currentTarget)} sx={{ color: 'text.primary' }} title="Site settings">
               <FontAwesomeIcon icon={faSliders} />
             </IconButton>
           </Box>
@@ -518,5 +506,6 @@ function AppShell() {
         </Box>
       </Container>
     </ThemeProvider>
+    </SiteSettingsContext.Provider>
   );
 }

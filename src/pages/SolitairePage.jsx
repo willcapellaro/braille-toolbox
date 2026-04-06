@@ -1,10 +1,9 @@
-import { useEffect, useReducer, useRef, useState } from 'react';
-import { Box, Button, Collapse, Divider, IconButton, Typography } from '@mui/material';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExpand, faCompress } from '@fortawesome/free-solid-svg-icons';
+import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { Box, Button, Collapse, Divider, ThemeProvider, Typography, createTheme, useTheme } from '@mui/material';
 import { dotsToPattern } from '../content';
 import BrailleCell from '../lib/braille/BrailleCell';
 import { useSolitaireSettings } from '../context/SolitaireSettingsContext.jsx';
+import { useSiteSettings } from '../App.jsx';
 
 // ── Card data ─────────────────────────────────────────────────────────────────
 
@@ -207,6 +206,9 @@ function reducer(state, action) {
     case 'DEAL':
       return deal();
 
+    case 'LOAD':
+      return { ...action.state, selected: null };
+
     default:
       return state;
   }
@@ -327,7 +329,7 @@ function PlayingCard({ card, selected, onClick, faceDown, sol, isValidTarget }) 
       border: '1.5px solid',
       borderColor: selected ? 'primary.main' : 'divider',
       borderRadius: '6px',
-      bgcolor: selected ? 'action.selected' : 'background.paper',
+      bgcolor: selected ? 'action.selected' : (sol?.cardBg === 'white' ? '#ffffff' : 'background.paper'),
       outline: selected ? '2px solid' : 'none',
       outlineColor: 'primary.main',
       outlineOffset: '1px',
@@ -357,7 +359,7 @@ function PlayingCard({ card, selected, onClick, faceDown, sol, isValidTarget }) 
 
 // EmptySlot shows a braille cell for the suit hint, or nothing.
 // suitDots: dot string to show (e.g. '14' for clubs), or null for blank.
-function EmptySlot({ onClick, suitDots, isValidTarget }) {
+function EmptySlot({ onClick, suitDots, isValidTarget, feltBg }) {
   const dimStyle = { '--cell-dot-color': 'var(--bt-ink)', '--cell-border-color': 'transparent', opacity: 0.2 };
   return (
     <Box onClick={onClick} sx={{
@@ -368,6 +370,7 @@ function EmptySlot({ onClick, suitDots, isValidTarget }) {
       alignItems: 'flex-start', justifyContent: 'flex-end',
       padding: `${CARD_PAD}px`, boxSizing: 'border-box',
       cursor: onClick ? 'pointer' : 'default',
+      ...(feltBg && { bgcolor: 'rgba(255,255,255,0.8)' }),
       ...(isValidTarget && { '&:hover': { outline: '2px dashed', outlineColor: '#4caf50', outlineOffset: '2px' } }),
     }}>
       {suitDots && (
@@ -533,46 +536,58 @@ const GAME_LIST = [
   { id: 'forty-thieves',name: 'Forty Thieves',  caption: 'Two decks. Forty columns. Rarely won.',      pattern: '/patterns/forty-thieves.svg', available: false },
 ];
 
+// ── Autosave ──────────────────────────────────────────────────────────────────
+
+const saveKey = (id) => `bt-sol-save-${id}`;
+function hasSave(id) { try { return !!localStorage.getItem(saveKey(id)); } catch { return false; } }
+function loadSave(id) { try { const r = localStorage.getItem(saveKey(id)); return r ? JSON.parse(r) : null; } catch { return null; } }
+function clearSave(id) { try { localStorage.removeItem(saveKey(id)); } catch {} }
+
 const SELECT_CARD_W = 120;
 const SELECT_CARD_H = 185;
 
-function GameSelectCard({ name, caption, pattern, available, onClick }) {
+function GameSelectCard({ name, caption, pattern, available, savedGame, onNew, onResume }) {
   return (
-    <Box
-      onClick={available ? onClick : undefined}
-      sx={{
-        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1,
-        cursor: available ? 'pointer' : 'default',
-        opacity: available ? 1 : 0.45,
-        '&:hover .game-card-back': available ? { borderColor: 'text.primary' } : {},
-      }}
-    >
-      <Box
-        className="game-card-back"
-        sx={{
-          width: SELECT_CARD_W, height: SELECT_CARD_H,
-          border: '1.5px solid', borderColor: 'divider',
-          borderRadius: '8px', bgcolor: 'background.paper',
-          backgroundImage: `url('${pattern}')`,
-          backgroundSize: '20% 20%',
-          transition: 'border-color 0.15s',
-        }}
-      />
+    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1, opacity: available ? 1 : 0.45 }}>
+      <Box sx={{
+        width: SELECT_CARD_W, height: SELECT_CARD_H,
+        border: '1.5px solid', borderColor: 'divider',
+        borderRadius: '8px', bgcolor: 'background.paper',
+        backgroundImage: `url('${pattern}')`,
+        backgroundSize: '20% 20%',
+      }} />
       <Typography variant="subtitle2" sx={{ textAlign: 'center' }}>{name}</Typography>
       <Typography variant="caption" sx={{ opacity: 0.6, textAlign: 'center', maxWidth: SELECT_CARD_W + 20 }}>
         {caption}
       </Typography>
-      {!available && <Typography variant="caption" sx={{ opacity: 0.35, fontSize: '10px' }}>Coming soon</Typography>}
+      {available ? (
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, width: SELECT_CARD_W }}>
+          {savedGame && (
+            <Button size="small" variant="contained" fullWidth onClick={onResume}>Resume Game</Button>
+          )}
+          <Button size="small" variant={savedGame ? 'outlined' : 'contained'} fullWidth onClick={onNew}>
+            New Game
+          </Button>
+        </Box>
+      ) : (
+        <Typography variant="caption" sx={{ opacity: 0.35, fontSize: '10px' }}>Coming soon</Typography>
+      )}
     </Box>
   );
 }
 
-function GameSelectScreen({ onSelect }) {
+function GameSelectScreen({ onNew, onResume }) {
   return (
     <Box sx={{ py: 3 }}>
       <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
         {GAME_LIST.map(g => (
-          <GameSelectCard key={g.id} {...g} onClick={() => onSelect(g.id)} />
+          <GameSelectCard
+            key={g.id}
+            {...g}
+            savedGame={g.available && hasSave(g.id)}
+            onNew={() => onNew(g.id)}
+            onResume={() => onResume(g.id)}
+          />
         ))}
       </Box>
     </Box>
@@ -581,21 +596,26 @@ function GameSelectScreen({ onSelect }) {
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
+// ── Felt ──────────────────────────────────────────────────────────────────────
+
+// These overlay the felt.jpg texture with a color blend.
+// mix-blend-mode: color applies hue+saturation while preserving the texture's luminosity.
+const FELT_OVERLAY = {
+  green: '#2a6b2a',
+  red:   '#8b2020',
+  blue:  '#1a3a8b',
+  black: '#1a1a1a',
+};
+
+
 export default function SolitairePage() {
   const [state, dispatch] = useReducer(reducer, null, deal);
-  const [gamePhase, setGamePhase] = useState('select'); // 'select' | 'playing'
+  const { solPhase: gamePhase, setSolPhase: setGamePhase, solGameId: gameId, setSolGameId: setGameId } = useSiteSettings();
   const [showLegend, setShowLegend] = useState(false);
   const [showRules, setShowRules] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const containerRef = useRef(null);
   const sol = useSolitaireSettings();
   const won = isWon(state.foundations);
-
-  useEffect(() => {
-    const handler = () => setIsFullscreen(!!document.fullscreenElement);
-    document.addEventListener('fullscreenchange', handler);
-    return () => document.removeEventListener('fullscreenchange', handler);
-  }, []);
 
   useEffect(() => {
     const cl = document.documentElement.classList;
@@ -604,10 +624,49 @@ export default function SolitairePage() {
     return () => cl.remove('sol-no-scroll');
   }, [sol?.noScroll]);
 
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) document.documentElement.requestFullscreen();
-    else document.exitFullscreen();
-  };
+  const feltOn = sol?.feltColor && sol.feltColor !== 'off';
+
+  // Felt: cursor-proximity glow — overrides --sol-ink on the container toward #FFD700 when close
+  useEffect(() => {
+    if (!feltOn) return;
+    const root = containerRef.current;
+    if (!root) return;
+    const onMove = (e) => {
+      // proximity: 0 = cursor at viewport edge, 1 = cursor far from any edge
+      const t = Math.min(1, Math.min(e.clientX, e.clientY,
+        window.innerWidth - e.clientX, window.innerHeight - e.clientY) / 160);
+      if (t < 0.98) {
+        // Near = #FFD700, far = #D4AF37 (let animation run by removing override)
+        const r = Math.round(0xFF + (0xD4 - 0xFF) * t);
+        const g = Math.round(0xD7 + (0xAF - 0xD7) * t);
+        const b = Math.round(0x00 + (0x37 - 0x00) * t);
+        root.style.setProperty('--sol-ink', `rgb(${r},${g},${b})`);
+      } else {
+        root.style.removeProperty('--sol-ink');
+      }
+    };
+    const onLeave = () => root.style.removeProperty('--sol-ink');
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseleave', onLeave);
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseleave', onLeave);
+      root.style.removeProperty('--sol-ink');
+    };
+  }, [feltOn]);
+
+  useEffect(() => {
+    const cl = document.documentElement.classList;
+    if (feltOn) cl.add('sol-felt-on');
+    else cl.remove('sol-felt-on');
+    return () => cl.remove('sol-felt-on');
+  }, [feltOn]);
+
+  // Autosave on every move while playing
+  useEffect(() => {
+    if (gamePhase !== 'playing') return;
+    try { localStorage.setItem(saveKey(gameId), JSON.stringify(state)); } catch {}
+  }, [state, gamePhase, gameId]);
 
   const wasteTop = state.waste[state.waste.length - 1] ?? null;
   const wasteSelected = state.selected?.source === 'waste';
@@ -621,81 +680,130 @@ export default function SolitairePage() {
     ? state.foundations.map(pile => canPlaceOnFoundation(movingCard, pile))
     : Array(4).fill(false);
 
-  if (gamePhase === 'select') {
-    return <GameSelectScreen onSelect={() => { dispatch({ type: 'DEAL' }); setGamePhase('playing'); }} />;
-  }
+  const feltOverlayColor = feltOn ? FELT_OVERLAY[sol.feltColor] : null;
+  const parentTheme = useTheme();
+  const feltTheme = useMemo(() => feltOn ? createTheme({
+    ...parentTheme,
+    palette: {
+      ...parentTheme.palette,
+      primary:    { main: '#D4AF37' },
+      secondary:  { main: '#D4AF37' },
+      text:       { primary: '#D4AF37', secondary: '#D4AF37', disabled: '#D4AF37' },
+      divider:    '#D4AF37',
+      action:     { ...parentTheme.palette.action, active: '#D4AF37' },
+    },
+  }) : null, [feltOn, parentTheme]);
 
-  return (
-    <Box ref={containerRef} className={sol?.noSelect === 'on' ? 'sol-no-select' : undefined} sx={{ pb: 4 }}>
-      {/* ── Controls row ── */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, flexWrap: 'wrap' }}>
-        <Button size="small" variant="outlined" onClick={() => dispatch({ type: 'DEAL' })}>New game</Button>
-        <Button size="small" sx={{ opacity: 0.6 }} onClick={() => setGamePhase('select')}>Games</Button>
-        <Box sx={{ flex: 1 }} />
-        <IconButton size="small" onClick={toggleFullscreen} title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'} sx={{ color: 'text.primary' }}>
-          <FontAwesomeIcon icon={isFullscreen ? faCompress : faExpand} style={{ fontSize: '0.85rem' }} />
-        </IconButton>
-      </Box>
-
-      {won && (
-        <Box sx={{ mb: 2, p: 1.5, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
-          <Typography variant="body1">You won!</Typography>
+  const outerContent = (
+    <Box
+      ref={containerRef}
+      className={[
+        sol?.noSelect === 'on' ? 'sol-no-select' : '',
+        feltOn ? 'sol-felt-active' : '',
+      ].filter(Boolean).join(' ') || undefined}
+      sx={{ pb: 4, position: 'relative' }}
+    >
+      {/* Felt background: texture + hue overlay */}
+      {feltOn && (
+        <Box sx={{
+          position: 'fixed', inset: 0, zIndex: -1, pointerEvents: 'none',
+          backgroundImage: `url('/patterns/felt.jpg')`,
+          backgroundSize: '60px',
+        }}>
+          <Box sx={{ position: 'absolute', inset: 0, bgcolor: feltOverlayColor, mixBlendMode: 'color' }} />
         </Box>
       )}
 
-      {/* ── Top row: stock / waste / foundations ── */}
-      <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
-        <Box onClick={() => dispatch({ type: 'DRAW' })} sx={{ cursor: 'pointer' }}>
-          {state.stock.length > 0
-            ? <PlayingCard card={state.stock[state.stock.length - 1]} faceDown sol={sol} />
-            : <EmptySlot onClick={() => dispatch({ type: 'DRAW' })} />
-          }
-        </Box>
-        <Box onClick={() => wasteTop && dispatch({ type: 'SELECT_WASTE' })}>
-          {wasteTop
-            ? <PlayingCard card={wasteTop} selected={wasteSelected} sol={sol} onClick={() => dispatch({ type: 'SELECT_WASTE' })} />
-            : <EmptySlot />
-          }
-        </Box>
-        <Box sx={{ flex: 1, minWidth: 8 }} />
-        {state.foundations.map((pile, i) => (
-          <Box key={i} onClick={() => dispatch({ type: 'SELECT_FOUNDATION', pile: i })}>
-            {pile.length > 0
-              ? <PlayingCard card={pile[pile.length - 1]} sol={sol} isValidTarget={validFoundations[i]} onClick={() => dispatch({ type: 'SELECT_FOUNDATION', pile: i })} />
-              : <EmptySlot suitDots={SUIT_DOTS[SUITS[i]]} isValidTarget={validFoundations[i]} onClick={() => dispatch({ type: 'SELECT_FOUNDATION', pile: i })} />
-            }
+      {/* ── Phase content ── */}
+      {gamePhase === 'select' ? (
+        <GameSelectScreen
+          onNew={(id) => {
+            clearSave(id);
+            dispatch({ type: 'DEAL' });
+            setGameId(id);
+            setGamePhase('playing');
+          }}
+          onResume={(id) => {
+            const saved = loadSave(id);
+            dispatch(saved ? { type: 'LOAD', state: saved } : { type: 'DEAL' });
+            setGameId(id);
+            setGamePhase('playing');
+          }}
+        />
+      ) : (
+        <>
+          {won && (
+            <Box sx={{ mb: 2, p: 1.5, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
+              <Typography variant="body1">You won!</Typography>
+            </Box>
+          )}
+
+          {/* ── Top row: stock / waste / foundations ── */}
+          <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
+            <Box onClick={() => dispatch({ type: 'DRAW' })} sx={{ cursor: 'pointer' }}>
+              {state.stock.length > 0
+                ? <PlayingCard card={state.stock[state.stock.length - 1]} faceDown sol={sol} />
+                : <EmptySlot feltBg={feltOn} onClick={() => dispatch({ type: 'DRAW' })} />
+              }
+            </Box>
+            <Box onClick={() => wasteTop && dispatch({ type: 'SELECT_WASTE' })}>
+              {wasteTop
+                ? <PlayingCard card={wasteTop} selected={wasteSelected} sol={sol} onClick={() => dispatch({ type: 'SELECT_WASTE' })} />
+                : <EmptySlot feltBg={feltOn} />
+              }
+            </Box>
+            <Box sx={{ flex: 1, minWidth: 8 }} />
+            {state.foundations.map((pile, i) => (
+              <Box key={i} onClick={() => dispatch({ type: 'SELECT_FOUNDATION', pile: i })}>
+                {pile.length > 0
+                  ? <PlayingCard card={pile[pile.length - 1]} sol={sol} isValidTarget={validFoundations[i]} onClick={() => dispatch({ type: 'SELECT_FOUNDATION', pile: i })} />
+                  : <EmptySlot feltBg={feltOn} suitDots={SUIT_DOTS[SUITS[i]]} isValidTarget={validFoundations[i]} onClick={() => dispatch({ type: 'SELECT_FOUNDATION', pile: i })} />
+                }
+              </Box>
+            ))}
           </Box>
-        ))}
-      </Box>
 
-      <Divider sx={{ mb: 2 }} />
+          <Divider sx={{ mb: 2 }} />
 
-      {/* ── Tableau ── */}
-      <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-start', overflowX: 'auto', pb: 2 }}>
-        {state.tableau.map((col, i) => (
-          <TableauColumn key={i} cards={col} col={i} selected={state.selected} dispatch={dispatch} sol={sol} isValidTarget={validTableau[i]} />
-        ))}
-      </Box>
+          {/* ── Tableau ── */}
+          <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-start', overflowX: 'auto', pb: 2 }}>
+            {state.tableau.map((col, i) => (
+              <TableauColumn key={i} cards={col} col={i} selected={state.selected} dispatch={dispatch} sol={sol} isValidTarget={validTableau[i]} />
+            ))}
+          </Box>
 
-      {/* ── Bottom: legend + rules toggles ── */}
-      <Divider sx={{ mt: 2, mb: 1 }} />
-      <Box sx={{ display: 'flex', gap: 1, mb: 0.5 }}>
-        <Button size="small" sx={{ opacity: 0.6 }} onClick={() => setShowLegend(v => !v)}>
-          {showLegend ? 'Hide legend' : 'Legend'}
-        </Button>
-        <Button size="small" sx={{ opacity: 0.6 }} onClick={() => setShowRules(v => !v)}>
-          {showRules ? 'Hide rules' : 'Rules'}
-        </Button>
-      </Box>
-      <Collapse in={showLegend}><Legend /></Collapse>
-      <Collapse in={showRules}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75, pt: 1 }}>
-          <Typography variant="body2"><strong>Goal.</strong> Move all 52 cards onto the four foundation piles, one per suit, built up from Ace to King.</Typography>
-          <Typography variant="body2"><strong>Tableau.</strong> Build columns down in alternating colors (red on black, black on red). Click a face-down card to flip it. Click a face-up card to select it, then click a valid destination to move it — along with any cards stacked below. Only a King may start an empty column.</Typography>
-          <Typography variant="body2"><strong>Stock & waste.</strong> Click the stock (left) to turn over one card at a time onto the waste pile. The top waste card is always available to play. When the stock runs out, click the empty slot to flip the waste back.</Typography>
-          <Typography variant="body2"><strong>Foundations.</strong> Each foundation starts with an Ace and builds up by suit (A → 2 → … → Q → K). Click a selected card, then click the matching foundation to place it.</Typography>
-        </Box>
-      </Collapse>
+          {/* ── Bottom: legend + rules toggles ── */}
+          <Divider sx={{ mt: 2, mb: 1 }} />
+          <Box sx={{ display: 'flex', gap: 1, mb: 0.5 }}>
+            <Button size="small" sx={{ opacity: 0.6 }} onClick={() => setShowLegend(v => !v)}>
+              {showLegend ? 'Hide legend' : 'Legend'}
+            </Button>
+            <Button size="small" sx={{ opacity: 0.6 }} onClick={() => setShowRules(v => !v)}>
+              {showRules ? 'Hide rules' : 'Rules'}
+            </Button>
+          </Box>
+          <Collapse in={showLegend}>
+            <Box sx={feltOn ? { bgcolor: 'rgba(0,0,0,0.8)', p: '1em', borderRadius: 1, mb: 1 } : {}}>
+              <Legend />
+            </Box>
+          </Collapse>
+          <Collapse in={showRules}>
+            <Box sx={feltOn
+              ? { display: 'flex', flexDirection: 'column', gap: 0.75, bgcolor: 'rgba(0,0,0,0.8)', p: '1em', borderRadius: 1 }
+              : { display: 'flex', flexDirection: 'column', gap: 0.75, pt: 1 }
+            }>
+              <Typography variant="body2"><strong>Goal.</strong> Move all 52 cards onto the four foundation piles, one per suit, built up from Ace to King.</Typography>
+              <Typography variant="body2"><strong>Tableau.</strong> Build columns down in alternating colors (red on black, black on red). Click a face-down card to flip it. Click a face-up card to select it, then click a valid destination to move it — along with any cards stacked below. Only a King may start an empty column.</Typography>
+              <Typography variant="body2"><strong>Stock & waste.</strong> Click the stock (left) to turn over one card at a time onto the waste pile. The top waste card is always available to play. When the stock runs out, click the empty slot to flip the waste back.</Typography>
+              <Typography variant="body2"><strong>Foundations.</strong> Each foundation starts with an Ace and builds up by suit (A → 2 → … → Q → K). Click a selected card, then click the matching foundation to place it.</Typography>
+            </Box>
+          </Collapse>
+        </>
+      )}
     </Box>
   );
+
+  return feltOn && feltTheme
+    ? <ThemeProvider theme={feltTheme}>{outerContent}</ThemeProvider>
+    : outerContent;
 }

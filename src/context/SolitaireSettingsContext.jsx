@@ -13,6 +13,8 @@ const DEFAULTS = {
   dropHints:    'on',
   noSelect:     'on',
   noScroll:     'off',
+  cardBg:       'white',
+  feltColor:    'off',
 };
 
 function load(key, def) {
@@ -33,6 +35,8 @@ export function SolitaireSettingsProvider({ children }) {
   const [dropHints,    setDropHints]    = useState(() => load('bt-sol-drophints',  DEFAULTS.dropHints));
   const [noSelect,     setNoSelect]     = useState(() => load('bt-sol-noselect',   DEFAULTS.noSelect));
   const [noScroll,     setNoScroll]     = useState(() => load('bt-sol-noscroll',   DEFAULTS.noScroll));
+  const [cardBg,       setCardBg]       = useState(() => load('bt-sol-cardbg',     DEFAULTS.cardBg));
+  const [feltColor,    setFeltColor]    = useState(() => load('bt-sol-felt',       DEFAULTS.feltColor));
 
   const set = (setter, key) => (_, v) => {
     if (v == null) return;
@@ -51,6 +55,8 @@ export function SolitaireSettingsProvider({ children }) {
       dropHints,    setDropHints:    set(setDropHints,    'bt-sol-drophints'),
       noSelect,     setNoSelect:     set(setNoSelect,     'bt-sol-noselect'),
       noScroll,     setNoScroll:     set(setNoScroll,     'bt-sol-noscroll'),
+      cardBg,       setCardBg:       set(setCardBg,       'bt-sol-cardbg'),
+      feltColor,    setFeltColor:    set(setFeltColor,    'bt-sol-felt'),
     }}>
       {children}
     </SolitaireSettingsContext.Provider>
