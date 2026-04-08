@@ -80,14 +80,6 @@ export default function SolitaireSettingsButton() {
             <ToggleButton value="white">White</ToggleButton>
             <ToggleButton value="theme">Theme</ToggleButton>
           </ToggleButtonGroup>
-          <Typography variant="caption">Felt</Typography>
-          <ToggleButtonGroup exclusive size="small" value={sol.feltColor} onChange={sol.setFeltColor}>
-            <ToggleButton value="off">Off</ToggleButton>
-            <ToggleButton value="green">Green</ToggleButton>
-            <ToggleButton value="red">Red</ToggleButton>
-            <ToggleButton value="blue">Blue</ToggleButton>
-            <ToggleButton value="black">Black</ToggleButton>
-          </ToggleButtonGroup>
         </Box>
       </Popover>
     </>

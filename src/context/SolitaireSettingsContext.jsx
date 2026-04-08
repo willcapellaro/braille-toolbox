@@ -14,7 +14,6 @@ const DEFAULTS = {
   noSelect:     'on',
   noScroll:     'off',
   cardBg:       'white',
-  feltColor:    'off',
 };
 
 function load(key, def) {
@@ -25,9 +24,9 @@ function save(key, val) {
 }
 
 export function SolitaireSettingsProvider({ children }) {
-  const [cardOutline,  setCardOutline]  = useState(() => load('bt-sol-outline',  DEFAULTS.cardOutline));
-  const [cellBounds,   setCellBounds]   = useState(() => load('bt-sol-bounds',   DEFAULTS.cellBounds));
-  const [brailleDots,  setBrailleDots]  = useState(() => load('bt-sol-dots',     DEFAULTS.brailleDots));
+  const [cardOutline,  setCardOutline]  = useState(() => load('bt-sol-outline',    DEFAULTS.cardOutline));
+  const [cellBounds,   setCellBounds]   = useState(() => load('bt-sol-bounds',     DEFAULTS.cellBounds));
+  const [brailleDots,  setBrailleDots]  = useState(() => load('bt-sol-dots',       DEFAULTS.brailleDots));
   const [printOverlay, setPrintOverlay] = useState(() => load('bt-sol-print',      DEFAULTS.printOverlay));
   const [printStyle,   setPrintStyle]   = useState(() => load('bt-sol-printstyle', DEFAULTS.printStyle));
   const [unraisedDots, setUnraisedDots] = useState(() => load('bt-sol-unraised',   DEFAULTS.unraisedDots));
@@ -36,7 +35,6 @@ export function SolitaireSettingsProvider({ children }) {
   const [noSelect,     setNoSelect]     = useState(() => load('bt-sol-noselect',   DEFAULTS.noSelect));
   const [noScroll,     setNoScroll]     = useState(() => load('bt-sol-noscroll',   DEFAULTS.noScroll));
   const [cardBg,       setCardBg]       = useState(() => load('bt-sol-cardbg',     DEFAULTS.cardBg));
-  const [feltColor,    setFeltColor]    = useState(() => load('bt-sol-felt',       DEFAULTS.feltColor));
 
   const set = (setter, key) => (_, v) => {
     if (v == null) return;
@@ -56,7 +54,6 @@ export function SolitaireSettingsProvider({ children }) {
       noSelect,     setNoSelect:     set(setNoSelect,     'bt-sol-noselect'),
       noScroll,     setNoScroll:     set(setNoScroll,     'bt-sol-noscroll'),
       cardBg,       setCardBg:       set(setCardBg,       'bt-sol-cardbg'),
-      feltColor,    setFeltColor:    set(setFeltColor,    'bt-sol-felt'),
     }}>
       {children}
     </SolitaireSettingsContext.Provider>

@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
-import { Box, Button, Collapse, Divider, ThemeProvider, Typography, createTheme, useTheme } from '@mui/material';
+import { useEffect, useReducer, useState } from 'react';
+import { Box, Button, Collapse, Divider, Typography } from '@mui/material';
 import { dotsToPattern } from '../content';
 import BrailleCell from '../lib/braille/BrailleCell';
 import { useSolitaireSettings } from '../context/SolitaireSettingsContext.jsx';
@@ -329,7 +329,7 @@ function PlayingCard({ card, selected, onClick, faceDown, sol, isValidTarget }) 
       border: '1.5px solid',
       borderColor: selected ? 'primary.main' : 'divider',
       borderRadius: '6px',
-      bgcolor: selected ? 'action.selected' : (sol?.cardBg === 'white' ? '#ffffff' : 'background.paper'),
+      bgcolor: sol?.cardBg === 'white' ? '#ffffff' : (selected ? 'action.selected' : 'background.paper'),
       outline: selected ? '2px solid' : 'none',
       outlineColor: 'primary.main',
       outlineOffset: '1px',
@@ -359,7 +359,7 @@ function PlayingCard({ card, selected, onClick, faceDown, sol, isValidTarget }) 
 
 // EmptySlot shows a braille cell for the suit hint, or nothing.
 // suitDots: dot string to show (e.g. '14' for clubs), or null for blank.
-function EmptySlot({ onClick, suitDots, isValidTarget, feltBg }) {
+function EmptySlot({ onClick, suitDots, isValidTarget }) {
   const dimStyle = { '--cell-dot-color': 'var(--bt-ink)', '--cell-border-color': 'transparent', opacity: 0.2 };
   return (
     <Box onClick={onClick} sx={{
@@ -370,7 +370,6 @@ function EmptySlot({ onClick, suitDots, isValidTarget, feltBg }) {
       alignItems: 'flex-start', justifyContent: 'flex-end',
       padding: `${CARD_PAD}px`, boxSizing: 'border-box',
       cursor: onClick ? 'pointer' : 'default',
-      ...(feltBg && { bgcolor: 'rgba(255,255,255,0.8)' }),
       ...(isValidTarget && { '&:hover': { outline: '2px dashed', outlineColor: '#4caf50', outlineOffset: '2px' } }),
     }}>
       {suitDots && (
@@ -596,24 +595,11 @@ function GameSelectScreen({ onNew, onResume }) {
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
-// ── Felt ──────────────────────────────────────────────────────────────────────
-
-// These overlay the felt.jpg texture with a color blend.
-// mix-blend-mode: color applies hue+saturation while preserving the texture's luminosity.
-const FELT_OVERLAY = {
-  green: '#2a6b2a',
-  red:   '#8b2020',
-  blue:  '#1a3a8b',
-  black: '#1a1a1a',
-};
-
-
 export default function SolitairePage() {
   const [state, dispatch] = useReducer(reducer, null, deal);
   const { solPhase: gamePhase, setSolPhase: setGamePhase, solGameId: gameId, setSolGameId: setGameId } = useSiteSettings();
   const [showLegend, setShowLegend] = useState(false);
   const [showRules, setShowRules] = useState(false);
-  const containerRef = useRef(null);
   const sol = useSolitaireSettings();
   const won = isWon(state.foundations);
 
@@ -623,44 +609,6 @@ export default function SolitairePage() {
     else cl.remove('sol-no-scroll');
     return () => cl.remove('sol-no-scroll');
   }, [sol?.noScroll]);
-
-  const feltOn = sol?.feltColor && sol.feltColor !== 'off';
-
-  // Felt: cursor-proximity glow — overrides --sol-ink on the container toward #FFD700 when close
-  useEffect(() => {
-    if (!feltOn) return;
-    const root = containerRef.current;
-    if (!root) return;
-    const onMove = (e) => {
-      // proximity: 0 = cursor at viewport edge, 1 = cursor far from any edge
-      const t = Math.min(1, Math.min(e.clientX, e.clientY,
-        window.innerWidth - e.clientX, window.innerHeight - e.clientY) / 160);
-      if (t < 0.98) {
-        // Near = #FFD700, far = #D4AF37 (let animation run by removing override)
-        const r = Math.round(0xFF + (0xD4 - 0xFF) * t);
-        const g = Math.round(0xD7 + (0xAF - 0xD7) * t);
-        const b = Math.round(0x00 + (0x37 - 0x00) * t);
-        root.style.setProperty('--sol-ink', `rgb(${r},${g},${b})`);
-      } else {
-        root.style.removeProperty('--sol-ink');
-      }
-    };
-    const onLeave = () => root.style.removeProperty('--sol-ink');
-    window.addEventListener('mousemove', onMove);
-    window.addEventListener('mouseleave', onLeave);
-    return () => {
-      window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('mouseleave', onLeave);
-      root.style.removeProperty('--sol-ink');
-    };
-  }, [feltOn]);
-
-  useEffect(() => {
-    const cl = document.documentElement.classList;
-    if (feltOn) cl.add('sol-felt-on');
-    else cl.remove('sol-felt-on');
-    return () => cl.remove('sol-felt-on');
-  }, [feltOn]);
 
   // Autosave on every move while playing
   useEffect(() => {
@@ -680,39 +628,11 @@ export default function SolitairePage() {
     ? state.foundations.map(pile => canPlaceOnFoundation(movingCard, pile))
     : Array(4).fill(false);
 
-  const feltOverlayColor = feltOn ? FELT_OVERLAY[sol.feltColor] : null;
-  const parentTheme = useTheme();
-  const feltTheme = useMemo(() => feltOn ? createTheme({
-    ...parentTheme,
-    palette: {
-      ...parentTheme.palette,
-      primary:    { main: '#D4AF37' },
-      secondary:  { main: '#D4AF37' },
-      text:       { primary: '#D4AF37', secondary: '#D4AF37', disabled: '#D4AF37' },
-      divider:    '#D4AF37',
-      action:     { ...parentTheme.palette.action, active: '#D4AF37' },
-    },
-  }) : null, [feltOn, parentTheme]);
-
-  const outerContent = (
+  return (
     <Box
-      ref={containerRef}
-      className={[
-        sol?.noSelect === 'on' ? 'sol-no-select' : '',
-        feltOn ? 'sol-felt-active' : '',
-      ].filter(Boolean).join(' ') || undefined}
-      sx={{ pb: 4, position: 'relative' }}
+      className={sol?.noSelect === 'on' ? 'sol-no-select' : undefined}
+      sx={{ pb: 4 }}
     >
-      {/* Felt background: texture + hue overlay */}
-      {feltOn && (
-        <Box sx={{
-          position: 'fixed', inset: 0, zIndex: -1, pointerEvents: 'none',
-          backgroundImage: `url('/patterns/felt.jpg')`,
-          backgroundSize: '60px',
-        }}>
-          <Box sx={{ position: 'absolute', inset: 0, bgcolor: feltOverlayColor, mixBlendMode: 'color' }} />
-        </Box>
-      )}
 
       {/* ── Phase content ── */}
       {gamePhase === 'select' ? (
@@ -743,13 +663,13 @@ export default function SolitairePage() {
             <Box onClick={() => dispatch({ type: 'DRAW' })} sx={{ cursor: 'pointer' }}>
               {state.stock.length > 0
                 ? <PlayingCard card={state.stock[state.stock.length - 1]} faceDown sol={sol} />
-                : <EmptySlot feltBg={feltOn} onClick={() => dispatch({ type: 'DRAW' })} />
+                : <EmptySlot onClick={() => dispatch({ type: 'DRAW' })} />
               }
             </Box>
             <Box onClick={() => wasteTop && dispatch({ type: 'SELECT_WASTE' })}>
               {wasteTop
                 ? <PlayingCard card={wasteTop} selected={wasteSelected} sol={sol} onClick={() => dispatch({ type: 'SELECT_WASTE' })} />
-                : <EmptySlot feltBg={feltOn} />
+                : <EmptySlot />
               }
             </Box>
             <Box sx={{ flex: 1, minWidth: 8 }} />
@@ -757,7 +677,7 @@ export default function SolitairePage() {
               <Box key={i} onClick={() => dispatch({ type: 'SELECT_FOUNDATION', pile: i })}>
                 {pile.length > 0
                   ? <PlayingCard card={pile[pile.length - 1]} sol={sol} isValidTarget={validFoundations[i]} onClick={() => dispatch({ type: 'SELECT_FOUNDATION', pile: i })} />
-                  : <EmptySlot feltBg={feltOn} suitDots={SUIT_DOTS[SUITS[i]]} isValidTarget={validFoundations[i]} onClick={() => dispatch({ type: 'SELECT_FOUNDATION', pile: i })} />
+                  : <EmptySlot suitDots={SUIT_DOTS[SUITS[i]]} isValidTarget={validFoundations[i]} onClick={() => dispatch({ type: 'SELECT_FOUNDATION', pile: i })} />
                 }
               </Box>
             ))}
@@ -783,15 +703,10 @@ export default function SolitairePage() {
             </Button>
           </Box>
           <Collapse in={showLegend}>
-            <Box sx={feltOn ? { bgcolor: 'rgba(0,0,0,0.8)', p: '1em', borderRadius: 1, mb: 1 } : {}}>
-              <Legend />
-            </Box>
+            <Legend />
           </Collapse>
           <Collapse in={showRules}>
-            <Box sx={feltOn
-              ? { display: 'flex', flexDirection: 'column', gap: 0.75, bgcolor: 'rgba(0,0,0,0.8)', p: '1em', borderRadius: 1 }
-              : { display: 'flex', flexDirection: 'column', gap: 0.75, pt: 1 }
-            }>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75, pt: 1 }}>
               <Typography variant="body2"><strong>Goal.</strong> Move all 52 cards onto the four foundation piles, one per suit, built up from Ace to King.</Typography>
               <Typography variant="body2"><strong>Tableau.</strong> Build columns down in alternating colors (red on black, black on red). Click a face-down card to flip it. Click a face-up card to select it, then click a valid destination to move it — along with any cards stacked below. Only a King may start an empty column.</Typography>
               <Typography variant="body2"><strong>Stock & waste.</strong> Click the stock (left) to turn over one card at a time onto the waste pile. The top waste card is always available to play. When the stock runs out, click the empty slot to flip the waste back.</Typography>
@@ -802,8 +717,4 @@ export default function SolitairePage() {
       )}
     </Box>
   );
-
-  return feltOn && feltTheme
-    ? <ThemeProvider theme={feltTheme}>{outerContent}</ThemeProvider>
-    : outerContent;
 }

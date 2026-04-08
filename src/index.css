@@ -35,31 +35,6 @@ html:-webkit-full-screen .app-footer-bar {
   display: none !important;
 }
 
-/* Animatable CSS custom property for felt ink */
-@property --sol-ink {
-  syntax: '<color>';
-  inherits: true;
-  initial-value: #D4AF37;
-}
-
-@keyframes sol-ink-pulse {
-  0%, 100% { --sol-ink: #D4AF37; }
-  50%       { --sol-ink: #C53358; }
-}
-
-/* Felt mode: animate ink scoped to the game container only, never touching the site */
-.sol-felt-active {
-  --sol-ink: #D4AF37;
-  --bt-ink: var(--sol-ink) !important;
-  animation: sol-ink-pulse 14s ease-in-out infinite;
-}
-
-/* MUI injects colors via JS into emotion classnames, so we re-target known text/icon selectors */
-.sol-felt-active,
-.sol-felt-active * {
-  color: inherit;
-}
-
 /* Disable text selection when game setting is active */
 .sol-no-select {
   user-select: none;
@@ -75,18 +50,4 @@ html.sol-no-scroll body {
 
 body {
   font-family: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
-}
-
-/* Felt mode: gold dividers inside game container */
-.sol-felt-active .MuiDivider-root {
-  border-color: #D4AF37 !important;
-}
-
-/* Felt mode: gold footer + site header divider */
-html.sol-felt-on .app-footer-bar {
-  border-color: #D4AF37 !important;
-}
-html.sol-felt-on .app-footer-bar,
-html.sol-felt-on .app-footer-bar * {
-  color: #D4AF37;
 }
