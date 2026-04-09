@@ -1,9 +1,15 @@
 import { useEffect, useReducer, useState } from 'react';
-import { Box, Button, Collapse, Divider, Typography } from '@mui/material';
+import { Box, Button, Collapse, Divider, Typography, useTheme } from '@mui/material';
 import { dotsToPattern } from '../content';
 import BrailleCell from '../lib/braille/BrailleCell';
 import { useSolitaireSettings } from '../context/SolitaireSettingsContext.jsx';
 import { useSiteSettings } from '../App.jsx';
+
+function hexLum(hex) {
+  if (!hex || !hex.startsWith('#')) return 1;
+  const r = parseInt(hex.slice(1,3),16)/255, g = parseInt(hex.slice(3,5),16)/255, b = parseInt(hex.slice(5,7),16)/255;
+  return 0.299*r + 0.587*g + 0.114*b;
+}
 
 // ── Card data ─────────────────────────────────────────────────────────────────
 
@@ -263,7 +269,7 @@ function CellWithPrint({ cell, dotColor, showPrintOverlay, printStyle }) {
 
 // ── Card rendering ────────────────────────────────────────────────────────────
 
-function PlayingCard({ card, selected, onClick, faceDown, sol, isValidTarget }) {
+function PlayingCard({ card, selected, onClick, faceDown, sol, isValidTarget, legendHighlighted, onCardHover, darkBg }) {
   if (faceDown || !card.faceUp) {
     return (
       <Box onClick={onClick} sx={{
@@ -280,6 +286,9 @@ function PlayingCard({ card, selected, onClick, faceDown, sol, isValidTarget }) 
   const dotColor = sol?.suitColor === 'on' ? SUIT_COLOR[card.suit] : 'var(--bt-ink)';
   const showPrintOverlay = sol?.printOverlay === 'hover' || sol?.printOverlay === 'always';
   const printStyle = sol?.printStyle ?? 'exact';
+
+  // On dark bg, add a crisp 1.5px white ring around raised dots for contrast
+  const dotOutlineSx = darkBg ? { '& .braille-dot.is-raised': { boxShadow: '0 0 0 1.5px #ffffff' } } : {};
 
   // Card outline sx
   const outlineSx = !selected
@@ -323,23 +332,29 @@ function PlayingCard({ card, selected, onClick, faceDown, sol, isValidTarget }) 
     '&:hover': { outline: '2px dashed', outlineColor: '#4caf50', outlineOffset: '2px' },
   } : {};
 
+  const legendHiSx = legendHighlighted ? { boxShadow: '0 0 0 2.5px var(--bt-ink)' } : {};
+
   return (
-    <Box onClick={onClick} sx={{
-      width: CARD_W, height: CARD_H,
-      border: '1.5px solid',
-      borderColor: selected ? 'primary.main' : 'divider',
-      borderRadius: '6px',
-      bgcolor: sol?.cardBg === 'white' ? '#ffffff' : (selected ? 'action.selected' : 'background.paper'),
-      outline: selected ? '2px solid' : 'none',
-      outlineColor: 'primary.main',
-      outlineOffset: '1px',
-      display: 'flex', flexDirection: 'column',
-      alignItems: 'flex-start', justifyContent: 'space-between',
-      padding: `${CARD_PAD}px`, boxSizing: 'border-box',
-      cursor: 'pointer', flexShrink: 0,
-      transition: 'border-color 0.1s, outline 0.1s',
-      ...outlineSx, ...boundsSx, ...dotsSx, ...unraisedSx, ...printSx, ...validTargetSx,
-    }}>
+    <Box
+      onClick={onClick}
+      onMouseEnter={onCardHover ? () => onCardHover({ suit: card.suit, rank: card.rank }) : undefined}
+      onMouseLeave={onCardHover ? () => onCardHover(null) : undefined}
+      sx={{
+        width: CARD_W, height: CARD_H,
+        border: '1.5px solid',
+        borderColor: selected ? 'primary.main' : 'divider',
+        borderRadius: '6px',
+        bgcolor: sol?.cardBg === 'white' ? '#ffffff' : (selected ? 'action.selected' : 'background.paper'),
+        outline: selected ? '2px solid' : 'none',
+        outlineColor: 'primary.main',
+        outlineOffset: '1px',
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'flex-start', justifyContent: 'space-between',
+        padding: `${CARD_PAD}px`, boxSizing: 'border-box',
+        cursor: 'pointer', flexShrink: 0,
+        transition: 'border-color 0.1s, outline 0.1s, box-shadow 0.1s',
+        ...outlineSx, ...boundsSx, ...dotsSx, ...unraisedSx, ...printSx, ...validTargetSx, ...legendHiSx, ...dotOutlineSx,
+      }}>
       {/* Rank — top */}
       <Box sx={{ display: 'flex', gap: `${CELL_GAP}px` }}>
         {RANK_CELLS[card.rank].map((cell, i) => (
@@ -381,7 +396,7 @@ function EmptySlot({ onClick, suitDots, isValidTarget }) {
 
 // ── Tableau column ────────────────────────────────────────────────────────────
 
-function TableauColumn({ cards, col, selected, dispatch, sol, isValidTarget }) {
+function TableauColumn({ cards, col, selected, dispatch, sol, isValidTarget, lgSuit, lgRank, onCardHover, darkBg }) {
   const [elevatedIdx, setElevatedIdx] = useState(null);
   const selectedSrc = selected?.source === 'tableau' && selected?.col === col;
 
@@ -431,6 +446,9 @@ function TableauColumn({ cards, col, selected, dispatch, sol, isValidTarget }) {
                 selected={isInSelection}
                 sol={sol}
                 isValidTarget={isTop ? isValidTarget : false}
+                legendHighlighted={card.faceUp && ((lgSuit && card.suit === lgSuit) || (lgRank && card.rank === lgRank))}
+                onCardHover={onCardHover}
+                darkBg={darkBg}
                 onClick={() => {
                   if (!card.faceUp) dispatch({ type: 'FLIP_TABLEAU', col });
                   else dispatch({ type: 'SELECT_TABLEAU', col, idx });
@@ -454,74 +472,146 @@ function isWon(foundations) {
 
 // ── Legend ────────────────────────────────────────────────────────────────────
 
-// Cap indicator group: Ace, J, Q, K — prefix is dot 6
-const LEGEND_CAP = [
-  { label: 'A',  cells: [{ dots: '1',     print: 'A' }] },
-  { label: 'J',  cells: [{ dots: '245',   print: 'J' }] },
-  { label: 'Q',  cells: [{ dots: '12345', print: 'Q' }] },
-  { label: 'K',  cells: [{ dots: '13',    print: 'K' }] },
+const SUIT_LETTER = { c: 'C', d: 'D', h: 'H', s: 'S' };
+
+const CAP_ITEMS = [
+  { rank: '_A',  dots: '1',     caption: 'A 1' },
+  { rank: '_J',  dots: '245',   caption: 'J 0' },
+  { rank: '_Q',  dots: '12345', caption: 'Q' },
+  { rank: '_K',  dots: '13',    caption: 'K' },
 ];
 
-// Number indicator group: 2–10 — prefix is dots 3456
-const LEGEND_NUM = [
-  { label: '2',  cells: [{ dots: '12',   print: '2' }] },
-  { label: '3',  cells: [{ dots: '14',   print: '3' }] },
-  { label: '4',  cells: [{ dots: '145',  print: '4' }] },
-  { label: '5',  cells: [{ dots: '15',   print: '5' }] },
-  { label: '6',  cells: [{ dots: '124',  print: '6' }] },
-  { label: '7',  cells: [{ dots: '1245', print: '7' }] },
-  { label: '8',  cells: [{ dots: '125',  print: '8' }] },
-  { label: '9',  cells: [{ dots: '24',   print: '9' }] },
-  { label: '10', cells: [{ dots: '1',    print: '1' }, { dots: '245', print: '0' }] },
+// Ordered 10→2 for vertical (top=10), reversed for horizontal (left=2)
+const NUM_ITEMS = [
+  { rank: 'N10', ten: true },
+  { rank: 'N9',  dots: '24',   caption: 'I 9' },
+  { rank: 'N8',  dots: '125',  caption: 'H 8' },
+  { rank: 'N7',  dots: '1245', caption: 'G 7' },
+  { rank: 'N6',  dots: '124',  caption: 'F 6' },
+  { rank: 'N5',  dots: '15',   caption: 'E 5' },
+  { rank: 'N4',  dots: '145',  caption: 'D 4' },
+  { rank: 'N3',  dots: '14',   caption: 'C 3' },
+  { rank: 'N2',  dots: '12',   caption: 'B 2' },
 ];
 
-function LegendCell({ cell, label }) {
+const LCELL_SX = (hi, dimmed, darkBg) => ({
+  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.25,
+  p: '2px', borderRadius: '4px',
+  bgcolor: hi ? 'action.selected' : 'transparent',
+  outline: '1.5px solid', outlineColor: hi ? 'primary.main' : 'transparent',
+  opacity: dimmed ? 0.2 : 1,
+  transition: 'background-color 0.12s, outline-color 0.12s, opacity 0.12s',
+  ...(darkBg && { '& .braille-dot.is-raised': { boxShadow: '0 0 0 1.5px #ffffff' } }),
+});
+
+function LegendCellItem({ dots, caption, color, highlighted, dimmed, darkBg, hoverProps }) {
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.25 }}>
-      <BrailleCell pattern={dotsToPattern(cell.dots)} size={CELL_SZ} label={cell.print}
+    <Box {...hoverProps} sx={{ ...LCELL_SX(highlighted, dimmed, darkBg), cursor: hoverProps?.onMouseEnter ? 'crosshair' : 'default' }}>
+      <BrailleCell pattern={dotsToPattern(dots)} size={CELL_SZ} label={caption}
+        style={{ '--cell-dot-color': color }} />
+      <Typography variant="caption" sx={{ fontSize: '9px', opacity: 0.5, lineHeight: 1, whiteSpace: 'nowrap' }}>
+        {caption}
+      </Typography>
+    </Box>
+  );
+}
+
+function LegendPrefixItem({ dots, caption }) {
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.25, opacity: 0.4 }}>
+      <BrailleCell pattern={dotsToPattern(dots)} size={CELL_SZ} label={caption}
         style={{ '--cell-dot-color': 'var(--bt-ink)' }} />
-      <Typography variant="caption" sx={{ fontSize: '9px', opacity: 0.4 }}>{label}</Typography>
+      <Typography variant="caption" sx={{ fontSize: '9px', lineHeight: 1, whiteSpace: 'nowrap' }}>{caption}</Typography>
     </Box>
   );
 }
 
-function LegendSection({ prefix, prefixLabel, items }) {
+function LegendTenItem({ highlighted, dimmed, darkBg, hoverProps, color }) {
   return (
-    <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-end' }}>
-      <LegendCell cell={prefix} label={prefixLabel} />
-      <Typography variant="caption" sx={{ opacity: 0.4, pb: '4px' }}>+</Typography>
-      {items.map(({ label, cells }) => (
-        <Box key={label} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.25 }}>
-          <Box sx={{ display: 'flex', gap: '3px' }}>
-            {cells.map((cell, i) => (
-              <BrailleCell key={i} pattern={dotsToPattern(cell.dots)} size={CELL_SZ} label={cell.print}
-                style={{ '--cell-dot-color': 'var(--bt-ink)' }} />
-            ))}
-          </Box>
-          <Typography variant="caption" sx={{ fontSize: '9px', opacity: 0.4 }}>{label}</Typography>
-        </Box>
-      ))}
-    </Box>
-  );
-}
-
-const VDIVIDER = (
-  <Box sx={{ alignSelf: 'stretch', width: '1px', bgcolor: 'divider', mx: 0.5, flexShrink: 0 }} />
-);
-
-function Legend() {
-  return (
-    <Box sx={{ mb: 2, display: 'flex', alignItems: 'flex-end', gap: 1, overflowX: 'auto', pb: 0.5 }}>
-      {/* Suits */}
-      <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-end' }}>
-        {SUITS.map(s => (
-          <LegendCell key={s} cell={{ dots: SUIT_DOTS[s], print: SUIT_PRINT[s] }} label={SUIT_PRINT[s]} />
-        ))}
+    <Box {...hoverProps} sx={{ ...LCELL_SX(highlighted, dimmed, darkBg), cursor: hoverProps?.onMouseEnter ? 'crosshair' : 'default' }}>
+      <Box sx={{ display: 'flex', gap: 0, borderRadius: '3px', overflow: 'hidden' }}>
+        <BrailleCell pattern={dotsToPattern('1')}   size={CELL_SZ} label="1" style={{ '--cell-dot-color': color }} />
+        <BrailleCell pattern={dotsToPattern('245')} size={CELL_SZ} label="0" style={{ '--cell-dot-color': color }} />
       </Box>
-      {VDIVIDER}
-      <LegendSection prefix={{ dots: '6',    print: '↑' }} prefixLabel="cap" items={LEGEND_CAP} />
-      {VDIVIDER}
-      <LegendSection prefix={{ dots: '3456', print: '#' }} prefixLabel="num" items={LEGEND_NUM} />
+      <Box sx={{ display: 'flex' }}>
+        <Typography variant="caption" sx={{ fontSize: '9px', opacity: 0.5, lineHeight: 1, width: CELL_W, textAlign: 'center' }}>A 1</Typography>
+        <Typography variant="caption" sx={{ fontSize: '9px', opacity: 0.5, lineHeight: 1, width: CELL_W, textAlign: 'center' }}>J 0</Typography>
+      </Box>
+    </Box>
+  );
+}
+
+function Legend({ sol, visibleSuits, visibleRanks, hoveredCardSig, onHoverKey, darkBg }) {
+  const highlightOn = sol?.legendHighlight === 'on';
+  const hoverOn     = sol?.legendHover === 'on';
+  const vertical    = sol?.legendPosition === 'right';
+  const ink = 'var(--bt-ink)';
+
+  const suitDotColor = (s) => sol?.suitColor === 'on' ? SUIT_COLOR[s] : ink;
+
+  const isHi = (type, val) => {
+    const fromVis  = highlightOn && (type === 'suit' ? visibleSuits.has(val) : visibleRanks.has(val));
+    const fromCard = hoverOn && hoveredCardSig && (type === 'suit' ? hoveredCardSig.suit === val : hoveredCardSig.rank === val);
+    return fromVis || fromCard;
+  };
+
+  // Any cell highlighted? If so, non-highlighted cells dim.
+  const anyHi = (highlightOn && (visibleSuits.size > 0 || visibleRanks.size > 0))
+    || (hoverOn && hoveredCardSig != null);
+
+  const hp = (key) => hoverOn
+    ? { onMouseEnter: () => onHoverKey(key), onMouseLeave: () => onHoverKey(null) }
+    : {};
+
+  const suitEls = SUITS.map(s => {
+    const hi = isHi('suit', s);
+    return <LegendCellItem key={s} dots={SUIT_DOTS[s]} caption={`${SUIT_LETTER[s]} ${SUIT_PRINT[s]}`}
+      color={suitDotColor(s)} highlighted={hi} dimmed={anyHi && !hi} darkBg={darkBg} hoverProps={hp('suit:' + s)} />;
+  });
+
+  const capEls = CAP_ITEMS.map(({ rank, dots, caption }) => {
+    const hi = isHi('rank', rank);
+    return <LegendCellItem key={rank} dots={dots} caption={caption}
+      color={ink} highlighted={hi} dimmed={anyHi && !hi} darkBg={darkBg} hoverProps={hp('rank:' + rank)} />;
+  });
+
+  const numOrder = vertical ? NUM_ITEMS : [...NUM_ITEMS].reverse();
+  const numEls = numOrder.map(({ rank, ten, dots, caption }) => {
+    const hi = isHi('rank', rank);
+    return ten
+      ? <LegendTenItem key={rank} highlighted={hi} dimmed={anyHi && !hi} darkBg={darkBg} color={ink} hoverProps={hp('rank:' + rank)} />
+      : <LegendCellItem key={rank} dots={dots} caption={caption} color={ink} highlighted={hi} dimmed={anyHi && !hi} darkBg={darkBg} hoverProps={hp('rank:' + rank)} />;
+  });
+
+  if (vertical) {
+    return (
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, pl: 1.5, borderLeft: '1px solid', borderColor: 'divider', flexShrink: 0 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>{suitEls}</Box>
+        <Divider />
+        <LegendPrefixItem dots="6" caption="^ cap" />
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>{capEls}</Box>
+        <Divider />
+        <LegendPrefixItem dots="3456" caption="# num" />
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>{numEls}</Box>
+      </Box>
+    );
+  }
+
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 0.25, overflowX: 'auto', pb: 0.5, mb: 1 }}>
+      <Box sx={{ display: 'flex', gap: 0.25, alignItems: 'flex-end' }}>{suitEls}</Box>
+      <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
+      <Box sx={{ display: 'flex', gap: 0.25, alignItems: 'flex-end' }}>
+        <LegendPrefixItem dots="6" caption="^ cap" />
+        <Typography variant="caption" sx={{ opacity: 0.3, pb: '4px', flexShrink: 0 }}>+</Typography>
+        {capEls}
+      </Box>
+      <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
+      <Box sx={{ display: 'flex', gap: 0.25, alignItems: 'flex-end' }}>
+        <LegendPrefixItem dots="3456" caption="# num" />
+        <Typography variant="caption" sx={{ opacity: 0.3, pb: '4px', flexShrink: 0 }}>+</Typography>
+        {numEls}
+      </Box>
     </Box>
   );
 }
@@ -562,7 +652,7 @@ function GameSelectCard({ name, caption, pattern, available, savedGame, onNew, o
       {available ? (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, width: SELECT_CARD_W }}>
           {savedGame && (
-            <Button size="small" variant="contained" fullWidth onClick={onResume}>Resume Game</Button>
+            <Button size="small" variant="contained" fullWidth onClick={onResume}>Resume</Button>
           )}
           <Button size="small" variant={savedGame ? 'outlined' : 'contained'} fullWidth onClick={onNew}>
             New Game
@@ -598,10 +688,16 @@ function GameSelectScreen({ onNew, onResume }) {
 export default function SolitairePage() {
   const [state, dispatch] = useReducer(reducer, null, deal);
   const { solPhase: gamePhase, setSolPhase: setGamePhase, solGameId: gameId, setSolGameId: setGameId } = useSiteSettings();
-  const [showLegend, setShowLegend] = useState(false);
   const [showRules, setShowRules] = useState(false);
+  const [hoveredLegendKey, setHoveredLegendKey] = useState(null);
+  const [hoveredCardSig, setHoveredCardSig] = useState(null);
   const sol = useSolitaireSettings();
+  const theme = useTheme();
   const won = isWon(state.foundations);
+
+  // Detect dark card background: theme mode when cardBg=theme, or always-light when cardBg=white
+  const paperColor = theme.palette.background.paper;
+  const darkBg = sol?.cardBg !== 'white' && hexLum(paperColor) < 0.5;
 
   useEffect(() => {
     const cl = document.documentElement.classList;
@@ -609,6 +705,15 @@ export default function SolitairePage() {
     else cl.remove('sol-no-scroll');
     return () => cl.remove('sol-no-scroll');
   }, [sol?.noScroll]);
+
+  // On mount: if phase was restored as 'playing', load the saved game
+  useEffect(() => {
+    if (gamePhase === 'playing') {
+      const saved = loadSave(gameId);
+      if (saved) dispatch({ type: 'LOAD', state: saved });
+      else dispatch({ type: 'DEAL' });
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Autosave on every move while playing
   useEffect(() => {
@@ -627,6 +732,39 @@ export default function SolitairePage() {
   const validFoundations = hintsOn && state.selected.cards.length === 1
     ? state.foundations.map(pile => canPlaceOnFoundation(movingCard, pile))
     : Array(4).fill(false);
+
+  // Legend hover/highlight derived state
+  const legendHoverOn = sol?.legendHover === 'on';
+  const lgSuit = legendHoverOn && hoveredLegendKey?.startsWith('suit:') ? hoveredLegendKey.slice(5) : null;
+  const lgRank = legendHoverOn && hoveredLegendKey?.startsWith('rank:') ? hoveredLegendKey.slice(5) : null;
+  // onCardHover always fires so legend can react; Legend component decides whether to use it
+  const onCardHover = setHoveredCardSig;
+
+  // Visible face-up cards (for legend highlight)
+  const visibleCards = [
+    ...state.tableau.flatMap(col => col.filter(c => c.faceUp)),
+    ...(wasteTop ? [wasteTop] : []),
+    ...state.foundations.map(f => f.length ? f[f.length - 1] : null).filter(Boolean),
+  ];
+  const visibleSuits = new Set(visibleCards.map(c => c.suit));
+  const visibleRanks = new Set(visibleCards.map(c => c.rank));
+
+  const legendEl = sol?.showLegend !== 'off' ? (
+    <Legend
+      sol={sol}
+      visibleSuits={visibleSuits}
+      visibleRanks={visibleRanks}
+      hoveredCardSig={legendHoverOn ? hoveredCardSig : null}
+      onHoverKey={setHoveredLegendKey}
+      darkBg={darkBg}
+    />
+  ) : null;
+  const legendRight = sol?.legendPosition === 'right';
+
+  function cardIsLH(card) {
+    if (!card || !card.faceUp) return false;
+    return (lgSuit && card.suit === lgSuit) || (lgRank && card.rank === lgRank);
+  }
 
   return (
     <Box
@@ -658,53 +796,65 @@ export default function SolitairePage() {
             </Box>
           )}
 
-          {/* ── Top row: stock / waste / foundations ── */}
-          <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
-            <Box onClick={() => dispatch({ type: 'DRAW' })} sx={{ cursor: 'pointer' }}>
-              {state.stock.length > 0
-                ? <PlayingCard card={state.stock[state.stock.length - 1]} faceDown sol={sol} />
-                : <EmptySlot onClick={() => dispatch({ type: 'DRAW' })} />
-              }
-            </Box>
-            <Box onClick={() => wasteTop && dispatch({ type: 'SELECT_WASTE' })}>
-              {wasteTop
-                ? <PlayingCard card={wasteTop} selected={wasteSelected} sol={sol} onClick={() => dispatch({ type: 'SELECT_WASTE' })} />
-                : <EmptySlot />
-              }
-            </Box>
-            <Box sx={{ flex: 1, minWidth: 8 }} />
-            {state.foundations.map((pile, i) => (
-              <Box key={i} onClick={() => dispatch({ type: 'SELECT_FOUNDATION', pile: i })}>
-                {pile.length > 0
-                  ? <PlayingCard card={pile[pile.length - 1]} sol={sol} isValidTarget={validFoundations[i]} onClick={() => dispatch({ type: 'SELECT_FOUNDATION', pile: i })} />
-                  : <EmptySlot suitDots={SUIT_DOTS[SUITS[i]]} isValidTarget={validFoundations[i]} onClick={() => dispatch({ type: 'SELECT_FOUNDATION', pile: i })} />
-                }
+          {/* Legend above (default) */}
+          {!legendRight && <Box sx={{ zoom: sol?.legendScale ?? 1 }}>{legendEl}</Box>}
+
+          {/* Game area — optionally beside right legend */}
+          <Box sx={legendRight ? { display: 'flex', gap: 1, alignItems: 'flex-start' } : {}}>
+            <Box sx={{ ...(legendRight ? { flex: 1, minWidth: 0 } : {}), zoom: sol?.cardScale ?? 1 }}>
+
+              {/* ── Top row: stock / waste / foundations ── */}
+              <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
+                <Box onClick={() => dispatch({ type: 'DRAW' })} sx={{ cursor: 'pointer' }}>
+                  {state.stock.length > 0
+                    ? <PlayingCard card={state.stock[state.stock.length - 1]} faceDown sol={sol} darkBg={darkBg} />
+                    : <EmptySlot onClick={() => dispatch({ type: 'DRAW' })} />
+                  }
+                </Box>
+                <Box onClick={() => wasteTop && dispatch({ type: 'SELECT_WASTE' })}>
+                  {wasteTop
+                    ? <PlayingCard card={wasteTop} selected={wasteSelected} sol={sol} darkBg={darkBg}
+                        legendHighlighted={cardIsLH(wasteTop)} onCardHover={onCardHover}
+                        onClick={() => dispatch({ type: 'SELECT_WASTE' })} />
+                    : <EmptySlot />
+                  }
+                </Box>
+                <Box sx={{ flex: 1, minWidth: 8 }} />
+                {state.foundations.map((pile, i) => (
+                  <Box key={i} onClick={() => dispatch({ type: 'SELECT_FOUNDATION', pile: i })}>
+                    {pile.length > 0
+                      ? <PlayingCard card={pile[pile.length - 1]} sol={sol} isValidTarget={validFoundations[i]} darkBg={darkBg}
+                          legendHighlighted={cardIsLH(pile[pile.length - 1])} onCardHover={onCardHover}
+                          onClick={() => dispatch({ type: 'SELECT_FOUNDATION', pile: i })} />
+                      : <EmptySlot suitDots={SUIT_DOTS[SUITS[i]]} isValidTarget={validFoundations[i]} onClick={() => dispatch({ type: 'SELECT_FOUNDATION', pile: i })} />
+                    }
+                  </Box>
+                ))}
               </Box>
-            ))}
+
+              <Divider sx={{ mb: 2 }} />
+
+              {/* ── Tableau ── */}
+              <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-start', overflowX: 'auto', pb: 2 }}>
+                {state.tableau.map((col, i) => (
+                  <TableauColumn key={i} cards={col} col={i} selected={state.selected} dispatch={dispatch}
+                    sol={sol} isValidTarget={validTableau[i]} darkBg={darkBg}
+                    lgSuit={lgSuit} lgRank={lgRank} onCardHover={onCardHover} />
+                ))}
+              </Box>
+
+            </Box>
+            {/* Legend right */}
+            {legendRight && <Box sx={{ zoom: sol?.legendScale ?? 1 }}>{legendEl}</Box>}
           </Box>
 
-          <Divider sx={{ mb: 2 }} />
-
-          {/* ── Tableau ── */}
-          <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-start', overflowX: 'auto', pb: 2 }}>
-            {state.tableau.map((col, i) => (
-              <TableauColumn key={i} cards={col} col={i} selected={state.selected} dispatch={dispatch} sol={sol} isValidTarget={validTableau[i]} />
-            ))}
-          </Box>
-
-          {/* ── Bottom: legend + rules toggles ── */}
+          {/* ── Bottom: rules ── */}
           <Divider sx={{ mt: 2, mb: 1 }} />
-          <Box sx={{ display: 'flex', gap: 1, mb: 0.5 }}>
-            <Button size="small" sx={{ opacity: 0.6 }} onClick={() => setShowLegend(v => !v)}>
-              {showLegend ? 'Hide legend' : 'Legend'}
-            </Button>
+          <Box sx={{ mb: 0.5 }}>
             <Button size="small" sx={{ opacity: 0.6 }} onClick={() => setShowRules(v => !v)}>
               {showRules ? 'Hide rules' : 'Rules'}
             </Button>
           </Box>
-          <Collapse in={showLegend}>
-            <Legend />
-          </Collapse>
           <Collapse in={showRules}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75, pt: 1 }}>
               <Typography variant="body2"><strong>Goal.</strong> Move all 52 cards onto the four foundation piles, one per suit, built up from Ace to King.</Typography>

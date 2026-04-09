@@ -20,16 +20,7 @@ body,
   min-height: 100%;
 }
 
-/* In fullscreen, fade the header to near-invisible until hovered; hide the footer */
-html:fullscreen          .app-header-bar,
-html:-webkit-full-screen .app-header-bar {
-  opacity: 0.05;
-  transition: opacity 0.2s ease;
-}
-html:fullscreen          .app-header-bar:hover,
-html:-webkit-full-screen .app-header-bar:hover {
-  opacity: 1;
-}
+/* In fullscreen, hide the footer only */
 html:fullscreen          .app-footer-bar,
 html:-webkit-full-screen .app-footer-bar {
   display: none !important;

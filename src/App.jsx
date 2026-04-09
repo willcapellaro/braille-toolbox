@@ -17,7 +17,7 @@ import {
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Link as RouterLink, Navigate, Route, Routes, useLocation } from 'react-router-dom';
-import { SolitaireSettingsProvider } from './context/SolitaireSettingsContext';
+import { SolitaireSettingsProvider, useSolitaireSettings } from './context/SolitaireSettingsContext';
 import SolitaireSettingsButton from './components/SolitaireSettingsButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSun, faMoon, faCircleHalfStroke, faSliders, faXmark, faExpand, faCompress } from '@fortawesome/free-solid-svg-icons';
@@ -325,14 +325,30 @@ function AppShell() {
   };
 
   const isSolitaire = location.pathname.startsWith('/games/solitaire');
+  const solSettings = useSolitaireSettings();
+  const solPadH = isSolitaire ? (solSettings?.padH ?? 0) : 0;
+  const solPadV = isSolitaire ? (solSettings?.padV ?? 0) : 0;
 
-  const [solPhase, setSolPhase] = useState('select'); // 'select' | 'playing'
-  const [solGameId, setSolGameId] = useState('klondike');
+  const [solPhase, setSolPhaseState] = useState(() => {
+    try { return localStorage.getItem('bt-sol-phase') || 'select'; } catch { return 'select'; }
+  });
+  const [solGameId, setSolGameIdState] = useState(() => {
+    try { return localStorage.getItem('bt-sol-gameid') || 'klondike'; } catch { return 'klondike'; }
+  });
+
+  const setSolPhase = (phase) => {
+    setSolPhaseState(phase);
+    try { localStorage.setItem('bt-sol-phase', phase); } catch {}
+  };
+  const setSolGameId = (id) => {
+    setSolGameIdState(id);
+    try { localStorage.setItem('bt-sol-gameid', id); } catch {}
+  };
 
   // Reset to select screen whenever user leaves the solitaire route
   useEffect(() => {
     if (!isSolitaire) setSolPhase('select');
-  }, [isSolitaire]);
+  }, [isSolitaire]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const gameName = GAME_NAME_MAP[solGameId] ?? 'Solitaire';
   const titleTarget = !isSolitaire ? BASE_TITLE
@@ -358,13 +374,17 @@ function AppShell() {
       openSiteSettings: (el) => setPopoverAnchor(el),
       solPhase, setSolPhase,
       solGameId, setSolGameId,
+      isSolitaire,
     }}>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Container maxWidth="lg" sx={{
+      <Container maxWidth={isSolitaire && solPadH > 0 ? false : 'lg'} sx={{
         py: 2, minWidth: 0,
-        '@media (min-width: 2560px)': { maxWidth: 1600, px: 6 },
-        '@media (min-width: 3840px)': { maxWidth: 2200, px: 10 },
+        px: isSolitaire && solPadH > 0 ? `${solPadH}px` : undefined,
+        pt: isSolitaire && solPadV > 0 ? `${solPadV}px` : 2,
+        pb: isSolitaire && solPadV > 0 ? `${solPadV}px` : 2,
+        '@media (min-width: 2560px)': !isSolitaire || solPadH === 0 ? { maxWidth: 1600, px: 6 } : {},
+        '@media (min-width: 3840px)': !isSolitaire || solPadH === 0 ? { maxWidth: 2200, px: 10 } : {},
       }}>
         <Box className="app-header-bar" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
           {/* Left: title + optional All Games button */}

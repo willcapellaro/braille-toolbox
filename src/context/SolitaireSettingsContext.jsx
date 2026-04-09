@@ -1,60 +1,121 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 const SolitaireSettingsContext = createContext(null);
 
-const DEFAULTS = {
-  cardOutline:  'always',
-  cellBounds:   'never',
-  brailleDots:  'always',
-  printOverlay: 'never',
-  printStyle:   'exact',
-  unraisedDots: 'never',
-  suitColor:    'off',
-  dropHints:    'on',
-  noSelect:     'on',
-  noScroll:     'off',
-  cardBg:       'white',
+// Each entry: { storage: localStorage suffix, default: value }
+const SETTING_META = {
+  cardOutline:  { storage: 'outline',    default: 'always' },
+  cellBounds:   { storage: 'bounds',     default: 'never'  },
+  brailleDots:  { storage: 'dots',       default: 'always' },
+  printOverlay: { storage: 'print',      default: 'never'  },
+  printStyle:   { storage: 'printstyle', default: 'exact'  },
+  unraisedDots: { storage: 'unraised',   default: 'never'  },
+  suitColor:    { storage: 'suit',       default: 'off'    },
+  dropHints:    { storage: 'drophints',  default: 'on'     },
+  noSelect:     { storage: 'noselect',   default: 'on'     },
+  noScroll:     { storage: 'noscroll',   default: 'off'    },
+  cardBg:           { storage: 'cardbg',       default: 'white'  },
+  cardScale:        { storage: 'cardscale',   default: 1.0      },
+  legendScale:      { storage: 'legendscale', default: 1.0      },
+  padV:             { storage: 'padv',        default: 0        },
+  padH:             { storage: 'padh',        default: 0        },
+  showLegend:       { storage: 'showlegend',  default: 'on'     },
+  legendPosition:   { storage: 'legendpos',   default: 'above'  },
+  legendHighlight:  { storage: 'legendhi',    default: 'off'    },
+  legendHover:      { storage: 'legendhover', default: 'off'    },
 };
 
-function load(key, def) {
-  try { return localStorage.getItem(key) ?? def; } catch { return def; }
+function lsGet(key, def) {
+  try { const v = localStorage.getItem(key); return v !== null ? v : String(def); } catch { return String(def); }
 }
-function save(key, val) {
-  try { localStorage.setItem(key, val); } catch {}
+function lsSet(key, val) {
+  try { localStorage.setItem(key, String(val)); } catch {}
+}
+function lsRemove(key) {
+  try { localStorage.removeItem(key); } catch {}
+}
+
+function profileStorageKey(profile, name) {
+  return `bt-sol-${profile}-${SETTING_META[name].storage}`;
+}
+
+function loadProfile(profile) {
+  const out = {};
+  for (const [name, meta] of Object.entries(SETTING_META)) {
+    const raw = lsGet(profileStorageKey(profile, name), meta.default);
+    const isNum = ['cardScale', 'legendScale', 'padV', 'padH'].includes(name);
+    out[name] = isNum ? (parseFloat(raw) ?? meta.default) : raw;
+  }
+  return out;
+}
+
+function clearProfile(profile) {
+  for (const name of Object.keys(SETTING_META)) {
+    lsRemove(profileStorageKey(profile, name));
+  }
+}
+
+function detectProfile() {
+  return typeof window !== 'undefined' && window.innerWidth < 600 ? 'phone' : 'large';
+}
+
+// Capitalize first letter to build setter names: cardOutline → setCardOutline
+function setterName(name) {
+  return 'set' + name.charAt(0).toUpperCase() + name.slice(1);
 }
 
 export function SolitaireSettingsProvider({ children }) {
-  const [cardOutline,  setCardOutline]  = useState(() => load('bt-sol-outline',    DEFAULTS.cardOutline));
-  const [cellBounds,   setCellBounds]   = useState(() => load('bt-sol-bounds',     DEFAULTS.cellBounds));
-  const [brailleDots,  setBrailleDots]  = useState(() => load('bt-sol-dots',       DEFAULTS.brailleDots));
-  const [printOverlay, setPrintOverlay] = useState(() => load('bt-sol-print',      DEFAULTS.printOverlay));
-  const [printStyle,   setPrintStyle]   = useState(() => load('bt-sol-printstyle', DEFAULTS.printStyle));
-  const [unraisedDots, setUnraisedDots] = useState(() => load('bt-sol-unraised',   DEFAULTS.unraisedDots));
-  const [suitColor,    setSuitColor]    = useState(() => load('bt-sol-suit',       DEFAULTS.suitColor));
-  const [dropHints,    setDropHints]    = useState(() => load('bt-sol-drophints',  DEFAULTS.dropHints));
-  const [noSelect,     setNoSelect]     = useState(() => load('bt-sol-noselect',   DEFAULTS.noSelect));
-  const [noScroll,     setNoScroll]     = useState(() => load('bt-sol-noscroll',   DEFAULTS.noScroll));
-  const [cardBg,       setCardBg]       = useState(() => load('bt-sol-cardbg',     DEFAULTS.cardBg));
+  const [profileMode, setProfileModeState] = useState(() => lsGet('bt-sol-profilemode', 'auto'));
+  const [detectedProfile, setDetectedProfile] = useState(() => detectProfile());
 
-  const set = (setter, key) => (_, v) => {
-    if (v == null) return;
-    setter(v); save(key, v);
+  const activeProfile = profileMode === 'auto' ? detectedProfile : profileMode;
+
+  const [settings, setSettings] = useState(() => loadProfile(activeProfile));
+
+  // Re-detect on resize
+  useEffect(() => {
+    const check = () => setDetectedProfile(detectProfile());
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
+  // Reload settings when active profile changes
+  useEffect(() => {
+    setSettings(loadProfile(activeProfile));
+  }, [activeProfile]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const setProfileMode = (mode) => {
+    setProfileModeState(mode);
+    lsSet('bt-sol-profilemode', mode);
   };
 
+  // Returns an onChange handler (_, value) compatible with MUI ToggleButtonGroup and Slider
+  const makeSetter = (name) => (_, v) => {
+    if (v == null) return;
+    const isNum = ['cardScale', 'legendScale', 'padV', 'padH'].includes(name);
+    const val = isNum ? (parseFloat(v) ?? SETTING_META[name].default) : v;
+    setSettings(prev => ({ ...prev, [name]: val }));
+    lsSet(profileStorageKey(activeProfile, name), val);
+  };
+
+  const clearSettings = () => {
+    clearProfile(activeProfile);
+    setSettings(loadProfile(activeProfile));
+  };
+
+  const ctx = {
+    ...settings,
+    profileMode,
+    setProfileMode,
+    activeProfile,
+    clearSettings,
+  };
+  for (const name of Object.keys(SETTING_META)) {
+    ctx[setterName(name)] = makeSetter(name);
+  }
+
   return (
-    <SolitaireSettingsContext.Provider value={{
-      cardOutline,  setCardOutline:  set(setCardOutline,  'bt-sol-outline'),
-      cellBounds,   setCellBounds:   set(setCellBounds,   'bt-sol-bounds'),
-      brailleDots,  setBrailleDots:  set(setBrailleDots,  'bt-sol-dots'),
-      printOverlay, setPrintOverlay: set(setPrintOverlay, 'bt-sol-print'),
-      printStyle,   setPrintStyle:   set(setPrintStyle,   'bt-sol-printstyle'),
-      unraisedDots, setUnraisedDots: set(setUnraisedDots, 'bt-sol-unraised'),
-      suitColor,    setSuitColor:    set(setSuitColor,    'bt-sol-suit'),
-      dropHints,    setDropHints:    set(setDropHints,    'bt-sol-drophints'),
-      noSelect,     setNoSelect:     set(setNoSelect,     'bt-sol-noselect'),
-      noScroll,     setNoScroll:     set(setNoScroll,     'bt-sol-noscroll'),
-      cardBg,       setCardBg:       set(setCardBg,       'bt-sol-cardbg'),
-    }}>
+    <SolitaireSettingsContext.Provider value={ctx}>
       {children}
     </SolitaireSettingsContext.Provider>
   );
