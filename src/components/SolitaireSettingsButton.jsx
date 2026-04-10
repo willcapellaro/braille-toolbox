@@ -231,11 +231,13 @@ export default function SolitaireSettingsButton() {
               <ToggleButton value="off">Off</ToggleButton>
               <ToggleButton value="on">On</ToggleButton>
             </ToggleButtonGroup>
-            <Typography variant="caption">Card highlight legend</Typography>
-            <ToggleButtonGroup exclusive size="small" value={sol.legendHover} onChange={sol.setLegendHover}>
-              <ToggleButton value="off">Off</ToggleButton>
-              <ToggleButton value="on">On</ToggleButton>
-            </ToggleButtonGroup>
+            {sol.legendHighlight === 'on' && (<>
+              <Typography variant="caption">Focus on selected card</Typography>
+              <ToggleButtonGroup exclusive size="small" value={sol.legendHover} onChange={sol.setLegendHover}>
+                <ToggleButton value="off">Off</ToggleButton>
+                <ToggleButton value="on">On</ToggleButton>
+              </ToggleButtonGroup>
+            </>)}
           </>)}
 
           <Divider />

@@ -269,7 +269,7 @@ function CellWithPrint({ cell, dotColor, showPrintOverlay, printStyle }) {
 
 // ── Card rendering ────────────────────────────────────────────────────────────
 
-function PlayingCard({ card, selected, onClick, faceDown, sol, isValidTarget, legendHighlighted, onCardHover, darkBg }) {
+function PlayingCard({ card, selected, onClick, faceDown, sol, isValidTarget, legendHighlighted, darkBg }) {
   if (faceDown || !card.faceUp) {
     return (
       <Box onClick={onClick} sx={{
@@ -337,8 +337,6 @@ function PlayingCard({ card, selected, onClick, faceDown, sol, isValidTarget, le
   return (
     <Box
       onClick={onClick}
-      onMouseEnter={onCardHover ? () => onCardHover({ suit: card.suit, rank: card.rank }) : undefined}
-      onMouseLeave={onCardHover ? () => onCardHover(null) : undefined}
       sx={{
         width: CARD_W, height: CARD_H,
         border: '1.5px solid',
@@ -396,7 +394,7 @@ function EmptySlot({ onClick, suitDots, isValidTarget }) {
 
 // ── Tableau column ────────────────────────────────────────────────────────────
 
-function TableauColumn({ cards, col, selected, dispatch, sol, isValidTarget, lgSuit, lgRank, onCardHover, darkBg }) {
+function TableauColumn({ cards, col, selected, dispatch, sol, isValidTarget, lgSuit, lgRank, darkBg }) {
   const [elevatedIdx, setElevatedIdx] = useState(null);
   const selectedSrc = selected?.source === 'tableau' && selected?.col === col;
 
@@ -447,7 +445,6 @@ function TableauColumn({ cards, col, selected, dispatch, sol, isValidTarget, lgS
                 sol={sol}
                 isValidTarget={isTop ? isValidTarget : false}
                 legendHighlighted={card.faceUp && ((lgSuit && card.suit === lgSuit) || (lgRank && card.rank === lgRank))}
-                onCardHover={onCardHover}
                 darkBg={darkBg}
                 onClick={() => {
                   if (!card.faceUp) dispatch({ type: 'FLIP_TABLEAU', col });
@@ -541,46 +538,46 @@ function LegendTenItem({ highlighted, dimmed, darkBg, hoverProps, color }) {
   );
 }
 
-function Legend({ sol, visibleSuits, visibleRanks, hoveredCardSig, onHoverKey, darkBg }) {
+function Legend({ sol, visibleSuits, visibleRanks, selectedCard, onHoverKey, darkBg }) {
   const highlightOn = sol?.legendHighlight === 'on';
-  const hoverOn     = sol?.legendHover === 'on';
+  const focusOn     = sol?.legendHover === 'on';
   const vertical    = sol?.legendPosition === 'right';
   const ink = 'var(--bt-ink)';
 
   const suitDotColor = (s) => sol?.suitColor === 'on' ? SUIT_COLOR[s] : ink;
 
-  const isHi = (type, val) => {
-    const fromVis  = highlightOn && (type === 'suit' ? visibleSuits.has(val) : visibleRanks.has(val));
-    const fromCard = hoverOn && hoveredCardSig && (type === 'suit' ? hoveredCardSig.suit === val : hoveredCardSig.rank === val);
-    return fromVis || fromCard;
+  const isHi = (type, val) =>
+    highlightOn && (type === 'suit' ? visibleSuits.has(val) : visibleRanks.has(val));
+
+  // When a card is selected and focus mode is on, dim highlighted cells that don't match it
+  const isDimmed = (type, val) => {
+    if (!focusOn || !selectedCard) return false;
+    if (!isHi(type, val)) return false;
+    return type === 'suit' ? selectedCard.suit !== val : selectedCard.rank !== val;
   };
 
-  // Any cell highlighted? If so, non-highlighted cells dim.
-  const anyHi = (highlightOn && (visibleSuits.size > 0 || visibleRanks.size > 0))
-    || (hoverOn && hoveredCardSig != null);
-
-  const hp = (key) => hoverOn
+  const hp = (key) => onHoverKey
     ? { onMouseEnter: () => onHoverKey(key), onMouseLeave: () => onHoverKey(null) }
     : {};
 
   const suitEls = SUITS.map(s => {
     const hi = isHi('suit', s);
     return <LegendCellItem key={s} dots={SUIT_DOTS[s]} caption={`${SUIT_LETTER[s]} ${SUIT_PRINT[s]}`}
-      color={suitDotColor(s)} highlighted={hi} dimmed={anyHi && !hi} darkBg={darkBg} hoverProps={hp('suit:' + s)} />;
+      color={suitDotColor(s)} highlighted={hi} dimmed={isDimmed('suit', s)} darkBg={darkBg} hoverProps={hp('suit:' + s)} />;
   });
 
   const capEls = CAP_ITEMS.map(({ rank, dots, caption }) => {
     const hi = isHi('rank', rank);
     return <LegendCellItem key={rank} dots={dots} caption={caption}
-      color={ink} highlighted={hi} dimmed={anyHi && !hi} darkBg={darkBg} hoverProps={hp('rank:' + rank)} />;
+      color={ink} highlighted={hi} dimmed={isDimmed('rank', rank)} darkBg={darkBg} hoverProps={hp('rank:' + rank)} />;
   });
 
   const numOrder = vertical ? NUM_ITEMS : [...NUM_ITEMS].reverse();
   const numEls = numOrder.map(({ rank, ten, dots, caption }) => {
     const hi = isHi('rank', rank);
     return ten
-      ? <LegendTenItem key={rank} highlighted={hi} dimmed={anyHi && !hi} darkBg={darkBg} color={ink} hoverProps={hp('rank:' + rank)} />
-      : <LegendCellItem key={rank} dots={dots} caption={caption} color={ink} highlighted={hi} dimmed={anyHi && !hi} darkBg={darkBg} hoverProps={hp('rank:' + rank)} />;
+      ? <LegendTenItem key={rank} highlighted={hi} dimmed={isDimmed('rank', rank)} darkBg={darkBg} color={ink} hoverProps={hp('rank:' + rank)} />
+      : <LegendCellItem key={rank} dots={dots} caption={caption} color={ink} highlighted={hi} dimmed={isDimmed('rank', rank)} darkBg={darkBg} hoverProps={hp('rank:' + rank)} />;
   });
 
   if (vertical) {
@@ -690,7 +687,6 @@ export default function SolitairePage() {
   const { solPhase: gamePhase, setSolPhase: setGamePhase, solGameId: gameId, setSolGameId: setGameId } = useSiteSettings();
   const [showRules, setShowRules] = useState(false);
   const [hoveredLegendKey, setHoveredLegendKey] = useState(null);
-  const [hoveredCardSig, setHoveredCardSig] = useState(null);
   const sol = useSolitaireSettings();
   const theme = useTheme();
   const won = isWon(state.foundations);
@@ -733,12 +729,10 @@ export default function SolitairePage() {
     ? state.foundations.map(pile => canPlaceOnFoundation(movingCard, pile))
     : Array(4).fill(false);
 
-  // Legend hover/highlight derived state
+  // Legend hover key → card highlight
   const legendHoverOn = sol?.legendHover === 'on';
   const lgSuit = legendHoverOn && hoveredLegendKey?.startsWith('suit:') ? hoveredLegendKey.slice(5) : null;
   const lgRank = legendHoverOn && hoveredLegendKey?.startsWith('rank:') ? hoveredLegendKey.slice(5) : null;
-  // onCardHover always fires so legend can react; Legend component decides whether to use it
-  const onCardHover = setHoveredCardSig;
 
   // Visible face-up cards (for legend highlight)
   const visibleCards = [
@@ -754,7 +748,7 @@ export default function SolitairePage() {
       sol={sol}
       visibleSuits={visibleSuits}
       visibleRanks={visibleRanks}
-      hoveredCardSig={legendHoverOn ? hoveredCardSig : null}
+      selectedCard={movingCard}
       onHoverKey={setHoveredLegendKey}
       darkBg={darkBg}
     />
@@ -814,7 +808,7 @@ export default function SolitairePage() {
                 <Box onClick={() => wasteTop && dispatch({ type: 'SELECT_WASTE' })}>
                   {wasteTop
                     ? <PlayingCard card={wasteTop} selected={wasteSelected} sol={sol} darkBg={darkBg}
-                        legendHighlighted={cardIsLH(wasteTop)} onCardHover={onCardHover}
+                        legendHighlighted={cardIsLH(wasteTop)}
                         onClick={() => dispatch({ type: 'SELECT_WASTE' })} />
                     : <EmptySlot />
                   }
@@ -824,7 +818,7 @@ export default function SolitairePage() {
                   <Box key={i} onClick={() => dispatch({ type: 'SELECT_FOUNDATION', pile: i })}>
                     {pile.length > 0
                       ? <PlayingCard card={pile[pile.length - 1]} sol={sol} isValidTarget={validFoundations[i]} darkBg={darkBg}
-                          legendHighlighted={cardIsLH(pile[pile.length - 1])} onCardHover={onCardHover}
+                          legendHighlighted={cardIsLH(pile[pile.length - 1])}
                           onClick={() => dispatch({ type: 'SELECT_FOUNDATION', pile: i })} />
                       : <EmptySlot suitDots={SUIT_DOTS[SUITS[i]]} isValidTarget={validFoundations[i]} onClick={() => dispatch({ type: 'SELECT_FOUNDATION', pile: i })} />
                     }
@@ -839,7 +833,7 @@ export default function SolitairePage() {
                 {state.tableau.map((col, i) => (
                   <TableauColumn key={i} cards={col} col={i} selected={state.selected} dispatch={dispatch}
                     sol={sol} isValidTarget={validTableau[i]} darkBg={darkBg}
-                    lgSuit={lgSuit} lgRank={lgRank} onCardHover={onCardHover} />
+                    lgSuit={lgSuit} lgRank={lgRank} />
                 ))}
               </Box>
 
