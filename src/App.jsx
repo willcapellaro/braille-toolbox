@@ -171,7 +171,6 @@ export default function App() {
 }
 
 const BASE_TITLE = 'Braille Toolbox';
-const SOL_TITLE  = 'Braille Solitaire';
 
 // Custom typewriter: never remounts; on target change, backspaces to the common prefix then retypes.
 function useTypewriter(target, typeMs = 55, deleteMs = 40, initialDelay = 150) {
@@ -326,8 +325,9 @@ function AppShell() {
 
   const isSolitaire = location.pathname.startsWith('/games/solitaire');
   const solSettings = useSolitaireSettings();
-  const solPadH = isSolitaire ? (solSettings?.padH ?? 0) : 0;
-  const solPadV = isSolitaire ? (solSettings?.padV ?? 0) : 0;
+  const useCustomMargins = isSolitaire && solSettings?.marginMode === 'custom';
+  const solPadH = useCustomMargins ? (solSettings?.padH ?? 24) : 0;
+  const solPadV = useCustomMargins ? (solSettings?.padV ?? 16) : 0;
 
   const [solPhase, setSolPhaseState] = useState(() => {
     try { return localStorage.getItem('bt-sol-phase') || 'select'; } catch { return 'select'; }
@@ -378,13 +378,11 @@ function AppShell() {
     }}>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Container maxWidth={isSolitaire && solPadH > 0 ? false : 'lg'} sx={{
+      <Container maxWidth={useCustomMargins ? false : 'lg'} disableGutters={useCustomMargins} sx={{
         py: 2, minWidth: 0,
-        px: isSolitaire && solPadH > 0 ? `${solPadH}px` : undefined,
-        pt: isSolitaire && solPadV > 0 ? `${solPadV}px` : 2,
-        pb: isSolitaire && solPadV > 0 ? `${solPadV}px` : 2,
-        '@media (min-width: 2560px)': !isSolitaire || solPadH === 0 ? { maxWidth: 1600, px: 6 } : {},
-        '@media (min-width: 3840px)': !isSolitaire || solPadH === 0 ? { maxWidth: 2200, px: 10 } : {},
+        ...(useCustomMargins && { paddingLeft: `${solPadH}px !important`, paddingRight: `${solPadH}px !important`, pt: `${solPadV}px`, pb: `${solPadV}px` }),
+        '@media (min-width: 2560px)': !useCustomMargins ? { maxWidth: 1600, px: 6 } : {},
+        '@media (min-width: 3840px)': !useCustomMargins ? { maxWidth: 2200, px: 10 } : {},
       }}>
         <Box className="app-header-bar" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
           {/* Left: title + optional All Games button */}

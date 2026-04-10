@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Box, Button, Divider, IconButton, Popover, Slider, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import { useSolitaireSettings } from '../context/SolitaireSettingsContext.jsx';
 
-// Reads actual browser APIs — no interpretation beyond what the API says
+// Reads actual browser APIs:no interpretation beyond what the API says
 function useDeviceInfo() {
   const [info, setInfo] = useState(null);
   useEffect(() => {
@@ -42,7 +42,7 @@ export default function SolitaireSettingsButton() {
   const [anchor, setAnchor] = useState(null);
   const sol = useSolitaireSettings();
   const info = useDeviceInfo();
-  // Local display values for layout-reflow sliders — only committed on mouse/touch release
+  // Local display values for layout-reflow sliders:only committed on mouse/touch release
   const [draftPadV, setDraftPadV] = useState(null);
   const [draftPadH, setDraftPadH] = useState(null);
   if (!sol) return null;
@@ -93,7 +93,7 @@ export default function SolitaireSettingsButton() {
           </ToggleButtonGroup>
 
           {/* ── Card scale ── */}
-          <Typography variant="caption">Card scale — {sol.activeProfile} ({Math.round(sol.cardScale * 100)}%)</Typography>
+          <Typography variant="caption">Card scale:{sol.activeProfile} ({Math.round(sol.cardScale * 100)}%)</Typography>
           <Box sx={{ px: 1 }}>
             <Slider
               size="small" min={0.25} max={5.0} step={0.05}
@@ -105,7 +105,7 @@ export default function SolitaireSettingsButton() {
           </Box>
 
           {/* ── Legend scale ── */}
-          <Typography variant="caption">Legend scale — {sol.activeProfile} ({Math.round(sol.legendScale * 100)}%)</Typography>
+          <Typography variant="caption">Legend scale:{sol.activeProfile} ({Math.round(sol.legendScale * 100)}%)</Typography>
           <Box sx={{ px: 1 }}>
             <Slider
               size="small" min={0.25} max={5.0} step={0.05}
@@ -117,7 +117,14 @@ export default function SolitaireSettingsButton() {
           </Box>
 
           {/* ── Padding ── */}
-          <Typography variant="caption">Padding vertical — {padVDisplay}px</Typography>
+          <Typography variant="caption">Page margins</Typography>
+          <ToggleButtonGroup exclusive size="small" value={sol.marginMode}
+            onChange={(_, v) => { if (v) sol.setMarginMode(null, v); }}>
+            <ToggleButton value="site">Site</ToggleButton>
+            <ToggleButton value="custom">Custom</ToggleButton>
+          </ToggleButtonGroup>
+          {sol.marginMode === 'custom' && (<>
+          <Typography variant="caption">Padding vertical:{padVDisplay}px</Typography>
           <Box sx={{ px: 1 }}>
             <Slider
               size="small" min={0} max={600} step={4}
@@ -128,7 +135,7 @@ export default function SolitaireSettingsButton() {
               aria-label="Padding vertical"
             />
           </Box>
-          <Typography variant="caption">Padding horizontal — {padHDisplay}px</Typography>
+          <Typography variant="caption">Padding horizontal:{padHDisplay}px</Typography>
           <Box sx={{ px: 1 }}>
             <Slider
               size="small" min={0} max={600} step={4}
@@ -139,6 +146,7 @@ export default function SolitaireSettingsButton() {
               aria-label="Padding horizontal"
             />
           </Box>
+          </>)}
 
           <Divider />
 
