@@ -17,6 +17,7 @@ const SETTING_META = {
   cardBg:           { storage: 'cardbg',       default: 'white'  },
   cardScale:        { storage: 'cardscale',   default: 1.0      },
   legendScale:      { storage: 'legendscale', default: 1.0      },
+  fanSpread:        { storage: 'fanspread',   default: 1.0      },
   marginMode:       { storage: 'marginmode',  default: 'site'   },
   padV:             { storage: 'padv',        default: 16       },
   padH:             { storage: 'padh',        default: 24       },
@@ -44,7 +45,7 @@ function loadProfile(profile) {
   const out = {};
   for (const [name, meta] of Object.entries(SETTING_META)) {
     const raw = lsGet(profileStorageKey(profile, name), meta.default);
-    const isNum = ['cardScale', 'legendScale', 'padV', 'padH'].includes(name);
+    const isNum = ['cardScale', 'legendScale', 'padV', 'padH', 'fanSpread'].includes(name);
     out[name] = isNum ? (parseFloat(raw) ?? meta.default) : raw;
   }
   return out;
@@ -93,7 +94,7 @@ export function SolitaireSettingsProvider({ children }) {
   // Returns an onChange handler (_, value) compatible with MUI ToggleButtonGroup and Slider
   const makeSetter = (name) => (_, v) => {
     if (v == null) return;
-    const isNum = ['cardScale', 'legendScale', 'padV', 'padH'].includes(name);
+    const isNum = ['cardScale', 'legendScale', 'padV', 'padH', 'fanSpread'].includes(name);
     const val = isNum ? (parseFloat(v) ?? SETTING_META[name].default) : v;
     setSettings(prev => ({ ...prev, [name]: val }));
     lsSet(profileStorageKey(activeProfile, name), val);

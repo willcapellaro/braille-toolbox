@@ -229,8 +229,8 @@ const CARD_PAD   = 6;
 const CELL_GAP   = 3;
 const CARD_W     = 3 * CELL_W + 2 * CELL_GAP + 2 * CARD_PAD;  // 3×28 + 2×3 + 2×6 = 102
 const CARD_H     = Math.round(CARD_W * 1.55);                  // ~158
-const STACK_PEEK = 18; // px each face-down card peeks below the one above it
-const FACE_PEEK  = 28; // px each face-up card peeks
+const STACK_PEEK_BASE = 18;
+const FACE_PEEK_BASE  = 28;
 
 // ── Cell with optional print overlay ─────────────────────────────────────────
 
@@ -394,13 +394,13 @@ function EmptySlot({ onClick, suitDots, isValidTarget }) {
 
 // ── Tableau column ────────────────────────────────────────────────────────────
 
-function TableauColumn({ cards, col, selected, dispatch, sol, isValidTarget, lgSuit, lgRank, darkBg }) {
+function TableauColumn({ cards, col, selected, dispatch, sol, isValidTarget, lgSuit, lgRank, darkBg, facePeek, stackPeek }) {
   const [elevatedIdx, setElevatedIdx] = useState(null);
   const selectedSrc = selected?.source === 'tableau' && selected?.col === col;
 
   const colHeight = cards.length === 0
     ? CARD_H
-    : cards.slice(0, -1).reduce((acc, c) => acc + (c.faceUp ? FACE_PEEK : STACK_PEEK), 0) + CARD_H;
+    : cards.slice(0, -1).reduce((acc, c) => acc + (c.faceUp ? facePeek : stackPeek), 0) + CARD_H;
 
   const handleMouseMove = (e) => {
     // Disable peek elevation while a card is selected
@@ -408,7 +408,7 @@ function TableauColumn({ cards, col, selected, dispatch, sol, isValidTarget, lgS
     const y = e.clientY - e.currentTarget.getBoundingClientRect().top;
     let cumY = 0;
     for (let i = 0; i < cards.length - 1; i++) {
-      const peek = cards[i].faceUp ? FACE_PEEK : STACK_PEEK;
+      const peek = cards[i].faceUp ? facePeek : stackPeek;
       if (y >= cumY && y < cumY + peek) {
         setElevatedIdx(cards[i].faceUp ? i : null);
         return;
@@ -432,7 +432,7 @@ function TableauColumn({ cards, col, selected, dispatch, sol, isValidTarget, lgS
       ) : (
         cards.map((card, idx) => {
           const offsetY = cards.slice(0, idx).reduce((acc, c) => {
-            return acc + (c.faceUp ? FACE_PEEK : STACK_PEEK);
+            return acc + (c.faceUp ? facePeek : stackPeek);
           }, 0);
           const isInSelection = selectedSrc && idx >= selected.idx;
           const isElevated = idx === elevatedIdx && !selected;
@@ -729,6 +729,10 @@ export default function SolitairePage() {
     ? state.foundations.map(pile => canPlaceOnFoundation(movingCard, pile))
     : Array(4).fill(false);
 
+  const fanSpread = sol?.fanSpread ?? 1.0;
+  const facePeek  = Math.round(FACE_PEEK_BASE  * fanSpread);
+  const stackPeek = Math.round(STACK_PEEK_BASE * fanSpread);
+
   // Legend hover key → card highlight
   const legendHoverOn = sol?.legendHover === 'on';
   const lgSuit = legendHoverOn && hoveredLegendKey?.startsWith('suit:') ? hoveredLegendKey.slice(5) : null;
@@ -820,7 +824,7 @@ export default function SolitairePage() {
                       ? <PlayingCard card={pile[pile.length - 1]} sol={sol} isValidTarget={validFoundations[i]} darkBg={darkBg}
                           legendHighlighted={cardIsLH(pile[pile.length - 1])}
                           onClick={() => dispatch({ type: 'SELECT_FOUNDATION', pile: i })} />
-                      : <EmptySlot suitDots={SUIT_DOTS[SUITS[i]]} isValidTarget={validFoundations[i]} onClick={() => dispatch({ type: 'SELECT_FOUNDATION', pile: i })} />
+                      : <EmptySlot isValidTarget={validFoundations[i]} onClick={() => dispatch({ type: 'SELECT_FOUNDATION', pile: i })} />
                     }
                   </Box>
                 ))}
@@ -833,7 +837,7 @@ export default function SolitairePage() {
                 {state.tableau.map((col, i) => (
                   <TableauColumn key={i} cards={col} col={i} selected={state.selected} dispatch={dispatch}
                     sol={sol} isValidTarget={validTableau[i]} darkBg={darkBg}
-                    lgSuit={lgSuit} lgRank={lgRank} />
+                    lgSuit={lgSuit} lgRank={lgRank} facePeek={facePeek} stackPeek={stackPeek} />
                 ))}
               </Box>
 

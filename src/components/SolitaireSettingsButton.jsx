@@ -116,6 +116,18 @@ export default function SolitaireSettingsButton() {
             />
           </Box>
 
+          {/* ── Fan spread ── */}
+          <Typography variant="caption">Fan spread: {Math.round(sol.fanSpread * 100)}%</Typography>
+          <Box sx={{ px: 1 }}>
+            <Slider
+              size="small" min={0.25} max={3.0} step={0.05}
+              value={sol.fanSpread}
+              onChange={sol.setFanSpread}
+              marks={[{ value: 0.25 }, { value: 1.0 }, { value: 3.0 }]}
+              aria-label="Fan spread"
+            />
+          </Box>
+
           {/* ── Padding ── */}
           <Typography variant="caption">Page margins</Typography>
           <ToggleButtonGroup exclusive size="small" value={sol.marginMode}
