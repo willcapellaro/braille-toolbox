@@ -14,13 +14,13 @@ import {
   createTheme,
   useMediaQuery,
 } from '@mui/material';
-import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 import { Link as RouterLink, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { SolitaireSettingsProvider, useSolitaireSettings } from './context/SolitaireSettingsContext';
 import SolitaireSettingsButton from './components/SolitaireSettingsButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSun, faMoon, faCircleHalfStroke, faSliders, faXmark, faExpand, faCompress } from '@fortawesome/free-solid-svg-icons';
+import { faSun, faMoon, faCircleHalfStroke, faSliders, faXmark, faExpand, faCompress, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import AboutPage from './pages/AboutPage';
 import ArchivePage from './pages/ArchivePage';
 import QuickRefPage from './pages/QuickRefPage';
@@ -155,10 +155,100 @@ export function useSiteSettings() { return useContext(SiteSettingsContext); }
 
 const GAME_NAME_MAP = {
   klondike: 'Klondike',
+  blackjack: 'Blackjack',
   freecell: 'FreeCell',
   'lady-jane': 'Lady Jane',
   'forty-thieves': 'Forty Thieves',
 };
+
+// ── Breadcrumb map ────────────────────────────────────────────────────────────
+
+const BREADCRUMB_MAP = {
+  '/':          null,
+  '/quickref':  null,
+  '/learn':     'Learn',
+  '/about':     'About',
+  '/archive':   'More Tools',
+  '/games':     'Games',
+  '/games/solitaire': 'Solitaire',
+  '/admin':     'Admin',
+};
+
+// ── Sticky site header ────────────────────────────────────────────────────────
+
+const QUICKREF_PATHS = new Set(['/', '/quickref', '/learn']);
+
+function AppHeader({ titleText, isSolitaire, solPhase, setSolPhase, isFullscreen, toggleFullscreen, sidebarOpen, setSidebarOpen, popoverAnchor, setPopoverAnchor }) {
+  const location = useLocation();
+  const isQuickRef = QUICKREF_PATHS.has(location.pathname);
+  const breadcrumb = BREADCRUMB_MAP[location.pathname] ?? null;
+  const prefersDark = useMediaQuery('(prefers-color-scheme: dark)');
+
+  return (
+    <Box
+      component="header"
+      sx={{
+        position: 'sticky', top: 0, zIndex: 20,
+        bgcolor: 'background.default',
+        borderBottom: '1px solid', borderColor: 'divider',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        px: { xs: 1.5, sm: 2 }, height: 48, minWidth: 0,
+        // Full opacity when sidebar drawer is open on mobile/tablet
+        opacity: isQuickRef && sidebarOpen ? 1 : undefined,
+        zIndex: isQuickRef && sidebarOpen ? 1300 : 20,
+      }}
+    >
+      {/* Left: sidebar toggle (quickref paths) + title + breadcrumb */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0, overflow: 'hidden' }}>
+        {isQuickRef && (
+          <IconButton
+            size="small"
+            onClick={() => setSidebarOpen(o => !o)}
+            title={sidebarOpen ? 'Collapse nav' : 'Expand nav'}
+            sx={{ color: 'text.secondary', flexShrink: 0 }}
+          >
+            <FontAwesomeIcon icon={sidebarOpen ? faChevronLeft : faChevronRight} style={{ fontSize: '0.75rem' }} />
+          </IconButton>
+        )}
+        <Typography
+          variant="subtitle1"
+          component="p"
+          sx={{ fontWeight: 600, lineHeight: 1, whiteSpace: 'nowrap', flexShrink: 0 }}
+        >
+          <MuiLink component={RouterLink} to="/" underline="none" color="inherit">
+            {titleText}
+          </MuiLink>
+        </Typography>
+        {breadcrumb && (
+          <>
+            <Typography variant="body2" color="text.disabled" sx={{ flexShrink: 0 }}>/</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {breadcrumb}
+            </Typography>
+          </>
+        )}
+        {isSolitaire && solPhase === 'playing' && (
+          <Button size="small" sx={{ opacity: 0.6, flexShrink: 0 }} onClick={() => setSolPhase('select')}>
+            All Games
+          </Button>
+        )}
+      </Box>
+
+      {/* Right: icons */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexShrink: 0 }}>
+        {isSolitaire && (
+          <IconButton size="small" onClick={toggleFullscreen} sx={{ color: 'text.primary' }} title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}>
+            <FontAwesomeIcon icon={isFullscreen ? faCompress : faExpand} />
+          </IconButton>
+        )}
+        {isSolitaire && <SolitaireSettingsButton />}
+        <IconButton size="small" onClick={e => setPopoverAnchor(e.currentTarget)} sx={{ color: 'text.primary' }} title="Site settings">
+          <FontAwesomeIcon icon={faSliders} />
+        </IconButton>
+      </Box>
+    </Box>
+  );
+}
 
 // ── App ───────────────────────────────────────────────────────────────────────
 
@@ -172,39 +262,6 @@ export default function App() {
 
 const BASE_TITLE = 'Braille Toolbox';
 
-// Custom typewriter: never remounts; on target change, backspaces to the common prefix then retypes.
-function useTypewriter(target, typeMs = 55, deleteMs = 40, initialDelay = 150) {
-  const [displayed, setDisplayed] = useState('');
-  const displayedRef = useRef('');
-  const targetRef = useRef(target);
-  const timerRef = useRef(null);
-  const startedRef = useRef(false);
-
-  useEffect(() => {
-    targetRef.current = target;
-    clearTimeout(timerRef.current);
-    function tick() {
-      const cur = displayedRef.current;
-      const tgt = targetRef.current;
-      if (cur === tgt) return;
-      if (cur.length > 0 && !tgt.startsWith(cur)) {
-        displayedRef.current = cur.slice(0, -1);
-        setDisplayed(displayedRef.current);
-        timerRef.current = setTimeout(tick, deleteMs);
-      } else if (cur.length < tgt.length) {
-        displayedRef.current = tgt.slice(0, cur.length + 1);
-        setDisplayed(displayedRef.current);
-        timerRef.current = setTimeout(tick, typeMs);
-      }
-    }
-    const delay = startedRef.current ? 0 : initialDelay;
-    startedRef.current = true;
-    timerRef.current = setTimeout(tick, delay);
-    return () => clearTimeout(timerRef.current);
-  }, [target, typeMs, deleteMs, initialDelay]);
-
-  return displayed;
-}
 
 function AppShell() {
   const location = useLocation();
@@ -235,6 +292,7 @@ function AppShell() {
     try { return localStorage.getItem('bt-custom-paper') || null; } catch { return null; }
   });
   const [popoverAnchor, setPopoverAnchor] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const hasCustom = Boolean(customInk || customPaper);
 
@@ -325,9 +383,6 @@ function AppShell() {
 
   const isSolitaire = location.pathname.startsWith('/games/solitaire');
   const solSettings = useSolitaireSettings();
-  const useCustomMargins = isSolitaire && solSettings?.marginMode === 'custom';
-  const solPadH = useCustomMargins ? (solSettings?.padH ?? 24) : 0;
-  const solPadV = useCustomMargins ? (solSettings?.padV ?? 16) : 0;
 
   const [solPhase, setSolPhaseState] = useState(() => {
     try { return localStorage.getItem('bt-sol-phase') || 'select'; } catch { return 'select'; }
@@ -350,11 +405,15 @@ function AppShell() {
     if (!isSolitaire) setSolPhase('select');
   }, [isSolitaire]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const useCustomMargins = isSolitaire && solPhase === 'playing' && solSettings?.marginMode === 'custom';
+  const solPadH = useCustomMargins ? (solSettings?.padH ?? 24) : 0;
+  const solPadV = useCustomMargins ? (solSettings?.padV ?? 16) : 0;
+
   const gameName = GAME_NAME_MAP[solGameId] ?? 'Solitaire';
   const titleTarget = !isSolitaire ? BASE_TITLE
     : solPhase === 'playing' ? `Braille ${gameName}`
     : 'Braille Games';
-  const titleText = useTypewriter(titleTarget);
+  const titleText = titleTarget;
 
   const [isFullscreen, setIsFullscreen] = useState(false);
   useEffect(() => {
@@ -375,42 +434,30 @@ function AppShell() {
       solPhase, setSolPhase,
       solGameId, setSolGameId,
       isSolitaire,
+      sidebarOpen, setSidebarOpen,
     }}>
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      {/* ── Sticky site header ── */}
+      <AppHeader
+        titleText={titleText}
+        isSolitaire={isSolitaire}
+        solPhase={solPhase}
+        setSolPhase={setSolPhase}
+        isFullscreen={isFullscreen}
+        toggleFullscreen={toggleFullscreen}
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+        popoverAnchor={popoverAnchor}
+        setPopoverAnchor={setPopoverAnchor}
+      />
       <Container maxWidth={useCustomMargins ? false : 'lg'} disableGutters={useCustomMargins} sx={{
-        py: 2, minWidth: 0,
+        pt: 1, pb: 2, minWidth: 0,
         ...(useCustomMargins && { paddingLeft: `${solPadH}px !important`, paddingRight: `${solPadH}px !important`, pt: `${solPadV}px`, pb: `${solPadV}px` }),
         '@media (min-width: 2560px)': !useCustomMargins ? { maxWidth: 1600, px: 6 } : {},
         '@media (min-width: 3840px)': !useCustomMargins ? { maxWidth: 2200, px: 10 } : {},
       }}>
-        <Box className="app-header-bar" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-          {/* Left: title + optional All Games button */}
-          <Box className="app-header-title" sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: '16ch' }}>
-            <Typography variant="h5" component="p">
-              <MuiLink component={RouterLink} to="/" underline="none" color="inherit">
-                {titleText}
-              </MuiLink>
-            </Typography>
-            {isSolitaire && solPhase === 'playing' && (
-              <Button size="small" sx={{ opacity: 0.6, flexShrink: 0 }} onClick={() => setSolPhase('select')}>
-                All Games
-              </Button>
-            )}
-          </Box>
-          {/* Right: icons — fullscreen + game settings only on solitaire, site settings always */}
-          <Box className="app-header-icons" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-            {isSolitaire && (
-              <IconButton size="small" onClick={toggleFullscreen} sx={{ color: 'text.primary' }} title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}>
-                <FontAwesomeIcon icon={isFullscreen ? faCompress : faExpand} />
-              </IconButton>
-            )}
-            {isSolitaire && <SolitaireSettingsButton />}
-            <IconButton size="small" onClick={e => setPopoverAnchor(e.currentTarget)} sx={{ color: 'text.primary' }} title="Site settings">
-              <FontAwesomeIcon icon={faSliders} />
-            </IconButton>
-          </Box>
-          <Popover
+        <Popover
             open={Boolean(popoverAnchor)}
             anchorEl={popoverAnchor}
             onClose={() => setPopoverAnchor(null)}
@@ -482,11 +529,11 @@ function AppShell() {
 
             </Box>
           </Popover>
-        </Box>
 
         <Routes>
           <Route path="/" element={<QuickRefPage />} />
           <Route path="/quickref" element={<QuickRefPage />} />
+          <Route path="/learn" element={<QuickRefPage />} />
           <Route path="/intro" element={<Navigate to="/" replace />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/decode" element={<Navigate to="/archive?tab=decode" replace />} />
@@ -499,29 +546,6 @@ function AppShell() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
 
-        <Box
-          component="footer"
-          className="app-footer-bar"
-          sx={{
-            borderTop: 1,
-            borderColor: 'divider',
-            mt: 4, pt: 2,
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: 2,
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <Typography variant="caption" color="text.secondary">
-            © 2026 Will Capellaro & Braille Toolbox
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-            <MuiLink component={RouterLink} to="/about" underline="hover">About</MuiLink>
-            <MuiLink component={RouterLink} to="/archive" underline="hover">Archive</MuiLink>
-            <MuiLink href="https://willcapellaro1.typeform.com/to/oPcfuyiL" underline="hover" target="_blank" rel="noreferrer">Feedback</MuiLink>
-          </Box>
-        </Box>
       </Container>
     </ThemeProvider>
     </SiteSettingsContext.Provider>

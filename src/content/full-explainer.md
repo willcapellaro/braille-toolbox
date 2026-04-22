@@ -64,19 +64,19 @@
 
 <h2 id="numbers">Numbers</h2>
 
-<p>Basic numbers are written by using the number symbol, [[br:3456]] which converts letters [[br:1]] A (for 1) through [[br:245]] J (for 0). The number prefix starts the number format, then things return to letters after a space. Texts with lots of math are usually written in a specialized braille code called Nemeth Braille.</p>
+<p>Basic numbers are written by using the number symbol, [[capt:dot3456]] which converts letters [[br:1]] A (for 1) through [[br:245]] J (for 0). The number prefix starts the number format, then things return to letters after a space. Texts with lots of math are usually written in a specialized braille code called Nemeth Braille.</p>
 
 <ul class="infostrip grid10">
-<li><div>[[br:1236 1]]</div><div> #a  </div><div> 1 </div></li>                                   
-<li><div>[[br:1236 12]]</div><div> #b  </div><div> 2 </div></li>                                  
-<li><div>[[br:1236 14]]</div><div> #c  </div><div> 3 </div></li>                                  
-<li><div>[[br:1236 145]]</div><div> #d  </div><div> 4 </div></li>                                  
-<li><div>[[br:1236 15]]</div><div> #e  </div><div> 5 </div></li>                                  
-<li><div>[[br:1236 124]]</div><div> #f  </div><div> 6 </div></li>                                  
-<li><div>[[br:1236 1245]]</div><div> #g  </div><div> 7 </div></li>                                  
-<li><div>[[br:1236 125]]</div><div> #h  </div><div> 8 </div></li>                                  
-<li><div>[[br:1236 24]]</div><div> #i  </div><div> 9 </div></li>                                  
-<li><div>[[br:1236 145]]</div><div> #j  </div><div> 0 </div></li>                                                                   
+<li><div>[[br:3456 1]]<br/>[[capt:dot3456 a]]</div><div> 1 </div></li>
+<li><div>[[br:3456 12]]<br/>[[capt:dot3456 b]]</div><div> 2 </div></li>
+<li><div>[[br:3456 14]]<br/>[[capt:dot3456 c]]</div><div> 3 </div></li>
+<li><div>[[br:3456 145]]<br/>[[capt:dot3456 d]]</div><div> 4 </div></li>
+<li><div>[[br:3456 15]]<br/>[[capt:dot3456 e]]</div><div> 5 </div></li>
+<li><div>[[br:3456 124]]<br/>[[capt:dot3456 f]]</div><div> 6 </div></li>
+<li><div>[[br:3456 1245]]<br/>[[capt:dot3456 g]]</div><div> 7 </div></li>
+<li><div>[[br:3456 125]]<br/>[[capt:dot3456 h]]</div><div> 8 </div></li>
+<li><div>[[br:3456 24]]<br/>[[capt:dot3456 i]]</div><div> 9 </div></li>
+<li><div>[[br:3456 145]]<br/>[[capt:dot3456 j]]</div><div> 0 </div></li>                                                                   
 </ul>
 
 <h2 id="formatting">Formatting and styling</h2>
@@ -89,20 +89,23 @@
 
 <ul class="infostrip">
 <li><div>[[br:6]]</div><div> &#8593; </div><div> Capital Symbol</div></li>                                   
-<li><div>[[br:6 14 1 1234]]</div><div> dot*0Cap  </div><div>Cap </div></li>                                   
-<li><div>[[br:6 6 246 135 1235 145]]</div><div> dot*0dot*0WORD </div><div> WORD  </div></li>                                                            
+<li><div>[[br:6 14 1 1234]]</div><div>Cap </div></li>                                   
+<li><div>[[br:6 6 246 135 1235 145]]</div><div> WORD  </div></li>                                                            
 </ul>
 
 <h3 id="italics">Italics</h3>
 
-<p>Italics employ the [[br:46]] italic symbol followed by a second character to indicate how much text will be italicized.</p>
+<p>Italics employ the [[br:46]] italic symbol followed by a second character to indicate how much following text will be italicized.</p>
 
 <ul class="infostrip">
-<li><div>[[br:46 23]]</div><div>   </div><div> italic character  </div></li>                                   
-<li><div>[[br:46 23 1345]]</div><div>   </div><div> <em>n</em>  </div></li>                                   
-<li><div>[[br:id:comp_ital_word]]</div><div>   </div><div> italic word </div></li>
-<li><div>[[br:id:comp_ital_passage.svg ]]</div><div>   </div><div> begin  passage  </div></li>                                   
-<li><div>[[br:id:comp_ital_passage_end.svg ]]</div><div>   </div><div> end  passage  </div></li>                                   
+<li><div>[[br:46 23]]</div><div>   </div><div> italic letter  </div></li>                                   
+<!-- <li><div>[[br:46 23 1345]]</div><div>   </div><div> <em>n</em>  </div></li>                                    -->
+<li><div>[[br:46 2]]</div><div>   </div><div> italic word </div></li>
+<!-- <li><div>[[br:id:comp_ital_passage.svg ]]</div><div>   </div><div> begin  passage  </div></li>                                    -->
+<li><div>[[br:46 2356]]</div><div>   </div><div> begin  passage  </div></li>                                   
+<!-- <li><div>[[br:id:comp_ital_passage_end.svg ]]</div><div>   </div><div> end  passage  </div></li>                                    -->
+<li><div>[[br:46 3]]</div><div>   </div><div> end  passage  </div></li>                                   
+
 </ul>
 
 <h2 id="punctuation">Punctuation</h2>
@@ -221,20 +224,18 @@
 
 <h3 id="c_contractions">[[br:id:dot14_c]]C contractions</h3>
 
-<ul class="infostrip">  
-<li><div>[[br:14]]</div><div>  c </div><div> can </div></li>
-<li><div>[[br:456 14]]</div><div>  dot*456c  </div><div> cannot  </div></li>
-<li><div>[[br:25]]</div><div>  dot*25  </div><div> ⌂cc⌂  </div></li>
-<li><div>[[br:16]]</div><div>  dot*16  </div><div> ch  </div></li>
-<li><div>[[br:5 16]]</div><div>  dot*5dot*16 </div><div> character </div></li>
-<li><div>[[br:16]]</div><div>  dot*16  </div><div> child </div></li>
-<li><div>[[br:16 1345]]</div><div> dot*16n </div><div> children  </div></li>
-<li><div>[[br:25]]</div><div>  dot*25  </div><div> con⌂  </div></li>
-<li><div>[[br:25 14 1236]]</div><div>  dot*25cv  </div><div> conceive  </div></li>
-<li><div>[[br:25 14 1236 1245]]</div><div> dot*25cvg </div><div> conceiving  </div></li>
-<li><div>[[br:14 145]]</div><div>  cd  </div><div> could </div></li>
-
-
+<ul class="infostrip">
+<li><div>[[br:14]]<br/>[[capt:c]]</div><div> can </div></li>
+<li><div>[[br:456 14]]<br/>[[capt:dot456 c]]</div><div> cannot </div></li>
+<li><div>[[br:25]]<br/>[[capt:dot25]]</div><div> ⌂cc⌂ </div></li>
+<li><div>[[br:16]]<br/>[[capt:dot16]]</div><div> ch </div></li>
+<li><div>[[br:5 16]]<br/>[[capt:dot5 dot16]]</div><div> character </div></li>
+<li><div>[[br:16]]<br/>[[capt:dot16]]</div><div> child </div></li>
+<li><div>[[br:16 1345]]<br/>[[capt:dot16 n]]</div><div> children </div></li>
+<li><div>[[br:25]]<br/>[[capt:dot25]]</div><div> con⌂ </div></li>
+<li><div>[[br:25 14 1236]]<br/>[[capt:dot25 c v]]</div><div> conceive </div></li>
+<li><div>[[br:25 14 1236 1245]]<br/>[[capt:dot25 c v g]]</div><div> conceiving </div></li>
+<li><div>[[br:14 145]]<br/>[[capt:c d]]</div><div> could </div></li>
 </ul>
 
 <h3 id="d_contractions">[[br:id:dot145_d]]D contractions</h3>

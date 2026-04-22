@@ -1,5 +1,6 @@
 import { useEffect, useReducer, useState } from 'react';
 import { Box, Button, Collapse, Divider, Typography, useTheme } from '@mui/material';
+import BlackjackGame from './BlackjackPage.jsx';
 import { dotsToPattern } from '../content';
 import BrailleCell from '../lib/braille/BrailleCell';
 import { useSolitaireSettings } from '../context/SolitaireSettingsContext.jsx';
@@ -617,6 +618,7 @@ function Legend({ sol, visibleSuits, visibleRanks, selectedCard, onHoverKey, dar
 
 const GAME_LIST = [
   { id: 'klondike',     name: 'Klondike',      caption: 'The classic. Seven columns, draw one.',      pattern: '/patterns/klondike.svg',      available: true  },
+  { id: 'blackjack',   name: 'Blackjack',     caption: 'Beat the dealer. Hit or stand.',             pattern: '/patterns/klondike.svg',      available: true  },
   { id: 'freecell',     name: 'FreeCell',       caption: 'All cards face-up. Every move counts.',      pattern: '/patterns/freecell.svg',      available: false },
   { id: 'lady-jane',    name: 'Lady Jane',      caption: 'Patience for two full decks.',               pattern: '/patterns/lady-jane.svg',     available: false },
   { id: 'forty-thieves',name: 'Forty Thieves',  caption: 'Two decks. Forty columns. Rarely won.',      pattern: '/patterns/forty-thieves.svg', available: false },
@@ -786,6 +788,8 @@ export default function SolitairePage() {
             setGamePhase('playing');
           }}
         />
+      ) : gameId === 'blackjack' ? (
+        <BlackjackGame darkBg={darkBg} />
       ) : (
         <>
           {won && (

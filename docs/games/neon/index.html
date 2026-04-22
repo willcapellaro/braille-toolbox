@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>braille rps</title>
+<style>
+  :root {
+    --bg: #07050d;
+    --paper: #ff3ec8;
+    --rock: #3ecfff;
+    --scissors: #a8ff3e;
+    --copper: #c9a36a;
+    --copper-dim: #6b553a;
+    --solder: #9a7d4d;
+    --hot: #ffb347;
+    --hot-bright: #ffe0b0;
+    --trace: #5a4429;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg);
+    color: #eee;
+    font-family: system-ui, -apple-system, sans-serif;
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior: none;
+  }
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 10%, rgba(255,62,200,0.05), transparent 55%),
+      radial-gradient(ellipse at 80% 90%, rgba(62,207,255,0.05), transparent 55%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app {
+    position: relative;
+    height: 100vh;
+    height: 100dvh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    z-index: 1;
+  }
+
+  .device-strip {
+    position: relative;
+    height: 20vh;
+    max-height: 24vh;
+    padding: 1vh 2vw;
+    transition: opacity 400ms ease;
+  }
+  .device-strip.top { transform: rotate(180deg); }
+  .device-svg {
+    width: 100%; height: 100%;
+    display: block;
+  }
+  .device-svg .key { cursor: pointer; }
+  .device-svg .key .cap-ring { transition: stroke 80ms, filter 120ms; }
+  .device-svg .key .cap      { transition: fill 80ms; }
+  .device-svg .key .cap-dots { transition: filter 120ms; }
+  .device-svg .key.pressed .cap-ring {
+    stroke: var(--hot);
+    filter: drop-shadow(0 0 2px var(--hot)) drop-shadow(0 0 8px var(--hot));
+  }
+  .device-svg .key.pressed .cap      { fill: #2a1a05; }
+  .device-svg .key.pressed .cap-dots { filter: drop-shadow(0 0 3px var(--hot)); }
+  .device-svg .key.pressed .dot-active { fill: var(--hot-bright); }
+  .device-svg .key.pressed .dot-idle   { fill: var(--hot); }
+  .device-strip.locked { opacity: 0.55; }
+
+  /* In 1p mode, P2's device is "powered down" */
+  body.mode-1p .device-strip.top {
+    opacity: 0.18;
+    pointer-events: none;
+  }
+
+  .arena {
+    position: relative;
+    display: grid;
+    grid-template-rows: 1fr auto 1fr;
+    align-items: center;
+    justify-items: center;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .arena-bg {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .sign-slot {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    min-height: 0;
+  }
+  .sign-slot.top { transform: rotate(180deg); }
+
+  .sign-svg {
+    width: min(26vh, 36vw);
+    height: min(26vh, 36vw);
+    max-width: 40vh;
+    max-height: 40vh;
+    display: block;
+    position: relative;
+    z-index: 3;
+  }
+  .halo {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .halo-circle {
+    width: min(40vh, 52vw);
+    height: min(40vh, 52vw);
+    border-radius: 50%;
+    opacity: 0;
+    transform: scale(0.85);
+    transition: opacity 500ms ease, transform 500ms ease;
+    filter: blur(22px);
+  }
+  .sign-slot.win .halo-circle { opacity: 0.65; transform: scale(1); }
+  .sign-slot.match-win .halo-circle { opacity: 0.85; transform: scale(1.1); }
+  .halo-circle.paper    { background: var(--paper); }
+  .halo-circle.rock     { background: var(--rock); }
+  .halo-circle.scissors { background: var(--scissors); }
+
+  /* Per-player score dots (match winnings). Sits near the player's own device. */
+  .score-row {
+    position: absolute;
+    left: 50%;
+    bottom: 0.5vh;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 1.6vh;
+    z-index: 4;
+    opacity: 0;
+    transition: opacity 400ms ease;
+  }
+  body.in-match .score-row { opacity: 1; }
+  .score-dot {
+    width: 1.3vh; height: 1.3vh;
+    border-radius: 50%;
+    background: #0e0a18;
+    border: 1px solid var(--copper-dim);
+    transition: background 250ms, box-shadow 250ms, border-color 250ms;
+  }
+  .score-dot.lit {
+    background: var(--hot-bright);
+    border-color: var(--hot);
+    box-shadow: 0 0 4px var(--hot), 0 0 10px var(--hot), 0 0 18px rgba(255,179,71,0.4);
+  }
+
+  /* Central timer (countdown + landing input indicator) */
+  .timer-row {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 0.4vh 0;
+  }
+  .timer {
+    display: flex;
+    align-items: center;
+    gap: 2.4vh;
+    padding: 1.2vh 2.4vh;
+    border: 1px solid var(--copper-dim);
+    border-radius: 2vh;
+    background: rgba(18, 12, 28, 0.55);
+    box-shadow: inset 0 0 12px rgba(107,85,58,0.2);
+    transition: border-color 300ms, box-shadow 300ms;
+  }
+  body.landing .timer { animation: breathe 2.4s ease-in-out infinite; }
+  body.landing.has-prefix .timer {
+    border-color: var(--copper);
+    box-shadow: inset 0 0 14px rgba(201,163,106,0.35), 0 0 10px rgba(201,163,106,0.25);
+    animation: none;
+  }
+  @keyframes breathe {
+    0%, 100% { border-color: var(--copper-dim); box-shadow: inset 0 0 12px rgba(107,85,58,0.15); }
+    50%      { border-color: var(--copper);     box-shadow: inset 0 0 14px rgba(201,163,106,0.25); }
+  }
+  .dot {
+    width: 1.6vh; height: 1.6vh;
+    border-radius: 50%;
+    background: #1e1530;
+    transition: background 180ms ease, box-shadow 180ms ease;
+  }
+  .dot.lit {
+    background: var(--hot);
+    box-shadow: 0 0 6px var(--hot), 0 0 14px var(--hot), 0 0 28px rgba(255,179,71,0.5);
+  }
+  /* Landing: has-prefix flag lights the central dot to mean "# received, awaiting mode" */
+  body.landing.has-prefix .timer .dot:nth-child(2) {
+    background: var(--hot);
+    box-shadow: 0 0 4px var(--hot), 0 0 10px var(--hot);
+  }
+</style>
+</head>
+<body class="landing">
+<div class="app">
+
+  <div class="device-strip top" data-player="2">
+    <svg class="device-svg" viewBox="0 0 600 220" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
+  </div>
+
+  <div class="arena">
+    <svg class="arena-bg" viewBox="0 0 600 400" preserveAspectRatio="none" aria-hidden="true"></svg>
+
+    <div class="sign-slot top" data-player="2">
+      <div class="halo"><div class="halo-circle"></div></div>
+      <svg class="sign-svg" viewBox="0 0 100 100" aria-hidden="true"></svg>
+      <div class="score-row">
+        <div class="score-dot"></div><div class="score-dot"></div><div class="score-dot"></div>
+      </div>
+    </div>
+
+    <div class="timer-row">
+      <div class="timer">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      </div>
+    </div>
+
+    <div class="sign-slot bottom" data-player="1">
+      <div class="halo"><div class="halo-circle"></div></div>
+      <svg class="sign-svg" viewBox="0 0 100 100" aria-hidden="true"></svg>
+      <div class="score-row">
+        <div class="score-dot"></div><div class="score-dot"></div><div class="score-dot"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="device-strip bottom" data-player="1">
+    <svg class="device-svg" viewBox="0 0 600 220" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
+  </div>
+
+</div>
+
+<script>
+(() => {
+  // Braille chord library. Dot 1=F, 2=D, 3=S, 4=J, 5=K, 6=L.
+  //   # (number sign) = 3,4,5,6      -> S J K L
+  //   a = 1                          -> F          (1p)
+  //   b = 1,2                        -> F D        (2p)
+  //   e = 1,5                        -> F K        (end)
+  //   Paper    = 1,2,3,4             -> S D F J
+  //   Rock     = 1,2,3,5             -> S D F K
+  //   Scissors = 2,3,4               -> S D J
+  const CHORDS = {
+    number:   new Set(['s','j','k','l']),
+    a:        new Set(['f']),
+    b:        new Set(['f','d']),
+    e:        new Set(['f','k']),
+    paper:    new Set(['s','d','f','j']),
+    rock:     new Set(['s','d','f','k']),
+    scissors: new Set(['s','d','j']),
+  };
+  const KEY_ORDER = ['s','d','f','j','k','l'];
+  const KEY_DOT   = { s:3, d:2, f:1, j:4, k:5, l:6 };
+  const MOVES     = ['paper','rock','scissors'];
+  const WIN_DOTS  = 3;        // first to 3 wins the match
+
+  const setsEqual = (a, b) => {
+    if (a.size !== b.size) return false;
+    for (const v of a) if (!b.has(v)) return false;
+    return true;
+  };
+  const identifyChord = held => {
+    for (const [name, c] of Object.entries(CHORDS)) {
+      if (setsEqual(held, c)) return name;
+    }
+    return null;
+  };
+  const chordToMove = held => {
+    const n = identifyChord(held);
+    return MOVES.includes(n) ? n : null;
+  };
+
+  // ---------- Neon sign ----------
+  const svgForSign = move => {
+    const color = { paper: '#ff3ec8', rock: '#3ecfff', scissors: '#a8ff3e' }[move];
+    const core  = { paper: '#ffe6f5', rock: '#e0f7ff', scissors: '#f2ffd9' }[move];
+    const fid = `glow-${move}`;
+    const shape = {
+      paper: `
+        <rect x="28" y="18" width="44" height="64" rx="4" stroke="${color}" stroke-width="11" fill="none" filter="url(#${fid})" opacity="0.85"/>
+        <rect x="28" y="18" width="44" height="64" rx="4" stroke="${color}" stroke-width="4.5" fill="none"/>
+        <rect x="28" y="18" width="44" height="64" rx="4" stroke="${core}" stroke-width="1.2" fill="none"/>
+      `,
+      rock: `
+        <circle cx="50" cy="50" r="28" stroke="${color}" stroke-width="11" fill="none" filter="url(#${fid})" opacity="0.85"/>
+        <circle cx="50" cy="50" r="28" stroke="${color}" stroke-width="4.5" fill="none"/>
+        <circle cx="50" cy="50" r="28" stroke="${core}" stroke-width="1.2" fill="none"/>
+      `,
+      scissors: `
+        <g stroke-linecap="round">
+          <path d="M50 82 L30 22" stroke="${color}" stroke-width="11" fill="none" filter="url(#${fid})" opacity="0.85"/>
+          <path d="M50 82 L70 22" stroke="${color}" stroke-width="11" fill="none" filter="url(#${fid})" opacity="0.85"/>
+          <path d="M50 82 L30 22" stroke="${color}" stroke-width="4.5" fill="none"/>
+          <path d="M50 82 L70 22" stroke="${color}" stroke-width="4.5" fill="none"/>
+          <path d="M50 82 L30 22" stroke="${core}"  stroke-width="1.2" fill="none"/>
+          <path d="M50 82 L70 22" stroke="${core}"  stroke-width="1.2" fill="none"/>
+          <circle cx="50" cy="82" r="4" stroke="${color}" stroke-width="3" fill="none"/>
+        </g>
+      `,
+    }[move];
+    return `
+      <defs>
+        <filter id="${fid}" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="3.5"/>
+        </filter>
+      </defs>
+      ${shape}
+    `;
+  };
+
+  // ---------- Illustrated input device ----------
+  const deviceMarkup = () => {
+    const cop = 'var(--copper)';
+    const cod = 'var(--copper-dim)';
+    const sol = 'var(--solder)';
+    const R = 36;
+    const keys = [
+      { id: 's', cx:  75, cy: 108 },
+      { id: 'd', cx: 175, cy: 108 },
+      { id: 'f', cx: 275, cy: 108 },
+      { id: 'j', cx: 355, cy: 108 },
+      { id: 'k', cx: 455, cy: 108 },
+      { id: 'l', cx: 555, cy: 108 },
+    ];
+    const dotCell = (active) => {
+      const pos = {
+        1: [-5.5, -8], 2: [-5.5, 0], 3: [-5.5, 8],
+        4: [ 5.5, -8], 5: [ 5.5, 0], 6: [ 5.5, 8],
+      };
+      return [1,2,3,4,5,6].map(n => {
+        const [x, y] = pos[n];
+        const isActive = n === active;
+        return `<circle class="${isActive ? 'dot-active' : 'dot-idle'}" cx="${x}" cy="${y}" r="${isActive ? 2.6 : 1.1}" fill="${isActive ? cop : cod}" opacity="${isActive ? 1 : 0.55}"/>`;
+      }).join('');
+    };
+    const keyGroup = k => `
+      <g class="key" data-key="${k.id}" transform="translate(${k.cx} ${k.cy})">
+        <circle cx="${-R-8}" cy="0" r="2.2" fill="${cod}"/>
+        <circle cx="${ R+8}" cy="0" r="2.2" fill="${cod}"/>
+        <rect x="${-R-5}" y="${-R-5}" width="${(R+5)*2}" height="${(R+5)*2}" rx="5" fill="#110b1e" stroke="${cod}" stroke-width="0.7"/>
+        <circle class="cap-ring" cx="0" cy="0" r="${R}" fill="none" stroke="${cod}" stroke-width="2.5"/>
+        <circle class="cap" cx="0" cy="0" r="${R-5}" fill="#0a0614"/>
+        <g class="cap-dots">${dotCell(KEY_DOT[k.id])}</g>
+        <rect x="-8" y="${R+4}" width="16" height="4" rx="1" fill="${cod}" opacity="0.8"/>
+      </g>
+    `;
+    const pcb = `
+      <rect x="8" y="18" width="584" height="200" rx="10" fill="#0a0612" stroke="${cod}" stroke-width="0.7" stroke-dasharray="5 4" opacity="0.75"/>
+      <circle cx="22"  cy="32"  r="2.3" fill="none" stroke="${cod}" stroke-width="0.6"/>
+      <circle cx="578" cy="32"  r="2.3" fill="none" stroke="${cod}" stroke-width="0.6"/>
+      <circle cx="22"  cy="204" r="2.3" fill="none" stroke="${cod}" stroke-width="0.6"/>
+      <circle cx="578" cy="204" r="2.3" fill="none" stroke="${cod}" stroke-width="0.6"/>
+    `;
+    const traces = `
+      <g stroke="${cod}" stroke-width="0.9" fill="none" opacity="0.9" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M 16 50 L 295 50 M 335 50 L 584 50"/>
+        <path d="M 16 180 L 295 180 M 335 180 L 584 180"/>
+        ${keys.map(p => `<path d="M ${p.cx} ${p.cy - R - 9} L ${p.cx} 50"/>`).join('')}
+        ${keys.map(p => `<path d="M ${p.cx} ${p.cy + R + 9} L ${p.cx} 180"/>`).join('')}
+        <path d="M 125 50 L 125 34 L 158 34 L 158 50"/>
+        <path d="M 405 180 L 405 196 L 440 196 L 440 180"/>
+        <path d="M 240 180 L 240 204 L 280 204"/>
+        <path d="M 490 50 L 490 30 L 530 30"/>
+      </g>
+    `;
+    const ic = `
+      <g>
+        <rect x="300" y="72" width="32" height="72" rx="2" fill="#0f091c" stroke="${cod}" stroke-width="0.8"/>
+        ${[80,96,112,128].map(y => `
+          <rect x="294" y="${y-1.6}" width="6" height="3.2" fill="${cod}"/>
+          <rect x="332" y="${y-1.6}" width="6" height="3.2" fill="${cod}"/>
+        `).join('')}
+        <circle cx="306" cy="80" r="1.3" fill="${cop}"/>
+        <path d="M 312 72 a 4 4 0 0 0 8 0" fill="none" stroke="${cod}" stroke-width="0.6"/>
+      </g>
+    `;
+    const resistors = `
+      <g fill="#1a1224" stroke="${cod}" stroke-width="0.5">
+        <rect x="108" y="46" width="14" height="8" rx="1"/>
+        <rect x="218" y="176" width="14" height="8" rx="1"/>
+        <rect x="468" y="46" width="14" height="8" rx="1"/>
+        <rect x="518" y="176" width="14" height="8" rx="1"/>
+      </g>
+      <g fill="${cop}" opacity="0.6">
+        <rect x="112" y="48" width="3" height="1"/><rect x="117" y="48" width="1.5" height="1"/>
+        <rect x="222" y="178" width="3" height="1"/><rect x="227" y="178" width="1.5" height="1"/>
+        <rect x="472" y="48" width="3" height="1"/><rect x="478" y="48" width="1.5" height="1"/>
+        <rect x="522" y="178" width="3" height="1"/><rect x="528" y="178" width="1.5" height="1"/>
+      </g>
+    `;
+    const caps = `
+      <g fill="#121a2a" stroke="${cod}" stroke-width="0.5">
+        <rect x="398" y="46" width="10" height="8" rx="1"/>
+        <rect x="328" y="176" width="10" height="8" rx="1"/>
+      </g>
+    `;
+    const diode = `
+      <g>
+        <rect x="400" y="176" width="14" height="8" rx="1" fill="#0f0a18" stroke="${cod}" stroke-width="0.5"/>
+        <path d="M 403 180 L 411 180 M 411 178 L 411 182" stroke="${cop}" stroke-width="0.7"/>
+      </g>
+    `;
+    const led = `
+      <g>
+        <circle cx="560" cy="204" r="3.4" fill="#2a1405" stroke="${cod}" stroke-width="0.7"/>
+        <circle cx="560" cy="204" r="1.3" fill="${cop}" opacity="0.9"/>
+      </g>
+    `;
+    const joints = keys.flatMap(p => [
+      `<circle cx="${p.cx}" cy="50"  r="1.8" fill="${sol}"/>`,
+      `<circle cx="${p.cx}" cy="180" r="1.8" fill="${sol}"/>`,
+    ]).join('');
+    const silk = `
+      <g fill="${cod}" opacity="0.35">
+        <rect x="40"  y="210" width="8" height="1"/>
+        <rect x="50"  y="210" width="4" height="1"/>
+        <rect x="56"  y="210" width="6" height="1"/>
+        <rect x="520" y="210" width="4" height="1"/>
+        <rect x="526" y="210" width="8" height="1"/>
+      </g>
+    `;
+    return `
+      ${pcb}
+      ${traces}
+      ${ic}
+      ${resistors}
+      ${caps}
+      ${diode}
+      ${led}
+      ${joints}
+      ${silk}
+      ${keys.map(keyGroup).join('')}
+    `;
+  };
+
+  // ---------- Arena illustration ----------
+  const arenaMarkup = () => {
+    const cop = 'var(--copper)';
+    const cod = 'var(--copper-dim)';
+    const tr  = 'var(--trace)';
+    const sol = 'var(--solder)';
+    const mounts = `
+      <g stroke="${cod}" stroke-width="0.9" fill="none" opacity="0.65" stroke-dasharray="5 4">
+        <rect x="160" y="50"  width="280" height="130" rx="6"/>
+        <rect x="160" y="220" width="280" height="130" rx="6"/>
+      </g>
+      <g fill="${tr}" opacity="0.9">
+        <circle cx="166" cy="56"  r="2.5"/><circle cx="434" cy="56"  r="2.5"/>
+        <circle cx="166" cy="174" r="2.5"/><circle cx="434" cy="174" r="2.5"/>
+        <circle cx="166" cy="226" r="2.5"/><circle cx="434" cy="226" r="2.5"/>
+        <circle cx="166" cy="344" r="2.5"/><circle cx="434" cy="344" r="2.5"/>
+      </g>
+    `;
+    const cables = `
+      <g fill="none" stroke="${cod}" stroke-width="1.3" stroke-linecap="round" opacity="0.85">
+        <path d="M 170 0   C 170 22, 200 36, 220 48  L 230 54"/>
+        <path d="M 300 0   C 300 24, 290 38, 300 54"/>
+        <path d="M 430 0   C 430 22, 400 36, 380 48  L 370 54"/>
+        <path d="M 230 346 L 220 352 C 200 364, 170 378, 170 400"/>
+        <path d="M 300 346 C 290 362, 300 376, 300 400"/>
+        <path d="M 370 346 L 380 352 C 400 364, 430 378, 430 400"/>
+      </g>
+      <g stroke="${cod}" stroke-width="0.9" fill="#0c0816" opacity="0.85">
+        <rect x="195" y="18"  width="210" height="6" rx="2"/>
+        <rect x="195" y="378" width="210" height="6" rx="2"/>
+      </g>
+    `;
+    const conduit = `
+      <g>
+        <path d="M 0 200 L 220 200 M 380 200 L 600 200" stroke="${cod}" stroke-width="1" fill="none"/>
+        <rect x="222" y="186" width="156" height="28" rx="4" fill="#110b1e" stroke="${cod}" stroke-width="0.9" opacity="0.9"/>
+        <circle cx="230" cy="192" r="1.6" fill="${sol}"/>
+        <circle cx="370" cy="192" r="1.6" fill="${sol}"/>
+        <circle cx="230" cy="208" r="1.6" fill="${sol}"/>
+        <circle cx="370" cy="208" r="1.6" fill="${sol}"/>
+        <g stroke="${cod}" stroke-width="0.7" opacity="0.75">
+          <path d="M 200 194 L 218 194 M 200 200 L 218 200 M 200 206 L 218 206"/>
+          <path d="M 382 194 L 400 194 M 382 200 L 400 200 M 382 206 L 400 206"/>
+        </g>
+      </g>
+    `;
+    const links = `
+      <g stroke="${cod}" stroke-width="0.9" fill="none" opacity="0.85">
+        <path d="M 180 180 L 180 200"/>
+        <path d="M 420 180 L 420 200"/>
+        <path d="M 180 220 L 180 200"/>
+        <path d="M 420 220 L 420 200"/>
+      </g>
+      <g fill="${sol}">
+        <circle cx="180" cy="200" r="2"/>
+        <circle cx="420" cy="200" r="2"/>
+      </g>
+    `;
+    const silk = `
+      <g fill="${cod}" opacity="0.3">
+        <rect x="20"  y="100" width="12" height="1.5"/>
+        <rect x="20"  y="106" width="8"  height="1.5"/>
+        <rect x="20"  y="112" width="16" height="1.5"/>
+        <rect x="568" y="100" width="12" height="1.5"/>
+        <rect x="572" y="106" width="8"  height="1.5"/>
+        <rect x="564" y="112" width="16" height="1.5"/>
+        <rect x="20"  y="288" width="10" height="1.5"/>
+        <rect x="20"  y="294" width="14" height="1.5"/>
+        <rect x="568" y="288" width="10" height="1.5"/>
+        <rect x="566" y="294" width="14" height="1.5"/>
+      </g>
+    `;
+    const brackets = `
+      <g stroke="${cod}" stroke-width="0.8" fill="none" opacity="0.8">
+        <path d="M 8 8 L 30 8 L 30 18"/>
+        <path d="M 592 8 L 570 8 L 570 18"/>
+        <path d="M 8 392 L 30 392 L 30 382"/>
+        <path d="M 592 392 L 570 392 L 570 382"/>
+      </g>
+      <g fill="${sol}">
+        <circle cx="14" cy="14" r="1.6"/>
+        <circle cx="586" cy="14" r="1.6"/>
+        <circle cx="14" cy="386" r="1.6"/>
+        <circle cx="586" cy="386" r="1.6"/>
+      </g>
+    `;
+    return `${brackets}${cables}${mounts}${conduit}${links}${silk}`;
+  };
+
+  // Build SVGs
+  document.querySelectorAll('.device-svg').forEach(svg => { svg.innerHTML = deviceMarkup(); });
+  document.querySelector('.arena-bg').innerHTML = arenaMarkup();
+
+  // ---------- State ----------
+  const gameState = {
+    mode: 'landing',   // 'landing' | '1p' | '2p'
+    phase: 'landing',  // 'landing' | 'input' | 'locked' | 'celebrate'
+    buffer: '',        // braille free-type buffer (only tracks '#' prefix)
+  };
+  const players = {
+    1: {
+      held: new Set(), pending: new Set(), score: 0,
+      deviceEl: document.querySelector('.device-strip.bottom'),
+      signEl:   document.querySelector('.sign-slot.bottom'),
+    },
+    2: {
+      held: new Set(), pending: new Set(), score: 0,
+      deviceEl: document.querySelector('.device-strip.top'),
+      signEl:   document.querySelector('.sign-slot.top'),
+    },
+  };
+
+  const renderKeys = pid => {
+    const { deviceEl, held } = players[pid];
+    deviceEl.querySelectorAll('.device-svg .key').forEach(k => {
+      k.classList.toggle('pressed', held.has(k.dataset.key));
+    });
+  };
+  const renderSign = (pid, move) => {
+    const { signEl } = players[pid];
+    const svg = signEl.querySelector('.sign-svg');
+    svg.innerHTML = move ? svgForSign(move) : '';
+    const halo = signEl.querySelector('.halo-circle');
+    halo.className = 'halo-circle' + (move ? ' ' + move : '');
+  };
+  const setLocked = (pid, v) => {
+    players[pid].deviceEl.classList.toggle('locked', v);
+  };
+  const setWin = (pid, v) => players[pid].signEl.classList.toggle('win', v);
+  const setMatchWin = (pid, v) => players[pid].signEl.classList.toggle('match-win', v);
+
+  const updateScoreDots = () => {
+    [1,2].forEach(pid => {
+      const dots = players[pid].signEl.querySelectorAll('.score-dot');
+      dots.forEach((d, i) => d.classList.toggle('lit', i < players[pid].score));
+    });
+  };
+  const allCountdownDots = () => document.querySelectorAll('.timer-row .timer .dot');
+  const lightAll = () => allCountdownDots().forEach(d => d.classList.add('lit'));
+  const clearAll = () => allCountdownDots().forEach(d => d.classList.remove('lit'));
+
+  const setBodyMode = () => {
+    document.body.classList.toggle('landing', gameState.mode === 'landing');
+    document.body.classList.toggle('in-match', gameState.mode !== 'landing');
+    document.body.classList.toggle('mode-1p', gameState.mode === '1p');
+    document.body.classList.toggle('mode-2p', gameState.mode === '2p');
+    document.body.classList.toggle('has-prefix', gameState.buffer === '#');
+  };
+
+  // ---------- Chord plumbing (multi-touch via pointer capture) ----------
+  // In landing mode, mirror the currently-held chord into the player's neon
+  // sign so they can practice the P/R/S orthography without actually playing.
+  const updateLandingPractice = pid => {
+    if (gameState.mode !== 'landing') return;
+    const move = chordToMove(players[pid].held);
+    renderSign(pid, move);
+  };
+  const pressKey = (pid, key) => {
+    const p = players[pid];
+    p.held.add(key);
+    p.pending.add(key);
+    renderKeys(pid);
+    updateLandingPractice(pid);
+  };
+  const releaseKey = (pid, key) => {
+    const p = players[pid];
+    p.held.delete(key);
+    renderKeys(pid);
+    updateLandingPractice(pid);
+    if (p.held.size === 0 && p.pending.size > 0) {
+      const chord = new Set(p.pending);
+      p.pending.clear();
+      onChordCompleted(pid, chord);
+    }
+  };
+
+  const onChordCompleted = (pid, chord) => {
+    const name = identifyChord(chord);
+
+    // 'e' ends any in-progress match and returns to landing
+    if (gameState.mode !== 'landing' && name === 'e') {
+      endMatch();
+      return;
+    }
+
+    if (gameState.mode === 'landing') {
+      if (name === 'number') {
+        gameState.buffer = '#';
+      } else if (gameState.buffer === '#' && name === 'a') {
+        startMatch('1p');
+      } else if (gameState.buffer === '#' && name === 'b') {
+        startMatch('2p');
+      } else {
+        gameState.buffer = '';
+      }
+      setBodyMode();
+    }
+  };
+
+  // Bind input handlers to each SVG key
+  document.querySelectorAll('.device-strip').forEach(strip => {
+    const pid = strip.dataset.player;
+    strip.querySelectorAll('.device-svg .key').forEach(g => {
+      const key = g.dataset.key;
+      g.style.pointerEvents = 'all';
+      g.addEventListener('pointerdown', e => {
+        e.preventDefault();
+        try { g.setPointerCapture(e.pointerId); } catch {}
+        pressKey(pid, key);
+      });
+      const release = () => releaseKey(pid, key);
+      g.addEventListener('pointerup', release);
+      g.addEventListener('pointercancel', release);
+      g.addEventListener('lostpointercapture', release);
+    });
+  });
+
+  // Desktop test: physical keys → P1; hold Shift → P2
+  window.addEventListener('keydown', e => {
+    const k = e.key.toLowerCase();
+    if (!KEY_ORDER.includes(k) || e.repeat) return;
+    const pid = e.shiftKey ? '2' : '1';
+    pressKey(pid, k);
+  });
+  window.addEventListener('keyup', e => {
+    const k = e.key.toLowerCase();
+    if (!KEY_ORDER.includes(k)) return;
+    ['1','2'].forEach(pid => {
+      if (players[pid].held.has(k)) releaseKey(pid, k);
+    });
+  });
+
+  // ---------- Game flow ----------
+  const beats = (a, b) => {
+    if (!a && !b) return 0;
+    if (!a && b)  return -1;
+    if (a && !b)  return 1;
+    if (a === b)  return 0;
+    return (
+      (a === 'rock' && b === 'scissors') ||
+      (a === 'scissors' && b === 'paper') ||
+      (a === 'paper' && b === 'rock')
+    ) ? 1 : -1;
+  };
+  const randomMove = () => MOVES[Math.floor(Math.random() * MOVES.length)];
+
+  let timer = null;
+  const clearTimer = () => { if (timer) { clearTimeout(timer); timer = null; } };
+
+  const enterLanding = () => {
+    clearTimer();
+    gameState.mode = 'landing';
+    gameState.phase = 'landing';
+    gameState.buffer = '';
+    players[1].score = 0;
+    players[2].score = 0;
+    [1,2].forEach(pid => {
+      players[pid].held = new Set();
+      players[pid].pending = new Set();
+      setLocked(pid, false);
+      setWin(pid, false);
+      setMatchWin(pid, false);
+      renderSign(pid, null);
+      renderKeys(pid);
+    });
+    updateScoreDots();
+    clearAll();
+    setBodyMode();
+  };
+
+  const startMatch = (mode) => {
+    gameState.mode = mode;
+    gameState.buffer = '';
+    players[1].score = 0;
+    players[2].score = 0;
+    updateScoreDots();
+    setBodyMode();
+    // brief flash of all countdown dots then start first round
+    lightAll();
+    timer = setTimeout(() => { clearAll(); startRound(); }, 450);
+  };
+
+  const endMatch = () => {
+    enterLanding();
+  };
+
+  const startRound = () => {
+    clearTimer();
+    gameState.phase = 'input';
+    [1,2].forEach(pid => {
+      players[pid].held = new Set();
+      players[pid].pending = new Set();
+      setLocked(pid, false);
+      setWin(pid, false);
+      renderSign(pid, null);
+      renderKeys(pid);
+    });
+    lightAll();
+    let remaining = 3;
+    const tick = () => {
+      remaining -= 1;
+      const dots = allCountdownDots();
+      if (dots[remaining]) dots[remaining].classList.remove('lit');
+      if (remaining <= 0) { reveal(); return; }
+      timer = setTimeout(tick, 900);
+    };
+    timer = setTimeout(tick, 900);
+  };
+
+  const reveal = () => {
+    clearTimer();
+    gameState.phase = 'locked';
+    const m1 = chordToMove(players[1].held);
+    const m2 = gameState.mode === '1p' ? randomMove() : chordToMove(players[2].held);
+    [1,2].forEach(pid => setLocked(pid, true));
+    renderSign(1, m1);
+    renderSign(2, m2);
+    const r = beats(m1, m2);
+    if (r === 1) {
+      setWin(1, true);
+      players[1].score = Math.min(WIN_DOTS, players[1].score + 1);
+    } else if (r === -1) {
+      setWin(2, true);
+      players[2].score = Math.min(WIN_DOTS, players[2].score + 1);
+    }
+    updateScoreDots();
+
+    if (players[1].score >= WIN_DOTS) { celebrateAndEnd(1); return; }
+    if (players[2].score >= WIN_DOTS) { celebrateAndEnd(2); return; }
+
+    timer = setTimeout(startRound, 3200);
+  };
+
+  const celebrateAndEnd = pid => {
+    gameState.phase = 'celebrate';
+    setMatchWin(pid, true);
+    timer = setTimeout(() => {
+      setMatchWin(pid, false);
+      endMatch();
+    }, 3500);
+  };
+
+  document.addEventListener('gesturestart', e => e.preventDefault());
+  document.addEventListener('contextmenu', e => e.preventDefault());
+
+  enterLanding();
+})();
+</script>
+</body>
+</html>

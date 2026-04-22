@@ -79,15 +79,17 @@ export function resolveAsciiBrailleSpec(spec) {
   let unresolved = false;
 
   parts.forEach((part) => {
-    const id = part.startsWith('id:') ? part.slice(3) : (/^[1-6]+$/.test(part) ? null : part);
+    // "0" is the blank/space cell — treat like a dot spec that resolves to id "space"
+    const isBlank = part === '0';
+    const id = isBlank ? null : (part.startsWith('id:') ? part.slice(3) : (/^[1-6]+$/.test(part) ? null : part));
 
     if (!id) {
-      // Raw dot numbers
-      dotSets.push(part);
-      patterns.push(dotsToRenderPattern(part));
+      // Raw dot numbers (or blank "0")
+      dotSets.push(isBlank ? '' : part);
+      patterns.push(isBlank ? '000000' : dotsToRenderPattern(part));
       // Reverse-lookup: find the cell whose single dotSet matches
       if (!lookupId) {
-        const match = getCellByDotSet(part);
+        const match = isBlank ? getBrailleCellById('space') : getCellByDotSet(part);
         if (match) {
           lookupId = match.id;
           symbol = symbol || match.display?.primaryLabel || '';
