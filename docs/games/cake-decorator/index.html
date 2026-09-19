@@ -24,7 +24,7 @@
     font: 500 13px/1.2 ui-rounded, "SF Pro Rounded", system-ui, -apple-system, sans-serif;
     color: var(--ink);
   }
-  canvas#gl { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; touch-action: none; }
+  canvas#gl { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
   .bar {
     position: fixed; display: flex; align-items: center; gap: 6px;
     padding: 6px; border-radius: 999px;
@@ -44,6 +44,10 @@
   button.on { background: #fff; box-shadow: 0 1px 4px rgba(90, 50, 40, 0.18); color: #b24a63; }
   .sw { width: 30px; height: 30px; padding: 0; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }
   .sw.on { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--accent); }
+  #autoPanel { bottom: calc(env(safe-area-inset-bottom) + 72px); right: 12px; padding: 4px 6px 4px 4px; }
+  #autoPanel input { width: 120px; accent-color: var(--accent); }
+  #autoPanel .rpm { min-width: 52px; text-align: right; font-variant-numeric: tabular-nums; }
+  #autoPanel[hidden] { display: none; }
   #pressWrap { display: flex; align-items: center; gap: 6px; padding: 0 8px; }
   #pressWrap input { width: 90px; accent-color: var(--accent); }
   #hint {
@@ -86,12 +90,21 @@
   <button id="spinBtn" title="Auto-spin (space)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-3-6.2"/><path d="M17 2v4h-4"/></svg>
     <span>Auto-spin</span></button>
+  <button id="inertiaBtn" class="on" title="Inertia: turntable coasts after a flick">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h11"/><path d="M11 8l4 4-4 4"/><path d="M18 7v10M21 9v6"/></svg>
+    <span>Inertia</span></button>
   <button id="undoBtn" title="Undo (⌘Z)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>
   </button>
   <button id="resetBtn" title="New cake">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11h16v9H4z"/><path d="M4 15c2 1.5 4 1.5 6 0s4-1.5 6 0 3 1 4 .5"/><path d="M12 4v4"/></svg>
   </button>
+</div>
+
+<div id="autoPanel" class="bar" hidden>
+  <button id="dirBtn" title="Spin direction"></button>
+  <input id="rpm" type="range" min="5" max="60" step="1" value="20" aria-label="Spin speed">
+  <span class="rpm" id="rpmLabel">20 rpm</span>
 </div>
 
 <div id="hint">Finger spins the turntable · Pencil decorates</div>
@@ -160,6 +173,25 @@ const DRIZ  = ['#3a1f15', '#70422a', '#f4ecdc', '#c98138', '#c02f52', '#6a9fd8']
 const hex = s => [1, 3, 5].map(k => parseInt(s.substr(k, 2), 16) / 255);
 let tool = 'frost', frostIdx = 1, drizIdx = 0;
 
+// Base cakes. Colors are sRGB 0..1; mix: 0 none, 1 chocolate chips, 2 funfetti.
+const CAKES = [
+  { name: 'Yellow',          sponge: [0.95, 0.80, 0.50], crust: [0.74, 0.50, 0.27], fill: [0.98, 0.95, 0.88], fillName: 'vanilla buttercream', pore: 1.0, mix: 0 },
+  { name: 'White',           sponge: [0.97, 0.93, 0.83], crust: [0.82, 0.66, 0.45], fill: [0.72, 0.10, 0.22], fillName: 'raspberry jam', pore: 0.8, mix: 0 },
+  { name: 'Chocolate',       sponge: [0.36, 0.20, 0.12], crust: [0.24, 0.13, 0.08], fill: [0.97, 0.93, 0.86], fillName: 'whipped cream', pore: 1.1, mix: 0 },
+  { name: 'Chocolate chip',  sponge: [0.94, 0.79, 0.52], crust: [0.72, 0.49, 0.27], fill: [0.40, 0.25, 0.17], fillName: 'chocolate buttercream', pore: 0.9, mix: 1 },
+  { name: 'Funfetti',        sponge: [0.96, 0.86, 0.60], crust: [0.78, 0.56, 0.32], fill: [0.99, 0.96, 0.90], fillName: 'vanilla buttercream', pore: 0.8, mix: 2 },
+  { name: 'Red velvet',      sponge: [0.56, 0.13, 0.14], crust: [0.40, 0.10, 0.10], fill: [0.98, 0.96, 0.90], fillName: 'cream cheese', pore: 0.9, mix: 0 },
+  { name: 'Lemon',           sponge: [0.97, 0.88, 0.52], crust: [0.80, 0.60, 0.30], fill: [0.98, 0.84, 0.28], fillName: 'lemon curd', pore: 0.9, mix: 0 },
+];
+// Everything a save/export would need lives here plus hgt/col.
+const cake = { type: -1, layers: 3 };
+function pickCake() {
+  let t;
+  do t = (Math.random() * CAKES.length) | 0; while (t === cake.type && CAKES.length > 1);
+  cake.type = t;
+  cake.layers = 2 + ((Math.random() * 3) | 0);
+}
+
 function resetCake() {
   hgt.fill(0);
   const c = hex(FROST[0]);
@@ -201,10 +233,19 @@ function mixCol(idx, c, t, gloss, gt) {
 }
 
 // ---------------- tools -----------------
+// Footprint half-extents [across, along u] in cake units; also drives the on-cake guide.
+const SHAPE = {
+  frost:   p => [0.05 + 0.035 * p, 0.085 + 0.05 * p],
+  knife:   () => [0.02, 0.19],
+  comb:    () => [0.022, 0.13],
+  drizzle: p => { const w = 0.009 + 0.013 * p; return [w, w]; },
+};
+// How much a tool touching the cake slows the turntable.
+const TOOL_DRAG = { frost: 0.4, knife: 0.6, comb: 0.5, drizzle: 0 };
 const stroke = { dist: 0, shift: 0, seed: 0, load: 0, lc: [1, 1, 1], sinceDrip: 0, nextGap: 0.1 };
 
 function stampFrost(th, u, p, ds, dt) {
-  const ax = 0.05 + 0.035 * p, ay = 0.085 + 0.05 * p;
+  const [ax, ay] = SHAPE.frost(p);
   const perPass = 0.014 + 0.04 * p;
   const jit = 0.6 + 0.8 * vn1(stroke.dist * 7 + stroke.seed);
   // Volume laid down by this stamp, spread over the footprint by area so the
@@ -229,7 +270,7 @@ function stampFrost(th, u, p, ds, dt) {
 }
 
 function stampKnife(th, u, p, ds) {
-  const ax = 0.02, ay = 0.19;
+  const [ax, ay] = SHAPE.knife();
   const T = 0.004 + 0.075 * Math.pow(1 - p, 1.6);  // harder press = closer to the cake
   const s = 0.6, seed = stroke.seed;
   const lc = stroke.lc;
@@ -278,7 +319,7 @@ function depositVolume(th, u, ax, ay, vol, c) {
 }
 
 function stampComb(th, u, p, tilt) {
-  const ax = 0.022, ay = 0.13;
+  const [ax, ay] = SHAPE.comb();
   const period = 0.02 + 0.035 * tilt;           // tilt the pencil for wider teeth
   const depth = 0.45 + 0.55 * p;
   let n = 0, sum = 0;
@@ -309,7 +350,7 @@ function bead(th, u, w, amt, c, gl) {
 
 const drips = [];
 function stampDrizzle(th, u, p, ds, dt) {
-  const w = 0.009 + 0.013 * p, hb = 0.011 + 0.012 * p;
+  const w = SHAPE.drizzle(p)[0], hb = 0.011 + 0.012 * p;
   const c = hex(DRIZ[drizIdx]);
   const amt = hb / (Math.PI * w / 2) * ds;
   if (amt > 0) bead(th, u, w, amt, c, 0.95);
@@ -363,12 +404,13 @@ const undoStack = [];
 function pushUndo() {
   const c = new Uint8Array(W * HU * 4);
   for (let k = 0; k < c.length; k++) c[k] = Math.round(col[k] * 255);
-  undoStack.push({ h: hgt.slice(), c });
+  undoStack.push({ h: hgt.slice(), c, cake: { ...cake } });
   if (undoStack.length > 10) undoStack.shift();
 }
 function undo() {
   const s = undoStack.pop(); if (!s) return;
   hgt.set(s.h);
+  Object.assign(cake, s.cake);
   for (let k = 0; k < s.c.length; k++) col[k] = s.c[k] / 255;
   drips.length = 0;
   markDirty(0, HU - 1);
@@ -462,7 +504,19 @@ void main() {
 const CAKE_FS = COMMON + LIGHT + `
 in vec2 vUV; in vec3 vP, vN, vTt, vTu, vCake; in float vRho;
 uniform sampler2D uH, uC; uniform vec2 uTex;
+uniform vec3 uSponge, uCrust, uFill; uniform float uLayers, uPore; uniform int uMix;
+uniform vec3 uTip; uniform vec2 uTipAx;   // tip: (theta, u, visible), footprint half-extents
 out vec4 o;
+// One jittered dot per grid cell; returns coverage, h gets a per-dot random.
+float specks(vec3 p, float prob, float rad, out float h) {
+  vec3 c = floor(p), f = fract(p);
+  h = hash3(c + 0.37);
+  if (h > prob) return 0.0;
+  vec3 ctr = 0.3 + 0.4 * vec3(hash3(c + 1.7), hash3(c + 5.3), hash3(c + 9.1));
+  vec3 d = (f - ctr) * vec3(1.0, 1.0 + 1.5 * hash3(c + 3.3), 1.0);
+  float r = length(d) / (0.5 + 0.7 * hash3(c + 7.7));
+  return 1.0 - smoothstep(rad - 0.06, rad + 0.02, r);
+}
 float Hs(vec2 uv) { return texture(uH, uv).r; }
 void main() {
   float h = Hs(vUV);
@@ -486,10 +540,34 @@ void main() {
   vec3 q = vCake * 46.0;
   q += (vec3(noise3(q * 0.37), noise3(q * 0.37 + 11.0), noise3(q * 0.37 + 23.0)) - 0.5) * 2.2;
   float n1 = noise3(q), n2 = noise3(q * 2.3 + 7.0), n3 = noise3(q.zxy * 5.1 + 3.0);
-  vec3 sponge = toLin(vec3(0.94, 0.8, 0.55)) * (0.86 + 0.14 * n2 + 0.06 * n3);
-  float pore = smoothstep(0.64, 0.8, n1 * 0.55 + n2 * 0.25 + n3 * 0.2) * 0.8;
+  vec3 sponge = toLin(uSponge) * (0.86 + 0.14 * n2 + 0.06 * n3);
+  float pore = smoothstep(0.64, 0.8, n1 * 0.55 + n2 * 0.25 + n3 * 0.2) * 0.8 * uPore;
   sponge *= mix(1.0, 0.5, pore);
-  sponge = mix(sponge, toLin(vec3(0.74, 0.5, 0.27)) * (0.8 + 0.3 * n2), smoothstep(0.4, 0.95, N0.y) * 0.6);
+  float topness = smoothstep(0.4, 0.95, N0.y);
+  sponge = mix(sponge, toLin(uCrust) * (0.8 + 0.3 * n2), topness * 0.6);
+  // mix-ins, fixed in the cake so they turn with it
+  if (uMix == 1) {
+    float hh; float m = specks(vCake * 15.0, 0.55, 0.26, hh);
+    sponge = mix(sponge, toLin(vec3(0.2, 0.1, 0.06)), m);
+    pore *= 1.0 - m;
+  } else if (uMix == 2) {
+    float hh; float m = specks(vCake * 24.0, 0.95, 0.24, hh);
+    vec3 sc = hh < 0.09 ? vec3(0.95, 0.35, 0.55) : hh < 0.18 ? vec3(0.3, 0.6, 0.95) : hh < 0.27 ? vec3(1.0, 0.85, 0.2)
+            : hh < 0.36 ? vec3(0.35, 0.8, 0.45) : hh < 0.45 ? vec3(1.0, 0.55, 0.2) : vec3(0.65, 0.45, 0.9);
+    sponge = mix(sponge, toLin(sc), m * (1.0 - topness * 0.6));
+    pore *= 1.0 - m;
+  }
+  // filling between layers, visible on the bare side
+  float fillM = 0.0;
+  for (int k = 1; k < 4; k++) {
+    if (float(k) >= uLayers) break;
+    float yk = H * float(k) / uLayers;
+    float dd = abs(vCake.y - yk + 0.004 * (n2 - 0.5));
+    fillM = max(fillM, 1.0 - smoothstep(0.02, 0.026, dd));
+  }
+  fillM *= 1.0 - topness;
+  sponge = mix(sponge, toLin(uFill) * (0.94 + 0.08 * n3), fillM);
+  pore *= 1.0 - fillM;
 
   float cover = smoothstep(0.0003, 0.011, h);
   vec3 alb = mix(sponge, fro, cover);
@@ -500,11 +578,22 @@ void main() {
   float matte = (1.0 - gloss) * cover;
   N = normalize(N + mn * (matte * 0.12 + (1.0 - cover) * 0.35));
 
-  float rough = mix(0.85, mix(0.6, 0.1, gloss), cover);
+  float rough = mix(mix(0.85, 0.45, fillM), mix(0.6, 0.1, gloss), cover);
   float ao = cav * mix(0.45, 1.0, smoothstep(0.0, 0.14, vP.y)) * mix(1.0 - pore * 0.4, 1.0, cover);
   float wrap = mix(0.15, 0.2 + 0.45 * (1.0 - gloss), cover);
   vec3 c = shade(vP, N, alb, rough, 0.0, wrap, ao, cover * (1.0 - gloss * 0.6));
-  o = vec4(tonemap(c), 1.0);
+  vec3 outc = tonemap(c);
+  if (uTip.z > 0.5) {  // tool guide: dot at the tip, outline of the footprint
+    float dth = mod(vUV.x * 2.0 * PI - uTip.x + PI, 2.0 * PI) - PI;
+    vec2 d = vec2(dth * max(vRho, 0.001), vUV.y * UL - uTip.y);
+    float dl = length(d), e = length(d / uTipAx);
+    float dotm = 1.0 - smoothstep(0.005, 0.005 + fwidth(dl) * 1.5, dl);
+    float halo = 1.0 - smoothstep(0.009, 0.009 + fwidth(dl) * 1.5, dl);
+    float ring = 1.0 - smoothstep(0.0, fwidth(e) * 1.6, abs(e - 1.0));
+    outc = mix(outc, vec3(1.0), max(ring * 0.6, halo * 0.9));
+    outc = mix(outc, vec3(0.45, 0.12, 0.22), dotm);
+  }
+  o = vec4(outc, 1.0);
 }`;
 
 const OBJ_VS = COMMON + `
@@ -692,19 +781,26 @@ function invert(m) {
 }
 function xform(m, v) { const o = [0, 0, 0, 0]; for (let r = 0; r < 4; r++) o[r] = m[r] * v[0] + m[4 + r] * v[1] + m[8 + r] * v[2] + m[12 + r] * v[3]; return o; }
 
-const cam = { VP: null, inv: null, eye: null, pxPerUnit: 300, horizon: 0.5 };
+const cam = { VP: null, inv: null, eye: null, pxPerUnit: 300, horizon: 0.5, left: 0, top: 0 };
+// Adjustable viewpoint: elevation 0 = side on, PI/2 = straight down.
+const view = { elevation: 0.45, targetY: 0.26, zoom: 1 };
 let cssW = 1, cssH = 1;
 function resize() {
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  cssW = window.innerWidth; cssH = window.innerHeight;
+  const rect = canvas.getBoundingClientRect();
+  cssW = Math.max(1, rect.width); cssH = Math.max(1, rect.height);
+  cam.left = rect.left; cam.top = rect.top;
   canvas.width = Math.round(cssW * dpr); canvas.height = Math.round(cssH * dpr);
+  updateCamera();
+}
+function updateCamera() {
   const asp = cssW / cssH, fovy = 30 * Math.PI / 180;
   const fx = 2 * Math.atan(Math.tan(fovy / 2) * asp);
-  const dist = Math.max(1.5 / Math.tan(fx / 2), 1.08 / Math.tan(fovy / 2)) + 1.0;
-  const el = 0.45, target = [0, 0.26, 0];
+  const dist = (Math.max(1.5 / Math.tan(fx / 2), 1.08 / Math.tan(fovy / 2)) + 1.0) / view.zoom;
+  const el = Math.min(Math.PI / 2 - 1e-3, Math.max(0, view.elevation)), target = [0, view.targetY, 0];
   const eye = [0, target[1] + dist * Math.sin(el), dist * Math.cos(el)];
-  const view = lookAt(eye, target, [0, 1, 0]);
-  cam.VP = mul(persp(fovy, asp, 0.1, 60), view);
+  const viewM = lookAt(eye, target, [0, 1, 0]);
+  cam.VP = mul(persp(fovy, asp, 0.1, 60), viewM);
   cam.inv = invert(cam.VP); cam.eye = eye;
   const a = xform(cam.VP, [0, H * 0.5, R, 1]), b = xform(cam.VP, [0.1, H * 0.5, R, 1]);
   cam.pxPerUnit = Math.abs(b[0] / b[3] - a[0] / a[3]) * 0.5 * cssW / 0.1;
@@ -712,6 +808,7 @@ function resize() {
   cam.horizon = Math.min(0.95, Math.max(0.05, hz[1] / hz[3] * 0.5 + 0.5));
 }
 window.addEventListener('resize', resize);
+if (window.visualViewport) window.visualViewport.addEventListener('resize', resize);
 resize();
 
 // Ray -> undisplaced cake surface -> (world angle phi, profile coordinate u)
@@ -740,7 +837,7 @@ function smoothH(th, u, r) {
 // Sphere-trace the frosted surface (base shape pushed out by the thickness field)
 // so the tool lands where the frosting is seen.
 function pick(sx, sy) {
-  const nx = sx / cssW * 2 - 1, ny = 1 - sy / cssH * 2;
+  const nx = (sx - cam.left) / cssW * 2 - 1, ny = 1 - (sy - cam.top) / cssH * 2;
   const a = xform(cam.inv, [nx, ny, -1, 1]), b = xform(cam.inv, [nx, ny, 1, 1]);
   const o = [a[0] / a[3], a[1] / a[3], a[2] / a[3]];
   const d = V3.norm(V3.sub([b[0] / b[3], b[1] / b[3], b[2] / b[3]], o));
@@ -767,82 +864,133 @@ function pick(sx, sy) {
 // ------------------------------------------------------------------
 // Input
 // ------------------------------------------------------------------
-const spin = { rot: 0, vel: 0, id: null, lastX: 0, hist: [], auto: false };
-const pen = { id: null, down: false, x: 0, y: 0, p: 0.5, tilt: 0, prev: null, type: '' };
-const isIPad = /iPad/.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
+const spin = { rot: 0, vel: 0, fingers: new Map(), hist: [], auto: false, dir: -1, rpm: 20, inertia: true };
+const pen = { id: null, down: false, x: 0, y: 0, p: 0.5, tilt: 0, prev: null, type: '', hover: false, hx: 0, hy: 0 };
+const UA = navigator.userAgent;
+const isIPad = /iPad/.test(UA) || (/Macintosh/.test(UA) && navigator.maxTouchPoints > 1);
+const isIOS = isIPad || /iPhone|iPod/.test(UA);
+// On iOS, Touch Events keep pencil and fingers fully independent (pointer events
+// can cancel one another). Everywhere else pointer events do the job.
+const useTouchEvents = isIOS && 'ontouchstart' in window;
 let pencilMode = isIPad;
 const pressEl = document.getElementById('press');
 
-function penPressure(e) {
-  if (e.pointerType === 'pen') {
-    const pr = e.pressure || 0;
-    return Math.min(1, Math.max(0.05, 0.08 + 1.1 * Math.pow(pr, 0.75)));
-  }
-  return +pressEl.value;
-}
+const pressureCurve = pr => Math.min(1, Math.max(0.05, 0.08 + 1.1 * Math.pow(Math.max(0, pr), 0.75)));
+const tiltFromAltitude = alt => Math.min(1, Math.max(0, 1 - alt / (Math.PI / 2)));
+function penPressure(e) { return e.pointerType === 'pen' ? pressureCurve(e.pressure || 0) : +pressEl.value; }
 function penTilt(e) {
+  if (e.pointerType !== 'pen') return 0.2;
   let alt = e.altitudeAngle;
   if (alt === undefined) {
     const tx = Math.tan((e.tiltX || 0) * Math.PI / 180), ty = Math.tan((e.tiltY || 0) * Math.PI / 180);
     alt = Math.PI / 2 - Math.atan(Math.hypot(tx, ty));
   }
-  return e.pointerType === 'pen' ? Math.min(1, Math.max(0, 1 - alt / (Math.PI / 2))) : 0.2;
+  return tiltFromAltitude(alt);
 }
 
-function classify(e) {
-  if (e.pointerType === 'pen') { if (!pencilMode) setPencilMode(true); return 'tool'; }
-  if (e.pointerType === 'mouse') return (e.button !== 0 || e.shiftKey) ? 'spin' : 'tool';
-  if (pencilMode) {
-    // crude palm rejection: ignore touches landing right next to the pencil
-    if (pen.down && pen.type === 'pen' && Math.hypot(e.clientX - pen.x, e.clientY - pen.y) < 170) return 'ignore';
-    return 'spin';
-  }
-  return pen.down ? 'spin' : 'tool';
-}
-
-canvas.addEventListener('pointerdown', e => {
-  e.preventDefault();
+// ---- tool pointer ----
+function penDown(id, x, y, p, tilt, type) {
+  if (pen.down) return false;
   hideHint();
-  const kind = classify(e);
-  if (kind === 'tool' && !pen.down) {
-    Object.assign(pen, { id: e.pointerId, down: true, x: e.clientX, y: e.clientY, p: penPressure(e), tilt: penTilt(e), prev: null, type: e.pointerType });
-    pushUndo();
-    Object.assign(stroke, { dist: 0, shift: (Math.random() * W) | 0, seed: Math.random() * 1000, load: 0,
-                            lc: hex(FROST[frostIdx]), sinceDrip: 0, nextGap: 0.02 + Math.random() * 0.06 });
-  } else if (kind === 'spin' && spin.id === null) {
-    spin.id = e.pointerId; spin.lastX = e.clientX; spin.vel = 0;
-    spin.hist = [[performance.now(), spin.rot]];
-  } else return;
-  try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
+  Object.assign(pen, { id, down: true, x, y, p, tilt, prev: null, type });
+  pushUndo();
+  Object.assign(stroke, { dist: 0, shift: (Math.random() * W) | 0, seed: Math.random() * 1000, load: 0,
+                          lc: hex(FROST[frostIdx]), sinceDrip: 0, nextGap: 0.02 + Math.random() * 0.06 });
+  return true;
+}
+function penMove(id, x, y, p, tilt) {
+  if (!pen.down || id !== pen.id) return;
+  pen.x = x; pen.y = y;
+  pen.p += (p - pen.p) * 0.5;
+  pen.tilt += (tilt - pen.tilt) * 0.3;
+}
+function penUp(id) { if (id === pen.id) { pen.down = false; pen.id = null; pen.prev = null; } }
+
+// ---- spinning fingers (any number; the turntable follows their average motion) ----
+function spinDown(id, x) {
+  hideHint();
+  if (!spin.fingers.size) { spin.vel = 0; spin.hist = [[performance.now(), spin.rot]]; }
+  spin.fingers.set(id, x);
+}
+function spinMove(id, x) {
+  if (!spin.fingers.has(id)) return;
+  const dx = x - spin.fingers.get(id);
+  spin.fingers.set(id, x);
+  spin.rot -= dx / spin.fingers.size / (cam.pxPerUnit * R);
+  const now = performance.now();
+  spin.hist.push([now, spin.rot]);
+  while (spin.hist.length > 2 && now - spin.hist[0][0] > 90) spin.hist.shift();
+}
+function spinUp(id) {
+  if (!spin.fingers.delete(id) || spin.fingers.size) return;
+  const now = performance.now();
+  const h0 = spin.hist.find(s => now - s[0] <= 90);
+  spin.vel = h0 && now - h0[0] > 8 ? (spin.rot - h0[1]) / ((now - h0[0]) / 1000) : 0;
+  spin.vel = spin.inertia ? Math.max(-14, Math.min(14, spin.vel)) : 0;
+}
+
+// ---- Touch Events (iOS) ----
+if (useTouchEvents) {
+  canvas.addEventListener('touchstart', e => {
+    e.preventDefault();
+    for (const t of e.changedTouches) {
+      const id = 't' + t.identifier;
+      if (t.touchType === 'stylus') {
+        if (!pencilMode) setPencilMode(true);
+        penDown(id, t.clientX, t.clientY, pressureCurve(t.force), tiltFromAltitude(t.altitudeAngle ?? Math.PI / 2), 'pen');
+      } else if (pencilMode) {
+        if ((t.radiusX || 0) > 30) continue;   // resting palm
+        spinDown(id, t.clientX);
+      } else if (!penDown(id, t.clientX, t.clientY, +pressEl.value, 0.2, 'touch')) {
+        spinDown(id, t.clientX);
+      }
+    }
+  }, { passive: false });
+  canvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    for (const t of e.changedTouches) {
+      const id = 't' + t.identifier;
+      if (id === pen.id) penMove(id, t.clientX, t.clientY, t.touchType === 'stylus' ? pressureCurve(t.force) : +pressEl.value,
+                                 t.touchType === 'stylus' ? tiltFromAltitude(t.altitudeAngle ?? Math.PI / 2) : 0.2);
+      else spinMove(id, t.clientX);
+    }
+  }, { passive: false });
+  const tEnd = e => { for (const t of e.changedTouches) { const id = 't' + t.identifier; penUp(id); spinUp(id); } };
+  canvas.addEventListener('touchend', tEnd);
+  canvas.addEventListener('touchcancel', tEnd);
+} else {
+  canvas.addEventListener('touchstart', e => e.preventDefault(), { passive: false });
+  canvas.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
+}
+
+// ---- Pointer Events (mouse everywhere; pen/touch off iOS) ----
+const handledByTouch = e => useTouchEvents && e.pointerType !== 'mouse';
+canvas.addEventListener('pointerdown', e => {
+  if (handledByTouch(e)) return;
+  e.preventDefault();
+  const id = 'p' + e.pointerId;
+  let ok = false;
+  if (e.pointerType === 'pen') { if (!pencilMode) setPencilMode(true); ok = penDown(id, e.clientX, e.clientY, penPressure(e), penTilt(e), 'pen'); }
+  else if (e.pointerType === 'mouse') {
+    if (e.button !== 0 || e.shiftKey) { spinDown(id, e.clientX); ok = true; }
+    else ok = penDown(id, e.clientX, e.clientY, penPressure(e), penTilt(e), 'mouse');
+  } else if (pencilMode) { if ((e.width || 0) <= 60) { spinDown(id, e.clientX); ok = true; } }
+  else { ok = penDown(id, e.clientX, e.clientY, penPressure(e), penTilt(e), 'touch'); if (!ok) { spinDown(id, e.clientX); ok = true; } }
+  if (ok) try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
 });
 canvas.addEventListener('pointermove', e => {
-  if (e.pointerId === pen.id && pen.down) {
-    pen.x = e.clientX; pen.y = e.clientY;
-    pen.p += (penPressure(e) - pen.p) * 0.5;
-    pen.tilt += (penTilt(e) - pen.tilt) * 0.3;
-  } else if (e.pointerId === spin.id) {
-    const dx = e.clientX - spin.lastX; spin.lastX = e.clientX;
-    spin.rot -= dx / (cam.pxPerUnit * R);
-    const now = performance.now();
-    spin.hist.push([now, spin.rot]);
-    while (spin.hist.length > 2 && now - spin.hist[0][0] > 90) spin.hist.shift();
-  }
+  // hover (mouse, or a hovering Pencil) drives the on-cake guide
+  if ((e.pointerType === 'mouse' || e.pointerType === 'pen') && !e.buttons) { pen.hover = true; pen.hx = e.clientX; pen.hy = e.clientY; }
+  if (handledByTouch(e)) return;
+  const id = 'p' + e.pointerId;
+  if (id === pen.id) penMove(id, e.clientX, e.clientY, penPressure(e), penTilt(e));
+  else spinMove(id, e.clientX);
 });
-function endPointer(e) {
-  if (e.pointerId === pen.id) { pen.down = false; pen.id = null; pen.prev = null; }
-  if (e.pointerId === spin.id) {
-    const now = performance.now();
-    const h0 = spin.hist.find(s => now - s[0] <= 90);
-    spin.vel = h0 && now - h0[0] > 8 ? (spin.rot - h0[1]) / ((now - h0[0]) / 1000) : 0;
-    spin.vel = Math.max(-14, Math.min(14, spin.vel));
-    spin.id = null;
-  }
-}
-canvas.addEventListener('pointerup', endPointer);
-canvas.addEventListener('pointercancel', endPointer);
+const pEnd = e => { if (handledByTouch(e)) return; const id = 'p' + e.pointerId; penUp(id); spinUp(id); };
+canvas.addEventListener('pointerup', pEnd);
+canvas.addEventListener('pointercancel', pEnd);
+canvas.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' || e.pointerType === 'pen') pen.hover = false; });
 canvas.addEventListener('contextmenu', e => e.preventDefault());
-canvas.addEventListener('touchstart', e => e.preventDefault(), { passive: false });
-canvas.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
 document.addEventListener('gesturestart', e => e.preventDefault());
 document.addEventListener('dblclick', e => e.preventDefault());
 
@@ -875,28 +1023,65 @@ function setPencilMode(on) {
     ? 'Finger spins the turntable · Pencil decorates'
     : 'Drag to decorate · right-drag / shift-drag / second finger spins · Space auto-spins';
 }
-function setAuto(on) { spin.auto = on; document.getElementById('spinBtn').classList.toggle('on', on); }
+function setAuto(on) {
+  spin.auto = on;
+  document.getElementById('spinBtn').classList.toggle('on', on);
+  document.getElementById('autoPanel').hidden = !on;
+}
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('cake-' + k); return v === null ? d : JSON.parse(v); } catch (_) { return d; } },
+  set(k, v) { try { localStorage.setItem('cake-' + k, JSON.stringify(v)); } catch (_) {} },
+};
+const ICON_CCW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 3-6.2"/><path d="M7 2v4h4"/></svg>';
+const ICON_CW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-3-6.2"/><path d="M17 2v4h-4"/></svg>';
+function syncAutoPanel() {
+  // dir -1 turns the front of the cake left-to-right: counter-clockwise seen from above
+  document.getElementById('dirBtn').innerHTML = spin.dir < 0 ? ICON_CCW : ICON_CW;
+  document.getElementById('dirBtn').title = spin.dir < 0 ? 'Counter-clockwise' : 'Clockwise';
+  document.getElementById('rpm').value = spin.rpm;
+  document.getElementById('rpmLabel').textContent = spin.rpm + ' rpm';
+}
+spin.dir = store.get('dir', -1) < 0 ? -1 : 1;
+spin.rpm = Math.min(60, Math.max(5, +store.get('rpm', 20) || 20));
+spin.inertia = !!store.get('inertia', true);
+document.getElementById('dirBtn').onclick = () => { spin.dir = -spin.dir; store.set('dir', spin.dir); syncAutoPanel(); };
+document.getElementById('rpm').oninput = e => { spin.rpm = +e.target.value; store.set('rpm', spin.rpm); syncAutoPanel(); };
+function setInertia(on) {
+  spin.inertia = on; store.set('inertia', on);
+  document.getElementById('inertiaBtn').classList.toggle('on', on);
+}
+document.getElementById('inertiaBtn').onclick = () => setInertia(!spin.inertia);
 document.getElementById('pencilBtn').onclick = () => setPencilMode(!pencilMode);
 document.getElementById('spinBtn').onclick = () => setAuto(!spin.auto);
 document.getElementById('undoBtn').onclick = undo;
-document.getElementById('resetBtn').onclick = () => { pushUndo(); resetCake(); };
+document.getElementById('resetBtn').onclick = () => {
+  pushUndo(); pickCake(); resetCake();
+  const c = CAKES[cake.type];
+  showNote(`${c.name} · ${cake.layers} layers · ${c.fillName}`);
+};
 let hintTimer = setTimeout(hideHint, 7000);
 function hideHint() { clearTimeout(hintTimer); document.getElementById('hint').style.opacity = 0; }
+function showNote(text) {
+  const h = document.getElementById('hint');
+  h.textContent = text; h.style.opacity = 1;
+  clearTimeout(hintTimer); hintTimer = setTimeout(hideHint, 2500);
+}
 window.addEventListener('keydown', e => {
   if ((e.metaKey || e.ctrlKey) && e.key === 'z') { e.preventDefault(); undo(); return; }
   const tools = { '1': 'frost', '2': 'knife', '3': 'comb', '4': 'drizzle' };
   if (tools[e.key]) setTool(tools[e.key]);
   if (e.key === ' ') { e.preventDefault(); setAuto(!spin.auto); }
-  if (e.key === 'ArrowLeft') spin.vel += 0.8;
-  if (e.key === 'ArrowRight') spin.vel -= 0.8;
+  if (e.key === 'ArrowLeft') { if (spin.inertia) spin.vel += 0.8; else spin.rot += 0.1; }
+  if (e.key === 'ArrowRight') { if (spin.inertia) spin.vel -= 0.8; else spin.rot -= 0.1; }
+  if (e.key === 'g') showGuide = !showGuide;
 });
 
 // ------------------------------------------------------------------
 // Main loop
 // ------------------------------------------------------------------
-function applyPen(dt) {
+let showGuide = true;
+function applyPen(dt, hit) {
   if (!pen.down) return;
-  const hit = pick(pen.x, pen.y);
   if (!hit) { pen.prev = null; return; }
   const cur = { th: hit.phi - spin.rot, u: hit.u };
   const a = pen.prev;
@@ -915,12 +1100,15 @@ function applyPen(dt) {
 let last = performance.now();
 function frame(now) {
   const dt = Math.min(0.05, (now - last) / 1000); last = now;
-  if (spin.id === null) {
-    if (spin.auto) spin.vel += (-2.0 - spin.vel) * Math.min(1, dt * 3);
-    else spin.vel *= Math.exp(-(0.35 + (pen.down ? 0.6 * pen.p : 0)) * dt);
+  if (!spin.fingers.size) {
+    if (spin.auto) spin.vel += (spin.dir * spin.rpm * TAU / 60 - spin.vel) * Math.min(1, dt * 3);
+    else if (!spin.inertia) spin.vel = 0;
+    else spin.vel *= Math.exp(-(0.35 + (pen.down ? TOOL_DRAG[tool] * pen.p : 0)) * dt);
     spin.rot += spin.vel * dt;
   }
-  applyPen(dt);
+  const tipXY = pen.down ? [pen.x, pen.y] : pen.hover ? [pen.hx, pen.hy] : null;
+  const hit = tipXY && pick(tipXY[0], tipXY[1]);
+  applyPen(dt, hit);
   updateDrips(dt);
   upload();
 
@@ -951,6 +1139,13 @@ function frame(now) {
   gl.uniform3fv(cakeProg.u.uEye, cam.eye);
   gl.uniform1f(cakeProg.u.uRot, spin.rot);
   gl.uniform2f(cakeProg.u.uTex, 1 / W, 1 / HU);
+  const ck = CAKES[cake.type];
+  gl.uniform3fv(cakeProg.u.uSponge, ck.sponge); gl.uniform3fv(cakeProg.u.uCrust, ck.crust); gl.uniform3fv(cakeProg.u.uFill, ck.fill);
+  gl.uniform1f(cakeProg.u.uLayers, cake.layers); gl.uniform1f(cakeProg.u.uPore, ck.pore); gl.uniform1i(cakeProg.u.uMix, ck.mix);
+  const guideP = pen.down ? pen.p : pen.type === 'pen' ? 0.35 : +pressEl.value;
+  const shp = SHAPE[tool](guideP);
+  gl.uniform3f(cakeProg.u.uTip, hit ? hit.phi - spin.rot : 0, hit ? hit.u : 0, hit && showGuide ? 1 : 0);
+  gl.uniform2f(cakeProg.u.uTipAx, shp[0], shp[1]);
   gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, texH); gl.uniform1i(cakeProg.u.uH, 0);
   gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, texC); gl.uniform1i(cakeProg.u.uC, 1);
   gl.bindVertexArray(cakeMesh.vao);
@@ -960,7 +1155,10 @@ function frame(now) {
   requestAnimationFrame(frame);
 }
 
+pickCake();
 resetCake();
+setInertia(spin.inertia);
+syncAutoPanel();
 setPencilMode(pencilMode);
 setTool('frost');
 requestAnimationFrame(frame);
