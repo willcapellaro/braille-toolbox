@@ -1,0 +1,969 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#f4e2da">
+<title>Cake Studio</title>
+<style>
+  :root {
+    --ink: #4a3a3a;
+    --pill: rgba(255, 250, 247, 0.72);
+    --pill-edge: rgba(120, 80, 70, 0.14);
+    --accent: #e0778f;
+  }
+  html, body {
+    margin: 0; height: 100%; overflow: hidden;
+    background: #f4e2da;
+    overscroll-behavior: none;
+    touch-action: none;
+    -webkit-user-select: none; user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    font: 500 13px/1.2 ui-rounded, "SF Pro Rounded", system-ui, -apple-system, sans-serif;
+    color: var(--ink);
+  }
+  canvas#gl { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; touch-action: none; }
+  .bar {
+    position: fixed; display: flex; align-items: center; gap: 6px;
+    padding: 6px; border-radius: 999px;
+    background: var(--pill); border: 1px solid var(--pill-edge);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4); backdrop-filter: blur(14px) saturate(1.4);
+    box-shadow: 0 6px 24px rgba(90, 50, 40, 0.10);
+  }
+  #tools { top: calc(env(safe-area-inset-top) + 12px); left: 50%; transform: translateX(-50%); }
+  #opts { bottom: calc(env(safe-area-inset-bottom) + 12px); right: 12px; }
+  #swatches { top: 50%; left: calc(env(safe-area-inset-left) + 12px); transform: translateY(-50%); flex-direction: column; }
+  button {
+    appearance: none; border: 0; background: transparent; color: inherit; font: inherit;
+    display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 999px;
+    cursor: pointer; touch-action: manipulation;
+  }
+  button svg { width: 22px; height: 22px; }
+  button.on { background: #fff; box-shadow: 0 1px 4px rgba(90, 50, 40, 0.18); color: #b24a63; }
+  .sw { width: 30px; height: 30px; padding: 0; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }
+  .sw.on { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--accent); }
+  #pressWrap { display: flex; align-items: center; gap: 6px; padding: 0 8px; }
+  #pressWrap input { width: 90px; accent-color: var(--accent); }
+  #hint {
+    position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 70px); transform: translateX(-50%);
+    padding: 8px 14px; border-radius: 999px; background: rgba(74, 58, 58, 0.78); color: #fff;
+    transition: opacity .8s; pointer-events: none; white-space: nowrap;
+  }
+  @media (max-width: 640px) {
+    button span { display: none; }
+    #opts { bottom: calc(env(safe-area-inset-bottom) + 64px); }
+    #hint { display: none; }
+  }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+
+<div id="tools" class="bar">
+  <button data-tool="frost" class="on" title="Frosting (1)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l7-7"/><path d="M11 13c1-4 4-8 8-9 1 3-1 8-5 10-1 .5-2 .3-3-1z"/></svg>
+    <span>Frost</span></button>
+  <button data-tool="knife" title="Smooth / scrape (2)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="13" rx="1.2"/><path d="M12 15.5v6"/></svg>
+    <span>Smooth</span></button>
+  <button data-tool="comb" title="Texture comb (3)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h8v16H5z"/><path d="M13 6h5M13 10h5M13 14h5M13 18h5"/></svg>
+    <span>Texture</span></button>
+  <button data-tool="drizzle" title="Drizzle (4)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c3 4.5 5 7.5 5 10a5 5 0 0 1-10 0c0-2.5 2-5.5 5-10z"/></svg>
+    <span>Drizzle</span></button>
+</div>
+
+<div id="swatches" class="bar"></div>
+
+<div id="opts" class="bar">
+  <div id="pressWrap" title="Simulated pressure for mouse / finger"><span>Pressure</span><input id="press" type="range" min="0.05" max="1" step="0.01" value="0.5"></div>
+  <button id="pencilBtn" title="Pencil mode: pencil decorates, fingers spin">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4l5 5L9 20H4v-5z"/></svg>
+    <span>Pencil mode</span></button>
+  <button id="spinBtn" title="Auto-spin (space)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-3-6.2"/><path d="M17 2v4h-4"/></svg>
+    <span>Auto-spin</span></button>
+  <button id="undoBtn" title="Undo (⌘Z)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>
+  </button>
+  <button id="resetBtn" title="New cake">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11h16v9H4z"/><path d="M4 15c2 1.5 4 1.5 6 0s4-1.5 6 0 3 1 4 .5"/><path d="M12 4v4"/></svg>
+  </button>
+</div>
+
+<div id="hint">Finger spins the turntable · Pencil decorates</div>
+
+<script>
+'use strict';
+// ------------------------------------------------------------------
+// Cake geometry. The whole frosted surface is one "profile" strip that
+// runs from the bottom of the side (u = 0), over a rounded top edge, to
+// the center of the top (u = L). Frosting lives in a (theta, u) grid.
+// ------------------------------------------------------------------
+const TAU = Math.PI * 2;
+const R = 1.0, H = 0.82, C = 0.075;
+const L1 = H - C, L2 = Math.PI * C / 2, L3 = R - C, L = L1 + L2 + L3;
+const W = 1280;
+const cellTh = TAU / W;
+const HU = Math.round(L / (cellTh * R));
+const cellU = L / HU;
+const MAXH = 0.17;
+
+function prof(u) { // -> [r, y, nr, ny]
+  if (u < L1) return [R, Math.max(u, 0), 1, 0];
+  if (u < L1 + L2) { const a = (u - L1) / C, c = Math.cos(a), s = Math.sin(a); return [R - C + C * c, L1 + C * s, c, s]; }
+  return [Math.max(R - C - (u - L1 - L2), 0), H, 0, 1];
+}
+const rhoRow = new Float32Array(HU);
+for (let j = 0; j < HU; j++) rhoRow[j] = Math.max(prof((j + 0.5) * cellU)[0], 0.004);
+
+// Simulation state
+const hgt = new Float32Array(W * HU);          // frosting thickness
+const col = new Float32Array(W * HU * 4);      // surface color rgb + gloss
+const gpuCol = new Uint8Array(W * HU * 4);
+let dirty0 = 0, dirty1 = HU - 1;
+function markDirty(a, b) { dirty0 = Math.min(dirty0, a); dirty1 = Math.max(dirty1, b); }
+
+// ---------------- noise -----------------
+function h3(x, y, z) {
+  let h = (Math.imul(x, 374761393) + Math.imul(y, 668265263) + Math.imul(z, 1440662683)) | 0;
+  h = Math.imul(h ^ (h >>> 13), 1274126177); h ^= h >>> 16;
+  return (h >>> 0) / 4294967296;
+}
+function vn3(x, y, z) {
+  const xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z);
+  let fx = x - xi, fy = y - yi, fz = z - zi;
+  fx = fx * fx * (3 - 2 * fx); fy = fy * fy * (3 - 2 * fy); fz = fz * fz * (3 - 2 * fz);
+  const l = (a, b, t) => a + (b - a) * t;
+  return l(
+    l(l(h3(xi, yi, zi), h3(xi + 1, yi, zi), fx), l(h3(xi, yi + 1, zi), h3(xi + 1, yi + 1, zi), fx), fy),
+    l(l(h3(xi, yi, zi + 1), h3(xi + 1, yi, zi + 1), fx), l(h3(xi, yi + 1, zi + 1), h3(xi + 1, yi + 1, zi + 1), fx), fy), fz);
+}
+function vn1(x) { const i = Math.floor(x), f = x - i, t = f * f * (3 - 2 * f); return h3(i, 7, 3) * (1 - t) + h3(i + 1, 7, 3) * t; }
+
+// Static lumpiness field (seam-free), shifted around per stroke.
+const lump = new Float32Array(W * HU);
+for (let j = 0; j < HU; j++) {
+  const [r, y] = prof((j + 0.5) * cellU);
+  for (let i = 0; i < W; i++) {
+    const th = (i + 0.5) * cellTh, x = r * Math.cos(th), z = r * Math.sin(th);
+    lump[j * W + i] = 0.62 * vn3(x * 9 + 50, y * 9 + 50, z * 9 + 50) + 0.38 * vn3(x * 24 + 9, y * 24 + 9, z * 24 + 9);
+  }
+}
+
+// ---------------- palettes -----------------
+const FROST = ['#fbf3e3', '#f5a8bf', '#a6dcc2', '#c4acf0', '#f8da80', '#9ec9f2', '#a5705a'];
+const DRIZ  = ['#3a1f15', '#70422a', '#f4ecdc', '#c98138', '#c02f52', '#6a9fd8'];
+const hex = s => [1, 3, 5].map(k => parseInt(s.substr(k, 2), 16) / 255);
+let tool = 'frost', frostIdx = 1, drizIdx = 0;
+
+function resetCake() {
+  hgt.fill(0);
+  const c = hex(FROST[0]);
+  for (let k = 0; k < W * HU; k++) { col[k * 4] = c[0]; col[k * 4 + 1] = c[1]; col[k * 4 + 2] = c[2]; col[k * 4 + 3] = 0.2; }
+  drips.length = 0;
+  markDirty(0, HU - 1);
+}
+
+// ---------------- footprint iteration -----------------
+const wrapA = a => { a = (a + Math.PI) % TAU; if (a < 0) a += TAU; return a - Math.PI; };
+// Calls fn(idx, dx, dy, i, j) for cells within the |dx|<=ax, |dy|<=ay box
+// (dx measured along the circumference in physical units).
+function forFoot(th, u, ax, ay, fn) {
+  th = ((th % TAU) + TAU) % TAU;
+  const j0 = Math.max(0, Math.floor((u - ay) / cellU)), j1 = Math.min(HU - 1, Math.ceil((u + ay) / cellU));
+  if (j1 < j0) return;
+  const ic = Math.round(th / cellTh - 0.5);
+  for (let j = j0; j <= j1; j++) {
+    const dy = (j + 0.5) * cellU - u;
+    if (dy > ay || dy < -ay) continue;
+    const rj = rhoRow[j];
+    const full = ax / (rj * cellTh) >= W / 2;
+    const ni = full ? W / 2 : Math.ceil(ax / (rj * cellTh));
+    const kEnd = full ? W / 2 - 1 : ni;
+    const row = j * W;
+    for (let k = -ni; k <= kEnd; k++) {
+      const i = ((ic + k) % W + W) % W;
+      const dx = wrapA((i + 0.5) * cellTh - th) * rj;
+      if (dx > ax || dx < -ax) continue;
+      fn(row + i, dx, dy, i, j);
+    }
+  }
+  markDirty(j0, j1);
+}
+function mixCol(idx, c, t, gloss, gt) {
+  const o = idx * 4;
+  col[o] += (c[0] - col[o]) * t; col[o + 1] += (c[1] - col[o + 1]) * t; col[o + 2] += (c[2] - col[o + 2]) * t;
+  if (gloss !== undefined) col[o + 3] += (gloss - col[o + 3]) * gt;
+}
+
+// ---------------- tools -----------------
+const stroke = { dist: 0, shift: 0, seed: 0, load: 0, lc: [1, 1, 1], sinceDrip: 0, nextGap: 0.1 };
+
+function stampFrost(th, u, p, ds, dt) {
+  const ax = 0.05 + 0.035 * p, ay = 0.085 + 0.05 * p;
+  const perPass = 0.014 + 0.04 * p;
+  const jit = 0.6 + 0.8 * vn1(stroke.dist * 7 + stroke.seed);
+  // Volume laid down by this stamp, spread over the footprint by area so the
+  // top center (where the footprint wraps the whole ring) doesn't pile up.
+  const vol = (perPass * 1.07 * ay * ds + 0.04 * p * dt * Math.PI * ax * ay / 3) * jit;
+  const c = hex(FROST[frostIdx]);
+  const sh = stroke.shift;
+  const wf = (dx, dy) => { const q = (dx * dx) / (ax * ax) + (dy * dy) / (ay * ay); return q < 1 ? (1 - q) * (1 - q) : 0; };
+  let S = 0;
+  forFoot(th, u, ax, ay, (idx, dx, dy, i, j) => { S += wf(dx, dy) * rhoRow[j]; });
+  if (S <= 0) return;
+  const amt = vol / (S * cellTh * cellU);
+  forFoot(th, u, ax, ay, (idx, dx, dy, i, j) => {
+    const w = wf(dx, dy);
+    if (!w) return;
+    const lp = lump[j * W + (i + sh) % W];
+    const add = amt * w * (0.2 + 1.6 * lp);
+    const h = hgt[idx];
+    hgt[idx] = Math.min(MAXH, h + add);
+    mixCol(idx, c, Math.min(1, add / (0.3 * h + 0.002)), 0.18, Math.min(1, add / 0.004));
+  });
+}
+
+function stampKnife(th, u, p, ds) {
+  const ax = 0.02, ay = 0.19;
+  const T = 0.004 + 0.075 * Math.pow(1 - p, 1.6);  // harder press = closer to the cake
+  const s = 0.6, seed = stroke.seed;
+  const lc = stroke.lc;
+  forFoot(th, u, ax, ay, (idx, dx, dy) => {
+    const wx = 1 - (dx * dx) / (ax * ax);
+    const e = Math.abs(dy) / ay, wy = e < 0.8 ? 1 : 1 - (e - 0.8) / 0.2;
+    const w = wx * wy * s;
+    const tgt = T * (1 + 0.025 * (vn1(dy * 30 + seed) - 0.5));  // tiny blade imperfections
+    const h = hgt[idx], o = idx * 4;
+    if (h > tgt) {
+      const rem = (h - tgt) * w;
+      hgt[idx] = h - rem;
+      const nl = stroke.load + rem;
+      if (nl > 0) { const k = rem / nl; lc[0] += (col[o] - lc[0]) * k; lc[1] += (col[o + 1] - lc[1]) * k; lc[2] += (col[o + 2] - lc[2]) * k; }
+      stroke.load = nl;
+    } else if (stroke.load > 1e-5) {
+      const put = Math.min((tgt - h) * w, stroke.load * 0.5);
+      if (put > 0) {
+        hgt[idx] = h + put; stroke.load -= put;
+        mixCol(idx, lc, 0.9 * put / (h + put + 0.002));
+      }
+    }
+    // Scraping polishes buttercream to a satin sheen (never dulls glossy ganache).
+    if (col[o + 3] < 0.45) col[o + 3] += (0.45 - col[o + 3]) * w * 0.25;
+  });
+  // A little of what the blade carries gets pushed off its top end (the "crown").
+  if (stroke.load > 0) {
+    const spill = stroke.load * 0.035;
+    stroke.load -= spill;
+    depositVolume(th, u + ay * 0.95, 0.035, 0.03, spill, lc);
+  }
+  stroke.load = Math.min(stroke.load, 25);
+}
+
+function depositVolume(th, u, ax, ay, vol, c) {
+  let sw = 0;
+  const wf = (dx, dy) => { const q = dx * dx / (ax * ax) + dy * dy / (ay * ay); return q < 1 ? (1 - q) * (1 - q) : 0; };
+  forFoot(th, u, ax, ay, (idx, dx, dy) => { sw += wf(dx, dy); });
+  if (sw <= 0) return;
+  forFoot(th, u, ax, ay, (idx, dx, dy) => {
+    const w = wf(dx, dy); if (!w) return;
+    const add = vol * w / sw, h = hgt[idx];
+    hgt[idx] = Math.min(MAXH, h + add);
+    mixCol(idx, c, add / (h + add + 0.002));
+  });
+}
+
+function stampComb(th, u, p, tilt) {
+  const ax = 0.022, ay = 0.13;
+  const period = 0.02 + 0.035 * tilt;           // tilt the pencil for wider teeth
+  const depth = 0.45 + 0.55 * p;
+  let n = 0, sum = 0;
+  forFoot(th, u, ax, ay, idx => { n++; sum += hgt[idx]; });
+  if (!n) return;
+  const m = sum / n;
+  if (m < 1e-4) return;
+  forFoot(th, u, ax, ay, (idx, dx, dy) => {
+    const wx = 1 - (dx * dx) / (ax * ax);
+    const e = Math.abs(dy) / ay, wy = e < 0.75 ? 1 : 1 - (e - 0.75) / 0.25;
+    const c = 0.5 + 0.5 * Math.cos(TAU * dy / period);
+    const shape = Math.pow(c, 0.6);                 // broad ridges, crisp grooves
+    const tgt = m * (1 + depth * (2 * shape - 1.25));
+    hgt[idx] += (Math.max(0, tgt) - hgt[idx]) * wx * wy * 0.45;
+  });
+}
+
+function bead(th, u, w, amt, c, gl) {
+  forFoot(th, u, w, w, (idx, dx, dy) => {
+    const q = (dx * dx + dy * dy) / (w * w);
+    if (q >= 1) return;
+    const add = amt * Math.sqrt(1 - q);
+    hgt[idx] = Math.min(MAXH, hgt[idx] + add);
+    const t = Math.min(1, add / 0.0015);
+    mixCol(idx, c, t, gl, t);
+  });
+}
+
+const drips = [];
+function stampDrizzle(th, u, p, ds, dt) {
+  const w = 0.009 + 0.013 * p, hb = 0.011 + 0.012 * p;
+  const c = hex(DRIZ[drizIdx]);
+  const amt = hb / (Math.PI * w / 2) * ds;
+  if (amt > 0) bead(th, u, w, amt, c, 0.95);
+  if (dt > 0) bead(th, u, w * 2.2, 0.035 * (0.3 + p) * dt, c, 0.95);  // a resting pour pools
+  // Near the rim (or on the side) the ganache runs over and drips.
+  const rimU = L1 + L2 + 0.05;
+  if (u < rimU) {
+    stroke.sinceDrip += ds + dt * 0.35 * (0.3 + p);
+    if (stroke.sinceDrip > stroke.nextGap) {
+      stroke.sinceDrip = 0;
+      stroke.nextGap = 0.05 + Math.random() * 0.2 / (0.4 + p);
+      const toSide = Math.max(0, u - L1);
+      const len0 = toSide + (0.03 + Math.pow(Math.random(), 1.4) * 0.4) * (0.45 + p);
+      drips.push({ th, u, w: w * (0.75 + 0.35 * Math.random()), hb, c, len: len0, len0,
+                   speed: 0.2 + 0.16 * Math.random(), acc: 0 });
+    }
+  }
+}
+
+function updateDrips(dt) {
+  for (let k = drips.length - 1; k >= 0; k--) {
+    const d = drips[k];
+    const f = d.len / d.len0;
+    let dist = Math.min(d.len, d.speed * (0.25 + 0.75 * f) * dt);
+    d.acc += dist;
+    const step = 0.004;
+    while (d.acc >= step) {
+      d.acc -= step;
+      d.u -= step; d.len -= step;
+      const wc = d.w * (0.5 + 0.5 * Math.max(0, d.len / d.len0));
+      bead(d.th, d.u, wc, d.hb * 0.8 / (Math.PI * wc / 2) * step, d.c, 0.97);
+      if (d.u < 0.012) { d.len = 0; break; }
+    }
+    if (d.len <= 0.002) {
+      bead(d.th, d.u, d.w * 1.2, d.hb * 1.25, d.c, 0.97);  // the bulb at the end of a drip
+      drips.splice(k, 1);
+    }
+  }
+}
+
+function applyStamp(th, u, p, tilt, ds, dt) {
+  if (tool === 'frost') stampFrost(th, u, p, ds, dt);
+  else if (tool === 'knife') stampKnife(th, u, p, ds);
+  else if (tool === 'comb') { if (ds > 0) stampComb(th, u, p, tilt); }
+  else if (tool === 'drizzle') stampDrizzle(th, u, p, ds, dt);
+  stroke.dist += ds;
+}
+
+// ---------------- undo -----------------
+const undoStack = [];
+function pushUndo() {
+  const c = new Uint8Array(W * HU * 4);
+  for (let k = 0; k < c.length; k++) c[k] = Math.round(col[k] * 255);
+  undoStack.push({ h: hgt.slice(), c });
+  if (undoStack.length > 10) undoStack.shift();
+}
+function undo() {
+  const s = undoStack.pop(); if (!s) return;
+  hgt.set(s.h);
+  for (let k = 0; k < s.c.length; k++) col[k] = s.c[k] / 255;
+  drips.length = 0;
+  markDirty(0, HU - 1);
+}
+
+// ------------------------------------------------------------------
+// WebGL
+// ------------------------------------------------------------------
+const canvas = document.getElementById('gl');
+const gl = canvas.getContext('webgl2', { antialias: true, alpha: false, powerPreference: 'high-performance' });
+if (!gl) document.body.innerHTML = '<p style="padding:40px">This needs WebGL2.</p>';
+
+const F = x => x.toFixed(6);
+const COMMON = `#version 300 es
+precision highp float;
+const float PI = 3.14159265;
+const float R = ${F(R)}, H = ${F(H)}, C = ${F(C)}, L1 = ${F(L1)}, L2 = ${F(L2)}, UL = ${F(L)};
+`;
+const LIGHT = `
+uniform vec3 uEye;
+vec3 toLin(vec3 c) { return pow(c, vec3(2.2)); }
+float hash3(vec3 p) { p = fract(p * vec3(0.1031, 0.1030, 0.0973)); p += dot(p, p.yxz + 33.33); return fract((p.x + p.y) * p.z); }
+float noise3(vec3 x) {
+  vec3 i = floor(x), f = fract(x); f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(mix(hash3(i), hash3(i + vec3(1,0,0)), f.x), mix(hash3(i + vec3(0,1,0)), hash3(i + vec3(1,1,0)), f.x), f.y),
+             mix(mix(hash3(i + vec3(0,0,1)), hash3(i + vec3(1,0,1)), f.x), mix(hash3(i + vec3(0,1,1)), hash3(i + vec3(1,1,1)), f.x), f.y), f.z);
+}
+const vec3 LK = vec3(-0.5345, 0.7127, 0.4543);   // key: upper left front
+const vec3 LF = vec3(0.8457, 0.3171, 0.4287);    // cool fill from the right
+vec3 envMap(vec3 r, float rough) {
+  float up = clamp(r.y * 0.5 + 0.5, 0.0, 1.0);
+  vec3 c = mix(vec3(0.34, 0.27, 0.25), vec3(1.0, 0.95, 0.92), smoothstep(0.25, 1.0, up));
+  float w = 0.035 + rough * 0.55;
+  c += vec3(1.0, 0.95, 0.88) * smoothstep(1.0 - w - 0.03, 1.0 - w * 0.25, dot(r, LK)) * (0.28 / (w + 0.02));
+  c += vec3(0.75, 0.85, 1.0) * smoothstep(1.0 - w - 0.04, 1.0 - w * 0.25, dot(r, LF)) * (0.1 / (w + 0.02));
+  return c;
+}
+vec3 shade(vec3 P, vec3 N, vec3 alb, float rough, float metal, float wrap, float ao, float sss) {
+  vec3 V = normalize(uEye - P);
+  float NdV = max(dot(N, V), 0.001);
+  vec3 keyC = vec3(1.0, 0.94, 0.86) * 2.2, fillC = vec3(0.55, 0.65, 0.85) * 0.55;
+  float nk = dot(N, LK), nf = dot(N, LF);
+  float dk = clamp((nk + wrap) / (1.0 + wrap), 0.0, 1.0);
+  float df = clamp((nf + wrap) / (1.0 + wrap), 0.0, 1.0);
+  vec3 hemi = mix(vec3(0.34, 0.26, 0.24), vec3(0.62, 0.64, 0.72), N.y * 0.5 + 0.5) * 0.85;
+  vec3 diff = keyC * dk + fillC * df + hemi * ao;
+  vec3 sssC = keyC * alb * vec3(1.0, 0.6, 0.5) * sss * max(dk - max(nk, 0.0), 0.0) * 1.2;
+  vec3 F0 = mix(vec3(0.04), alb, metal);
+  vec3 Fr = F0 + (1.0 - F0) * pow(1.0 - NdV, 5.0);
+  vec3 Hh = normalize(LK + V);
+  float a = max(rough * rough, 0.012);
+  float pw = 2.0 / (a * a) - 2.0;
+  float spec = (pw + 8.0) / (8.0 * PI) * pow(max(dot(N, Hh), 0.0), pw);
+  vec3 c = alb * (1.0 - metal) * (diff * mix(1.0, ao, 0.6) + sssC);
+  c += Fr * keyC * spec * max(nk, 0.0) * ao;
+  c += Fr * envMap(reflect(-V, N), rough) * ao * (1.0 - rough * 0.7);
+  return c;
+}
+vec3 tonemap(vec3 x) {
+  x *= 0.92;
+  x = clamp(x * (2.51 * x + 0.03) / (x * (2.43 * x + 0.59) + 0.14), 0.0, 1.0);
+  return pow(x, vec3(1.0 / 2.2));
+}
+`;
+
+const CAKE_VS = COMMON + `
+in vec2 aUV;
+uniform mat4 uVP; uniform float uRot; uniform sampler2D uH;
+out vec2 vUV; out vec3 vP, vN, vTt, vTu, vCake; out float vRho;
+void prof(float u, out vec2 p, out vec2 n) {
+  if (u < L1) { p = vec2(R, u); n = vec2(1.0, 0.0); }
+  else if (u < L1 + L2) { float a = (u - L1) / C; n = vec2(cos(a), sin(a)); p = vec2(R - C, L1) + C * n; }
+  else { p = vec2(max(R - C - (u - L1 - L2), 0.0), H); n = vec2(0.0, 1.0); }
+}
+void main() {
+  float th = aUV.x * 2.0 * PI, u = aUV.y * UL;
+  vec2 p, n; prof(u, p, n);
+  float h = textureLod(uH, aUV, 0.0).r;
+  float r = p.x + n.x * h, y = p.y + n.y * h;
+  float ph = th + uRot;
+  vec3 rad = vec3(cos(ph), 0.0, sin(ph));
+  vP = rad * r + vec3(0.0, y, 0.0);
+  vN = rad * n.x + vec3(0.0, n.y, 0.0);
+  vTt = vec3(-sin(ph), 0.0, cos(ph));
+  vTu = rad * (-n.y) + vec3(0.0, n.x, 0.0);
+  vCake = vec3(cos(th) * p.x, p.y, sin(th) * p.x);
+  vRho = p.x; vUV = aUV;
+  gl_Position = uVP * vec4(vP, 1.0);
+}`;
+
+const CAKE_FS = COMMON + LIGHT + `
+in vec2 vUV; in vec3 vP, vN, vTt, vTu, vCake; in float vRho;
+uniform sampler2D uH, uC; uniform vec2 uTex;
+out vec4 o;
+float Hs(vec2 uv) { return texture(uH, uv).r; }
+void main() {
+  float h = Hs(vUV);
+  vec2 dx = vec2(uTex.x, 0.0), dy = vec2(0.0, uTex.y);
+  float gx = (Hs(vUV + dx) - Hs(vUV - dx)) / (2.0 * uTex.x * 2.0 * PI * max(vRho, 0.03));
+  float gy = (Hs(vUV + dy) - Hs(vUV - dy)) / (2.0 * uTex.y * UL);
+  vec3 N0 = normalize(vN);
+  vec3 N = normalize(N0 - 1.2 * (gx * normalize(vTt) + gy * normalize(vTu)));
+
+  // cavity / occlusion from the thickness field
+  float s = 4.0;
+  float avg = (Hs(vUV + dx * s) + Hs(vUV - dx * s) + Hs(vUV + dy * s) + Hs(vUV - dy * s)) * 0.25;
+  float avg2 = (Hs(vUV + dx * s * 3.0) + Hs(vUV - dx * s * 3.0) + Hs(vUV + dy * s * 3.0) + Hs(vUV - dy * s * 3.0)) * 0.25;
+  float cav = clamp(1.0 - (avg - h) * 16.0 - (avg2 - h) * 5.0, 0.45, 1.08);
+
+  vec4 cc = texture(uC, vUV);
+  vec3 fro = toLin(cc.rgb);
+  float gloss = cc.a;
+
+  // sponge
+  vec3 q = vCake * 46.0;
+  q += (vec3(noise3(q * 0.37), noise3(q * 0.37 + 11.0), noise3(q * 0.37 + 23.0)) - 0.5) * 2.2;
+  float n1 = noise3(q), n2 = noise3(q * 2.3 + 7.0), n3 = noise3(q.zxy * 5.1 + 3.0);
+  vec3 sponge = toLin(vec3(0.94, 0.8, 0.55)) * (0.86 + 0.14 * n2 + 0.06 * n3);
+  float pore = smoothstep(0.64, 0.8, n1 * 0.55 + n2 * 0.25 + n3 * 0.2) * 0.8;
+  sponge *= mix(1.0, 0.5, pore);
+  sponge = mix(sponge, toLin(vec3(0.74, 0.5, 0.27)) * (0.8 + 0.3 * n2), smoothstep(0.4, 0.95, N0.y) * 0.6);
+
+  float cover = smoothstep(0.0003, 0.011, h);
+  vec3 alb = mix(sponge, fro, cover);
+
+  // micro tooth of buttercream, pores of the sponge
+  vec3 mq = vCake * 240.0;
+  vec3 mn = vec3(noise3(mq), noise3(mq + 19.1), noise3(mq + 37.7)) - 0.5;
+  float matte = (1.0 - gloss) * cover;
+  N = normalize(N + mn * (matte * 0.12 + (1.0 - cover) * 0.35));
+
+  float rough = mix(0.85, mix(0.6, 0.1, gloss), cover);
+  float ao = cav * mix(0.45, 1.0, smoothstep(0.0, 0.14, vP.y)) * mix(1.0 - pore * 0.4, 1.0, cover);
+  float wrap = mix(0.15, 0.2 + 0.45 * (1.0 - gloss), cover);
+  vec3 c = shade(vP, N, alb, rough, 0.0, wrap, ao, cover * (1.0 - gloss * 0.6));
+  o = vec4(tonemap(c), 1.0);
+}`;
+
+const OBJ_VS = COMMON + `
+in vec3 aP, aN;
+uniform mat4 uVP; uniform float uRot;
+out vec3 vP, vN, vL;
+void main() {
+  float c = cos(uRot), s = sin(uRot);
+  vL = aP;
+  vP = vec3(c * aP.x - s * aP.z, aP.y, s * aP.x + c * aP.z);
+  vN = vec3(c * aN.x - s * aN.z, aN.y, s * aN.x + c * aN.z);
+  gl_Position = uVP * vec4(vP, 1.0);
+}`;
+
+const OBJ_FS = COMMON + LIGHT + `
+in vec3 vP, vN, vL;
+uniform int uKind; uniform vec3 uAlb; uniform float uRough, uMetal;
+out vec4 o;
+void main() {
+  vec3 N = normalize(vN);
+  vec3 alb = toLin(uAlb);
+  float rough = uRough, metal = uMetal, ao = 1.0;
+  float r = length(vL.xz), th = atan(vL.z, vL.x);
+  if (uKind == 1) {                                  // ceramic cake board
+    if (N.y > 0.9) {
+      vec3 gold = toLin(vec3(0.86, 0.66, 0.34));
+      if (abs(r - 1.235) < 0.01) { alb = gold; metal = 1.0; rough = 0.28; }
+      float k = fract(th / (2.0 * PI) * 56.0);
+      float d = length(vec2((k - 0.5) * 2.0 * PI * r / 56.0, r - 1.285));
+      if (d < 0.012) { alb = gold; metal = 1.0; rough = 0.3; }
+      ao *= mix(0.3, 1.0, smoothstep(R - 0.04, R + 0.3, r));
+    } else {
+      ao *= 0.9;
+    }
+  } else if (uKind == 2) {                           // brushed turntable
+    alb *= 0.9 + 0.1 * noise3(vec3(r * 300.0, 0.0, 0.0));
+    ao *= mix(0.55, 1.0, smoothstep(-0.07, -0.1, vP.y) + smoothstep(1.0, 1.1, r));
+  } else if (uKind == 3) {                           // stand base
+    ao *= mix(0.4, 1.0, smoothstep(-0.13, -0.35, vP.y));
+  }
+  vec3 c = shade(vP, N, alb, rough, metal, 0.1, ao, 0.0);
+  o = vec4(tonemap(c), 1.0);
+}`;
+
+const BG_VS = `#version 300 es
+out vec2 vU;
+void main() { vec2 p = vec2((gl_VertexID << 1) & 2, gl_VertexID & 2); vU = p; gl_Position = vec4(p * 2.0 - 1.0, 0.999, 1.0); }`;
+const BG_FS = `#version 300 es
+precision highp float;
+in vec2 vU; uniform vec2 uRes; uniform float uHorizon;
+out vec4 o;
+void main() {
+  vec3 wall = mix(vec3(0.93, 0.80, 0.77), vec3(0.99, 0.93, 0.89), smoothstep(0.2, 1.0, vU.y));
+  vec3 table = mix(vec3(0.80, 0.68, 0.66), vec3(0.88, 0.77, 0.74), smoothstep(0.0, uHorizon, vU.y));
+  vec3 c = mix(table, wall, smoothstep(uHorizon - 0.004, uHorizon + 0.004, vU.y));
+  vec2 d = (vU - vec2(0.5, 0.55)) * vec2(uRes.x / uRes.y, 1.0);
+  c *= 1.0 - 0.25 * dot(d, d);
+  o = vec4(c, 1.0);
+}`;
+
+function compile(vs, fs) {
+  const p = gl.createProgram();
+  for (const [type, src] of [[gl.VERTEX_SHADER, vs], [gl.FRAGMENT_SHADER, fs]]) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src); gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { console.error(gl.getShaderInfoLog(s), src); throw new Error('shader'); }
+    gl.attachShader(p, s);
+  }
+  gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+  const u = {};
+  const n = gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS);
+  for (let k = 0; k < n; k++) { const name = gl.getActiveUniform(p, k).name; u[name] = gl.getUniformLocation(p, name); }
+  return { p, u };
+}
+const cakeProg = compile(CAKE_VS, CAKE_FS);
+const objProg = compile(OBJ_VS, OBJ_FS);
+const bgProg = compile(BG_VS, BG_FS);
+
+// Cake mesh
+const NT = 512, NU = 190;
+const cakeMesh = (() => {
+  const uv = new Float32Array((NT + 1) * (NU + 1) * 2);
+  let k = 0;
+  for (let j = 0; j <= NU; j++) for (let i = 0; i <= NT; i++) { uv[k++] = i / NT; uv[k++] = j / NU; }
+  const idx = new Uint32Array(NT * NU * 6);
+  k = 0;
+  for (let j = 0; j < NU; j++) for (let i = 0; i < NT; i++) {
+    const a = j * (NT + 1) + i, b = a + 1, c = a + NT + 1, d = c + 1;
+    idx[k++] = a; idx[k++] = c; idx[k++] = b; idx[k++] = b; idx[k++] = c; idx[k++] = d;
+  }
+  const vao = gl.createVertexArray(); gl.bindVertexArray(vao);
+  const vb = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, vb); gl.bufferData(gl.ARRAY_BUFFER, uv, gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(cakeProg.p, 'aUV'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  const ib = gl.createBuffer(); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ib); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, idx, gl.STATIC_DRAW);
+  gl.bindVertexArray(null);
+  return { vao, count: idx.length };
+})();
+
+function lathe(pts, seg) {
+  const n = pts.length, nrm = [];
+  for (let i = 0; i < n; i++) {
+    let nx = 0, ny = 0;
+    for (const [a, b] of [[i - 1, i], [i, i + 1]]) {
+      if (a < 0 || b >= n) continue;
+      const dx = pts[b][0] - pts[a][0], dy = pts[b][1] - pts[a][1], l = Math.hypot(dx, dy) || 1;
+      nx += dy / l; ny += -dx / l;
+    }
+    const l = Math.hypot(nx, ny) || 1; nrm.push([nx / l, ny / l]);
+  }
+  const pos = [], nor = [], idx = [];
+  for (let i = 0; i < n; i++) for (let s = 0; s <= seg; s++) {
+    const t = s / seg * TAU, c = Math.cos(t), sn = Math.sin(t);
+    pos.push(pts[i][0] * c, pts[i][1], pts[i][0] * sn);
+    nor.push(nrm[i][0] * c, nrm[i][1], nrm[i][0] * sn);
+  }
+  for (let i = 0; i < n - 1; i++) for (let s = 0; s < seg; s++) {
+    const a = i * (seg + 1) + s, b = a + 1, c = a + seg + 1, d = c + 1;
+    idx.push(a, c, b, b, c, d);
+  }
+  const vao = gl.createVertexArray(); gl.bindVertexArray(vao);
+  for (const [name, data] of [['aP', pos], ['aN', nor]]) {
+    const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(objProg.p, name); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 3, gl.FLOAT, false, 0, 0);
+  }
+  const ib = gl.createBuffer(); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ib); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(idx), gl.STATIC_DRAW);
+  gl.bindVertexArray(null);
+  return { vao, count: idx.length };
+}
+const board = lathe([[0, -0.06], [1.3, -0.06], [1.345, -0.055], [1.36, -0.04], [1.36, -0.02], [1.345, -0.005], [1.32, 0], [1.28, 0], [0, 0]], 256);
+const plate = lathe([[0, -0.115], [1.02, -0.115], [1.05, -0.108], [1.06, -0.09], [1.05, -0.07], [1.02, -0.06], [0, -0.06]], 192);
+const stand = lathe([[0, -1.6], [0.95, -1.6], [0.98, -1.57], [0.95, -1.52], [0.5, -1.4], [0.24, -1.1], [0.2, -0.5], [0.24, -0.2], [0.34, -0.14], [0.4, -0.12], [0.3, -0.115], [0, -0.115]], 128);
+
+// Textures
+gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+function makeTex(ifmt, fmt, type, data) {
+  const t = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, t);
+  gl.texImage2D(gl.TEXTURE_2D, 0, ifmt, W, HU, 0, fmt, type, data);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  return t;
+}
+const texH = makeTex(gl.R16F, gl.RED, gl.FLOAT, hgt);
+const texC = makeTex(gl.RGBA8, gl.RGBA, gl.UNSIGNED_BYTE, gpuCol);
+
+function upload() {
+  if (dirty1 < dirty0) return;
+  const j0 = dirty0, rows = dirty1 - dirty0 + 1;
+  const a = j0 * W * 4, b = (dirty1 + 1) * W * 4;
+  for (let k = a; k < b; k++) { const v = col[k]; gpuCol[k] = v <= 0 ? 0 : v >= 1 ? 255 : (v * 255 + 0.5) | 0; }
+  gl.bindTexture(gl.TEXTURE_2D, texH);
+  gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, j0, W, rows, gl.RED, gl.FLOAT, hgt, j0 * W);
+  gl.bindTexture(gl.TEXTURE_2D, texC);
+  gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, j0, W, rows, gl.RGBA, gl.UNSIGNED_BYTE, gpuCol, j0 * W * 4);
+  dirty0 = HU; dirty1 = -1;
+}
+
+// ---------------- camera -----------------
+const V3 = {
+  sub: (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]],
+  cross: (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]],
+  dot: (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2],
+  norm: a => { const l = Math.hypot(a[0], a[1], a[2]); return [a[0] / l, a[1] / l, a[2] / l]; },
+};
+function persp(fovy, asp, n, f) { const t = 1 / Math.tan(fovy / 2); return [t / asp, 0, 0, 0, 0, t, 0, 0, 0, 0, (f + n) / (n - f), -1, 0, 0, 2 * f * n / (n - f), 0]; }
+function lookAt(e, c, up) {
+  const z = V3.norm(V3.sub(e, c)), x = V3.norm(V3.cross(up, z)), y = V3.cross(z, x);
+  return [x[0], y[0], z[0], 0, x[1], y[1], z[1], 0, x[2], y[2], z[2], 0, -V3.dot(x, e), -V3.dot(y, e), -V3.dot(z, e), 1];
+}
+function mul(a, b) { const o = new Array(16); for (let c = 0; c < 4; c++) for (let r = 0; r < 4; r++) { let s = 0; for (let k = 0; k < 4; k++) s += a[k * 4 + r] * b[c * 4 + k]; o[c * 4 + r] = s; } return o; }
+function invert(m) {
+  const [a00, a01, a02, a03, a10, a11, a12, a13, a20, a21, a22, a23, a30, a31, a32, a33] = m;
+  const b00 = a00 * a11 - a01 * a10, b01 = a00 * a12 - a02 * a10, b02 = a00 * a13 - a03 * a10, b03 = a01 * a12 - a02 * a11;
+  const b04 = a01 * a13 - a03 * a11, b05 = a02 * a13 - a03 * a12, b06 = a20 * a31 - a21 * a30, b07 = a20 * a32 - a22 * a30;
+  const b08 = a20 * a33 - a23 * a30, b09 = a21 * a32 - a22 * a31, b10 = a21 * a33 - a23 * a31, b11 = a22 * a33 - a23 * a32;
+  const d = 1 / (b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06);
+  return [
+    (a11 * b11 - a12 * b10 + a13 * b09) * d, (a02 * b10 - a01 * b11 - a03 * b09) * d, (a31 * b05 - a32 * b04 + a33 * b03) * d, (a22 * b04 - a21 * b05 - a23 * b03) * d,
+    (a12 * b08 - a10 * b11 - a13 * b07) * d, (a00 * b11 - a02 * b08 + a03 * b07) * d, (a32 * b02 - a30 * b05 - a33 * b01) * d, (a20 * b05 - a22 * b02 + a23 * b01) * d,
+    (a10 * b10 - a11 * b08 + a13 * b06) * d, (a01 * b08 - a00 * b10 - a03 * b06) * d, (a30 * b04 - a31 * b02 + a33 * b00) * d, (a21 * b02 - a20 * b04 - a23 * b00) * d,
+    (a11 * b07 - a10 * b09 - a12 * b06) * d, (a00 * b09 - a01 * b07 + a02 * b06) * d, (a31 * b01 - a30 * b03 - a32 * b00) * d, (a20 * b03 - a21 * b01 + a22 * b00) * d];
+}
+function xform(m, v) { const o = [0, 0, 0, 0]; for (let r = 0; r < 4; r++) o[r] = m[r] * v[0] + m[4 + r] * v[1] + m[8 + r] * v[2] + m[12 + r] * v[3]; return o; }
+
+const cam = { VP: null, inv: null, eye: null, pxPerUnit: 300, horizon: 0.5 };
+let cssW = 1, cssH = 1;
+function resize() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  cssW = window.innerWidth; cssH = window.innerHeight;
+  canvas.width = Math.round(cssW * dpr); canvas.height = Math.round(cssH * dpr);
+  const asp = cssW / cssH, fovy = 30 * Math.PI / 180;
+  const fx = 2 * Math.atan(Math.tan(fovy / 2) * asp);
+  const dist = Math.max(1.5 / Math.tan(fx / 2), 1.08 / Math.tan(fovy / 2)) + 1.0;
+  const el = 0.45, target = [0, 0.26, 0];
+  const eye = [0, target[1] + dist * Math.sin(el), dist * Math.cos(el)];
+  const view = lookAt(eye, target, [0, 1, 0]);
+  cam.VP = mul(persp(fovy, asp, 0.1, 60), view);
+  cam.inv = invert(cam.VP); cam.eye = eye;
+  const a = xform(cam.VP, [0, H * 0.5, R, 1]), b = xform(cam.VP, [0.1, H * 0.5, R, 1]);
+  cam.pxPerUnit = Math.abs(b[0] / b[3] - a[0] / a[3]) * 0.5 * cssW / 0.1;
+  const hz = xform(cam.VP, [0, -1.6, -40, 1]);
+  cam.horizon = Math.min(0.95, Math.max(0.05, hz[1] / hz[3] * 0.5 + 0.5));
+}
+window.addEventListener('resize', resize);
+resize();
+
+// Ray -> undisplaced cake surface -> (world angle phi, profile coordinate u)
+function sdf(x, y, z) {
+  const dx = Math.hypot(x, z) - (R - C), dy = y - (H - C);
+  return Math.hypot(Math.max(dx, 0), Math.max(dy, 0)) + Math.min(Math.max(dx, dy), 0) - C;
+}
+function uOf(r, y) {
+  const ex = r - (R - C), ey = y - (H - C);
+  if (ey <= 0) return Math.max(0, y);
+  if (ex > 0) return L1 + Math.atan2(ey, ex) * C;
+  return Math.min(L - 1e-4, L1 + L2 + (R - C - r));
+}
+function sampleH(th, u) {
+  const fi = (((th % TAU) + TAU) % TAU) / cellTh - 0.5, fj = Math.min(HU - 1, Math.max(0, u / cellU - 0.5));
+  const i0 = Math.floor(fi), j0 = Math.floor(fj), ti = fi - i0, tj = fj - j0;
+  const i1 = (i0 + 1) % W, ia = (i0 + W) % W, j1 = Math.min(HU - 1, j0 + 1);
+  const a = hgt[j0 * W + ia], b = hgt[j0 * W + i1], c = hgt[j1 * W + ia], d = hgt[j1 * W + i1];
+  return (a + (b - a) * ti) * (1 - tj) + (c + (d - c) * ti) * tj;
+}
+// Blurred thickness, so aiming isn't jittered by every lump rotating past.
+function smoothH(th, u, r) {
+  const e = 0.035, dth = e / Math.max(r, 0.05);
+  return (sampleH(th, u) * 2 + sampleH(th + dth, u) + sampleH(th - dth, u) + sampleH(th, u + e) + sampleH(th, u - e)) / 6;
+}
+// Sphere-trace the frosted surface (base shape pushed out by the thickness field)
+// so the tool lands where the frosting is seen.
+function pick(sx, sy) {
+  const nx = sx / cssW * 2 - 1, ny = 1 - sy / cssH * 2;
+  const a = xform(cam.inv, [nx, ny, -1, 1]), b = xform(cam.inv, [nx, ny, 1, 1]);
+  const o = [a[0] / a[3], a[1] / a[3], a[2] / a[3]];
+  const d = V3.norm(V3.sub([b[0] / b[3], b[1] / b[3], b[2] / b[3]], o));
+  let t = 0;
+  for (let k = 0; k < 260; k++) {
+    const x = o[0] + d[0] * t, y = o[1] + d[1] * t, z = o[2] + d[2] * t;
+    if (y < -0.02 && d[1] < 0) return null;
+    let s = sdf(x, y, z);
+    if (s < MAXH + 0.02) {
+      const r = Math.hypot(x, z);
+      s -= smoothH(Math.atan2(z, x) - spin.rot, uOf(r, y), r);
+      s *= 0.6;
+    }
+    if (s < 0.0006) {
+      const r = Math.hypot(x, z);
+      return { phi: Math.atan2(z, x), u: uOf(r, y) };
+    }
+    t += Math.max(s, 0.0004);
+    if (t > 60) break;
+  }
+  return null;
+}
+
+// ------------------------------------------------------------------
+// Input
+// ------------------------------------------------------------------
+const spin = { rot: 0, vel: 0, id: null, lastX: 0, hist: [], auto: false };
+const pen = { id: null, down: false, x: 0, y: 0, p: 0.5, tilt: 0, prev: null, type: '' };
+const isIPad = /iPad/.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
+let pencilMode = isIPad;
+const pressEl = document.getElementById('press');
+
+function penPressure(e) {
+  if (e.pointerType === 'pen') {
+    const pr = e.pressure || 0;
+    return Math.min(1, Math.max(0.05, 0.08 + 1.1 * Math.pow(pr, 0.75)));
+  }
+  return +pressEl.value;
+}
+function penTilt(e) {
+  let alt = e.altitudeAngle;
+  if (alt === undefined) {
+    const tx = Math.tan((e.tiltX || 0) * Math.PI / 180), ty = Math.tan((e.tiltY || 0) * Math.PI / 180);
+    alt = Math.PI / 2 - Math.atan(Math.hypot(tx, ty));
+  }
+  return e.pointerType === 'pen' ? Math.min(1, Math.max(0, 1 - alt / (Math.PI / 2))) : 0.2;
+}
+
+function classify(e) {
+  if (e.pointerType === 'pen') { if (!pencilMode) setPencilMode(true); return 'tool'; }
+  if (e.pointerType === 'mouse') return (e.button !== 0 || e.shiftKey) ? 'spin' : 'tool';
+  if (pencilMode) {
+    // crude palm rejection: ignore touches landing right next to the pencil
+    if (pen.down && pen.type === 'pen' && Math.hypot(e.clientX - pen.x, e.clientY - pen.y) < 170) return 'ignore';
+    return 'spin';
+  }
+  return pen.down ? 'spin' : 'tool';
+}
+
+canvas.addEventListener('pointerdown', e => {
+  e.preventDefault();
+  hideHint();
+  const kind = classify(e);
+  if (kind === 'tool' && !pen.down) {
+    Object.assign(pen, { id: e.pointerId, down: true, x: e.clientX, y: e.clientY, p: penPressure(e), tilt: penTilt(e), prev: null, type: e.pointerType });
+    pushUndo();
+    Object.assign(stroke, { dist: 0, shift: (Math.random() * W) | 0, seed: Math.random() * 1000, load: 0,
+                            lc: hex(FROST[frostIdx]), sinceDrip: 0, nextGap: 0.02 + Math.random() * 0.06 });
+  } else if (kind === 'spin' && spin.id === null) {
+    spin.id = e.pointerId; spin.lastX = e.clientX; spin.vel = 0;
+    spin.hist = [[performance.now(), spin.rot]];
+  } else return;
+  try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
+});
+canvas.addEventListener('pointermove', e => {
+  if (e.pointerId === pen.id && pen.down) {
+    pen.x = e.clientX; pen.y = e.clientY;
+    pen.p += (penPressure(e) - pen.p) * 0.5;
+    pen.tilt += (penTilt(e) - pen.tilt) * 0.3;
+  } else if (e.pointerId === spin.id) {
+    const dx = e.clientX - spin.lastX; spin.lastX = e.clientX;
+    spin.rot -= dx / (cam.pxPerUnit * R);
+    const now = performance.now();
+    spin.hist.push([now, spin.rot]);
+    while (spin.hist.length > 2 && now - spin.hist[0][0] > 90) spin.hist.shift();
+  }
+});
+function endPointer(e) {
+  if (e.pointerId === pen.id) { pen.down = false; pen.id = null; pen.prev = null; }
+  if (e.pointerId === spin.id) {
+    const now = performance.now();
+    const h0 = spin.hist.find(s => now - s[0] <= 90);
+    spin.vel = h0 && now - h0[0] > 8 ? (spin.rot - h0[1]) / ((now - h0[0]) / 1000) : 0;
+    spin.vel = Math.max(-14, Math.min(14, spin.vel));
+    spin.id = null;
+  }
+}
+canvas.addEventListener('pointerup', endPointer);
+canvas.addEventListener('pointercancel', endPointer);
+canvas.addEventListener('contextmenu', e => e.preventDefault());
+canvas.addEventListener('touchstart', e => e.preventDefault(), { passive: false });
+canvas.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
+document.addEventListener('gesturestart', e => e.preventDefault());
+document.addEventListener('dblclick', e => e.preventDefault());
+
+// ---------------- UI -----------------
+const swEl = document.getElementById('swatches');
+function buildSwatches() {
+  const pal = tool === 'drizzle' ? DRIZ : FROST;
+  const cur = tool === 'drizzle' ? drizIdx : frostIdx;
+  swEl.innerHTML = '';
+  pal.forEach((c, k) => {
+    const b = document.createElement('button');
+    b.className = 'sw' + (k === cur ? ' on' : '');
+    b.style.background = c;
+    b.onclick = () => { if (tool === 'drizzle') drizIdx = k; else frostIdx = k; buildSwatches(); };
+    swEl.appendChild(b);
+  });
+  swEl.style.visibility = (tool === 'frost' || tool === 'drizzle') ? 'visible' : 'hidden';
+}
+function setTool(t) {
+  tool = t;
+  document.querySelectorAll('[data-tool]').forEach(b => b.classList.toggle('on', b.dataset.tool === t));
+  buildSwatches();
+}
+document.querySelectorAll('[data-tool]').forEach(b => b.onclick = () => setTool(b.dataset.tool));
+function setPencilMode(on) {
+  pencilMode = on;
+  document.getElementById('pencilBtn').classList.toggle('on', on);
+  document.getElementById('pressWrap').style.display = on ? 'none' : 'flex';
+  document.getElementById('hint').textContent = on
+    ? 'Finger spins the turntable · Pencil decorates'
+    : 'Drag to decorate · right-drag / shift-drag / second finger spins · Space auto-spins';
+}
+function setAuto(on) { spin.auto = on; document.getElementById('spinBtn').classList.toggle('on', on); }
+document.getElementById('pencilBtn').onclick = () => setPencilMode(!pencilMode);
+document.getElementById('spinBtn').onclick = () => setAuto(!spin.auto);
+document.getElementById('undoBtn').onclick = undo;
+document.getElementById('resetBtn').onclick = () => { pushUndo(); resetCake(); };
+let hintTimer = setTimeout(hideHint, 7000);
+function hideHint() { clearTimeout(hintTimer); document.getElementById('hint').style.opacity = 0; }
+window.addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'z') { e.preventDefault(); undo(); return; }
+  const tools = { '1': 'frost', '2': 'knife', '3': 'comb', '4': 'drizzle' };
+  if (tools[e.key]) setTool(tools[e.key]);
+  if (e.key === ' ') { e.preventDefault(); setAuto(!spin.auto); }
+  if (e.key === 'ArrowLeft') spin.vel += 0.8;
+  if (e.key === 'ArrowRight') spin.vel -= 0.8;
+});
+
+// ------------------------------------------------------------------
+// Main loop
+// ------------------------------------------------------------------
+function applyPen(dt) {
+  if (!pen.down) return;
+  const hit = pick(pen.x, pen.y);
+  if (!hit) { pen.prev = null; return; }
+  const cur = { th: hit.phi - spin.rot, u: hit.u };
+  const a = pen.prev;
+  if (!a) { applyStamp(cur.th, cur.u, pen.p, pen.tilt, 0, dt); pen.prev = cur; return; }
+  const dth = wrapA(cur.th - a.th), du = cur.u - a.u;
+  const rho = Math.max(prof((a.u + cur.u) / 2)[0], 0.01);
+  const len = Math.hypot(dth * rho, du);
+  const n = Math.min(240, Math.max(1, Math.ceil(len / 0.005)));
+  for (let k = 1; k <= n; k++) {
+    const t = k / n;
+    applyStamp(a.th + dth * t, a.u + du * t, pen.p, pen.tilt, len / n, dt / n);
+  }
+  pen.prev = cur;
+}
+
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  if (spin.id === null) {
+    if (spin.auto) spin.vel += (-2.0 - spin.vel) * Math.min(1, dt * 3);
+    else spin.vel *= Math.exp(-(0.35 + (pen.down ? 0.6 * pen.p : 0)) * dt);
+    spin.rot += spin.vel * dt;
+  }
+  applyPen(dt);
+  updateDrips(dt);
+  upload();
+
+  gl.viewport(0, 0, canvas.width, canvas.height);
+  gl.disable(gl.DEPTH_TEST);
+  gl.useProgram(bgProg.p);
+  gl.uniform2f(bgProg.u.uRes, cssW, cssH);
+  gl.uniform1f(bgProg.u.uHorizon, cam.horizon);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+  gl.enable(gl.DEPTH_TEST);
+  gl.clear(gl.DEPTH_BUFFER_BIT);
+
+  gl.useProgram(objProg.p);
+  gl.uniformMatrix4fv(objProg.u.uVP, false, cam.VP);
+  gl.uniform3fv(objProg.u.uEye, cam.eye);
+  const drawObj = (m, kind, alb, rough, metal, rot) => {
+    gl.uniform1i(objProg.u.uKind, kind); gl.uniform3fv(objProg.u.uAlb, alb);
+    gl.uniform1f(objProg.u.uRough, rough); gl.uniform1f(objProg.u.uMetal, metal); gl.uniform1f(objProg.u.uRot, rot);
+    gl.bindVertexArray(m.vao); gl.drawElements(gl.TRIANGLES, m.count, gl.UNSIGNED_INT, 0);
+  };
+  drawObj(stand, 3, [0.93, 0.87, 0.9], 0.35, 0.0, 0);
+  drawObj(plate, 2, [0.86, 0.85, 0.86], 0.32, 1.0, spin.rot);
+  drawObj(board, 1, [0.97, 0.95, 0.93], 0.22, 0.0, spin.rot);
+
+  gl.useProgram(cakeProg.p);
+  gl.uniformMatrix4fv(cakeProg.u.uVP, false, cam.VP);
+  gl.uniform3fv(cakeProg.u.uEye, cam.eye);
+  gl.uniform1f(cakeProg.u.uRot, spin.rot);
+  gl.uniform2f(cakeProg.u.uTex, 1 / W, 1 / HU);
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, texH); gl.uniform1i(cakeProg.u.uH, 0);
+  gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, texC); gl.uniform1i(cakeProg.u.uC, 1);
+  gl.bindVertexArray(cakeMesh.vao);
+  gl.drawElements(gl.TRIANGLES, cakeMesh.count, gl.UNSIGNED_INT, 0);
+  gl.bindVertexArray(null);
+
+  requestAnimationFrame(frame);
+}
+
+resetCake();
+setPencilMode(pencilMode);
+setTool('frost');
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

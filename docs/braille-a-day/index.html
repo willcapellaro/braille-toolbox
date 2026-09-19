@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Braille a Day — Prototype</title>
+<style>
+  :root{
+    --accent:#0e7c86; --accent-soft:#e0f2f3; --new:#d9480f; --new-soft:#fff0e6;
+    --ink:#1d1d1f; --muted:#6b6b72; --line:#e3e3e8; --chrome:#dee1e6; --chrome-2:#f1f3f4;
+    --panel:#fafafa;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);background:#cfd3d9;
+    display:grid;grid-template-columns:1fr 300px;gap:16px;padding:16px;}
+  @media (max-width:860px){ body{grid-template-columns:1fr;height:auto} .browser{height:80vh} }
+
+  /* ---------- fake browser ---------- */
+  .browser{background:#fff;border-radius:10px;overflow:hidden;display:flex;flex-direction:column;min-height:0;
+    box-shadow:0 10px 40px rgba(0,0,0,.18);position:relative}
+  .tabs{background:var(--chrome);display:flex;align-items:flex-end;padding:8px 10px 0;gap:6px}
+  .lights{display:flex;gap:6px;margin:0 10px 10px 2px}.lights i{width:11px;height:11px;border-radius:50%;background:#ff5f57}
+  .lights i:nth-child(2){background:#febc2e}.lights i:nth-child(3){background:#28c840}
+  .tab{background:#fff;border-radius:8px 8px 0 0;padding:7px 14px;font-size:12px;max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .toolbar{display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid var(--line)}
+  .url{flex:1;background:var(--chrome-2);border-radius:16px;padding:6px 14px;font-size:13px;color:#444;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ext{position:relative;width:32px;height:32px;border-radius:50%;border:0;background:transparent;cursor:pointer;display:grid;place-items:center;font-size:20px}
+  .ext:hover,.ext.open{background:var(--chrome-2)}
+  .ext .bx{color:var(--accent);font-size:22px;margin:0;padding:0;background:none!important}
+  .ext.snoozed{opacity:.4}
+  .badge{position:absolute;right:-2px;bottom:-1px;background:var(--new);color:#fff;font-size:10px;font-weight:700;border-radius:8px;padding:0 4px;line-height:15px;min-width:15px;text-align:center}
+  .page{flex:1;overflow:auto;min-height:0}
+
+  /* ---------- braille cell ---------- */
+  .w{white-space:nowrap}
+  .bx{display:inline-grid;grid-template-columns:repeat(2,.16em);grid-template-rows:repeat(3,.16em);gap:.09em;
+    vertical-align:.53em;margin:0 .07em;padding:.05em .06em;border-radius:.14em;cursor:pointer;position:relative;color:var(--accent);
+    transition:background .2s}
+  .bx i{width:.16em;height:.16em;border-radius:50%}
+  .bx i.on{background:currentColor}
+  .ghost .bx i:not(.on){background:currentColor;opacity:.14}
+  .bx:hover{background:var(--accent-soft)}
+  .bx.today{color:var(--new);background:var(--new-soft)}
+  .bx.today.celebrate{animation:pop 1.6s ease-out 2}
+  @keyframes pop{0%{transform:scale(1)}15%{transform:scale(1.35)}30%{transform:scale(1)}}
+  .bx.today.found{background:var(--new);color:#fff}
+  .bx.sign{color:#8a63d2}
+  .bx.contraction{color:#8a63d2;background:#f1ebfb}
+  .labels .bx::after{content:attr(data-l);position:absolute;left:50%;top:100%;transform:translateX(-50%);
+    font:600 max(9px,.26em)/1 system-ui,sans-serif;color:var(--muted);margin-top:.12em;letter-spacing:0}
+  .bx.peek i{visibility:hidden}
+  .bx.peek::before{content:attr(data-l);position:absolute;inset:0;display:grid;place-items:center;font-size:.7em;font-weight:700;color:var(--ink)}
+  .labels h1,.labels h2,.labels h3,.labels h4{line-height:1.6}
+
+  /* ---------- sample sites ---------- */
+  .site{max-width:720px;margin:0 auto;padding:28px 28px 80px}
+  .site p,.site li{color:#333}
+  .news{font-family:Georgia,'Times New Roman',serif}
+  .news .mast{font:900 13px/1 system-ui;letter-spacing:.2em;text-transform:uppercase;border-bottom:3px double #222;padding-bottom:10px;margin-bottom:22px}
+  .news h1{font-size:38px;line-height:1.15;margin:.2em 0 .3em}
+  .news h2{font-size:24px;margin:1.4em 0 .4em}
+  .news h3{font-size:18px;font-style:italic;margin:1.2em 0 .4em}
+  .news h4{font:700 12px system-ui;letter-spacing:.15em;text-transform:uppercase;color:#777;margin:2em 0 .5em}
+  .recipe{font-family:system-ui,sans-serif;background:#fffaf3}
+  .recipe h1{font-size:34px;color:#8a3b12;margin:.2em 0}
+  .recipe h2{font-size:21px;color:#8a3b12;border-bottom:2px solid #f0d9c4;padding-bottom:4px;margin-top:1.6em}
+  .recipe h3{font-size:16px;margin:1.2em 0 .2em}
+  .recipe .meta{font-size:15px;color:#a0633b;font-weight:600}
+  .docs{font-family:system-ui,sans-serif}
+  .docs h1{font-size:30px;margin:.2em 0 .5em}
+  .docs h2{font-size:22px;border-bottom:1px solid var(--line);padding-bottom:6px;margin-top:1.8em}
+  .docs h3{font-size:16px;margin-top:1.4em}
+  .docs code{background:#f3f3f5;padding:2px 5px;border-radius:4px;font-size:13px}
+  .docs pre{background:#1f2430;color:#dfe3ea;padding:12px 14px;border-radius:8px;font-size:13px}
+
+  /* ---------- popup ---------- */
+  .popup{position:absolute;top:84px;right:10px;width:330px;max-width:calc(100% - 20px);max-height:calc(100% - 96px);overflow:auto;
+    background:#fff;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.25),0 0 0 1px rgba(0,0,0,.06);z-index:20;display:none}
+  .popup.open{display:block}
+  .pp-head{display:flex;align-items:center;gap:10px;padding:14px 16px 10px}
+  .pp-head b{font-size:15px}.pp-head span{color:var(--muted);font-size:12px;margin-left:auto}
+  .today-card{margin:0 16px;background:var(--new-soft);border-radius:12px;padding:14px;display:flex;gap:16px;align-items:center}
+  .bigcell{display:grid;grid-template-columns:repeat(2,26px);grid-template-rows:repeat(3,26px);gap:8px}
+  .bigcell i{width:26px;height:26px;border-radius:50%;border:2px dashed #e0b9a3;display:grid;place-items:center;font:600 11px system-ui;color:#c9a08a;font-style:normal}
+  .bigcell i.on{background:var(--new);border:2px solid var(--new);color:#fff}
+  .today-card .letter{font:800 44px/1 system-ui}
+  .today-card .dots{font-weight:600;color:var(--new)}
+  .today-card .hint{font-size:12px;color:#6b4a3a;margin-top:4px}
+  .spot{margin:12px 16px 0;font-size:13px}
+  .bar{height:6px;background:#eee;border-radius:3px;margin-top:6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--new);transition:width .3s}
+  .sec{padding:12px 16px;border-top:1px solid var(--line);margin-top:12px}
+  .sec h5{margin:0 0 8px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .alpha{display:grid;grid-template-columns:repeat(13,1fr);gap:4px;font-size:22px}
+  .alpha .slot{display:flex;flex-direction:column;align-items:center;gap:2px}
+  .alpha .slot small{font-size:9px;color:var(--muted)}
+  .alpha .slot .bx{margin:0;cursor:default}
+  .alpha .slot.future .bx i{background:#e4e4e8}
+  .alpha .slot.future small{color:#cfcfd4}
+  .btnrow{display:flex;gap:6px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 10px;font:inherit;font-size:12px;cursor:pointer}
+  .btn:hover{background:#f4f4f6}.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .special{margin:12px 16px 0;padding:10px 12px;background:#f1ebfb;border-radius:10px;font-size:13px;color:#4a2f7a}
+  .special b{display:block;margin-bottom:2px}
+  .setting{margin-bottom:10px}.setting label{display:block;font-size:12px;font-weight:600;margin-bottom:3px}
+  .setting select{width:100%;padding:5px;border-radius:6px;border:1px solid var(--line);font:inherit;font-size:13px}
+  .links a{display:flex;justify-content:space-between;padding:7px 0;color:var(--accent);text-decoration:none;font-weight:600}
+  .links a:hover{text-decoration:underline}
+  .gradcard{margin-top:8px;background:linear-gradient(135deg,#0e7c86,#4a2f7a);color:#fff;border-radius:10px;padding:14px;font-size:22px;text-align:center}
+  .gradcard small{display:block;font-size:12px;opacity:.85;margin-top:6px}
+  .gradcard .bx{color:#fff;background:none!important;margin:0 .05em}
+
+  /* ---------- tooltip + toast ---------- */
+  #tip{position:fixed;z-index:50;pointer-events:none;background:#1d1d1f;color:#fff;border-radius:10px;padding:10px 12px;font-size:12px;
+    display:none;gap:12px;align-items:center;box-shadow:0 8px 24px rgba(0,0,0,.3);max-width:260px}
+  #tip .bigcell{grid-template-columns:repeat(2,14px);grid-template-rows:repeat(3,14px);gap:4px}
+  #tip .bigcell i{width:14px;height:14px;border:1.5px solid #555;font-size:0}
+  #tip .bigcell i.on{background:#fff;border-color:#fff}
+  #tip b{font-size:22px;display:block;line-height:1}
+  .toast{position:absolute;left:50%;top:96px;transform:translate(-50%,-20px);opacity:0;background:#1d1d1f;color:#fff;border-radius:22px;
+    padding:9px 16px;font-size:13px;z-index:30;transition:.35s;pointer-events:none;white-space:nowrap;max-width:90%;overflow:hidden;text-overflow:ellipsis}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  .toast .bx{color:#ffb38a;background:none!important}
+
+  /* ---------- prototype controls ---------- */
+  .controls{background:var(--panel);border-radius:10px;padding:16px;overflow:auto;align-self:start;max-height:calc(100vh - 32px)}
+  .controls h2{font-size:13px;margin:0 0 4px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .controls .note{font-size:12px;color:var(--muted);margin:0 0 14px}
+  .controls .grp{margin-bottom:16px}
+  .controls label.t{font-weight:600;display:block;margin-bottom:4px}
+  .controls input[type=range]{width:100%}
+  .daylabel{font-size:13px;margin-top:4px}
+  .seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .seg button{flex:1;border:0;background:#fff;padding:6px;font:inherit;font-size:12px;cursor:pointer;border-right:1px solid var(--line)}
+  .seg button:last-child{border-right:0}.seg button.on{background:var(--accent);color:#fff}
+  .controls ul{padding-left:18px;margin:6px 0;font-size:12px;color:#444}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+
+<div class="browser" id="browser">
+  <div class="tabs"><div class="lights"><i></i><i></i><i></i></div><div class="tab" id="tabTitle">…</div></div>
+  <div class="toolbar">
+    <div class="url" id="url">…</div>
+    <button class="ext open" id="extBtn" title="Braille a Day" aria-label="Braille a Day extension"><span id="extIcon"></span><span class="badge" id="badge"></span></button>
+  </div>
+  <div class="page" id="page"></div>
+
+  <div class="popup open" id="popup"></div>
+  <div class="toast" id="toast"></div>
+</div>
+
+<aside class="controls">
+  <h2>Prototype controls</h2>
+  <p class="note">Not part of the extension — these let you time-travel and switch sites. Hover and click the dots in the headings.</p>
+
+  <div class="grp">
+    <label class="t" for="day">Day of the month</label>
+    <input type="range" id="day" min="1" max="31" value="5">
+    <div class="daylabel" id="dayLabel"></div>
+  </div>
+
+  <div class="grp">
+    <label class="t">Sample site</label>
+    <div class="seg" id="siteSeg">
+      <button data-site="news" class="on">News</button><button data-site="recipe">Recipe</button><button data-site="docs">Docs</button>
+    </div>
+  </div>
+
+  <div class="grp">
+    <label class="t">Compare</label>
+    <div class="seg" id="cmpSeg"><button data-v="on" class="on">With extension</button><button data-v="off">Original</button></div>
+  </div>
+
+  <div class="grp">
+    <label class="t">Things to try</label>
+    <ul>
+      <li>Click the orange dots (today's letter) to “spot” them all</li>
+      <li>Click any other cell to peek at the print letter</li>
+      <li>Open ⚙ Settings in the popup: level, which headings, letter order</li>
+      <li>Drag to days 27–31 for the end-of-month specials</li>
+      <li>Snooze, then resume</li>
+    </ul>
+  </div>
+</aside>
+
+<div id="tip"></div>
+
+<script>
+/* ================= braille data ================= */
+const BITS = {a:1,b:3,c:9,d:25,e:17,f:11,g:27,h:19,i:10,j:26,k:5,l:7,m:13,n:29,o:21,p:15,q:31,r:23,s:14,t:30,u:37,v:39,w:58,x:45,y:61,z:53};
+const SIGN = {num:60, cap:32};
+const CONTR = {and:47, the:46, for:63, of:55, with:62};
+const ORDERS = {
+  alpha: 'abcdefghijklmnopqrstuvwxyz'.split(''),
+  freq:  'etaoinshrdlcumwfgypbvkjxqz'.split('')
+};
+const dotsOf = bits => [1,2,3,4,5,6].filter(d => bits & (1 << (d-1)));
+const GRID = [1,4,2,5,3,6]; // visual order: rows of (left,right)
+
+function hint(l){
+  const i = 'abcdefghijklmnopqrstuvwxyz'.indexOf(l);
+  if (l === 'w') return 'w breaks the pattern — French braille had no w, so it was added later.';
+  if (i < 10) return 'Top-row family (a–j): only dots 1, 2, 4, 5.';
+  if (i < 20) return `${l} = ${'abcdefghij'[i-10]} + dot 3`;
+  const base = {u:'k',v:'l',x:'m',y:'n',z:'o'}[l];
+  return `${l} = ${base} + dot 6`;
+}
+
+/* ================= state ================= */
+const S = {
+  day: 5, site: 'news', compare: 'on',
+  level: 2, scope: 'h12', order: 'alpha', celebrate: true,
+  snooze: null, settingsOpen: false, popupOpen: true,
+  found: new Set(), peeks: 0
+};
+const learned = () => ORDERS[S.order].slice(0, Math.min(S.day, 26));
+const todayLetter = () => S.day <= 26 ? ORDERS[S.order][S.day-1] : null;
+
+/* ================= sample sites ================= */
+const SITES = {
+  news: { title:'City Council Approves New Bike Lanes — The Daily Ledger', url:'dailyledger.example/local/bike-lanes',
+    html:`<div class="site news">
+      <div class="mast">The Daily Ledger</div>
+      <h1>City Council Approves 12 Miles of New Bike Lanes</h1>
+      <p>After three hours of public comment, the council voted 7–2 on Tuesday night to fund a network of protected lanes connecting downtown with the riverfront.</p>
+      <h2>What the plan means for your commute</h2>
+      <p>Construction begins in spring. The first segment runs along Harbor Street, replacing a row of metered parking with a curb-separated lane.</p>
+      <h2>Residents weigh in</h2>
+      <p>Supporters packed the chamber wearing yellow. “My kids can finally ride to school,” said one parent.</p>
+      <h3>Opponents worry about parking and deliveries</h3>
+      <p>Several shop owners asked for loading zones, which the plan now includes on every block.</p>
+      <h4>Related stories</h4>
+      <p>Ferry schedule changes for 2027 · Library extends weekend hours</p></div>` },
+  recipe: { title:'Weeknight Lemon Pasta — Small Kitchen', url:'smallkitchen.example/recipes/lemon-pasta',
+    html:`<div class="site recipe">
+      <h1>Weeknight Lemon Pasta with Crispy Garlic</h1>
+      <p class="meta">Serves 4 · 25 minutes</p>
+      <p>Bright, fast, and made almost entirely from pantry staples. The secret is emulsifying the lemon with starchy pasta water.</p>
+      <h2>Ingredients</h2>
+      <ul><li>1 lb spaghetti</li><li>2 lemons, zested and juiced</li><li>6 cloves garlic, thinly sliced</li><li>Parmesan and black pepper</li></ul>
+      <h2>Method</h2>
+      <h3>1. Crisp the garlic</h3><p>Warm the oil gently and let the garlic turn golden. Scoop it out and save the oil.</p>
+      <h3>2. Cook the pasta</h3><p>Salt the water well. Reserve a cup of the cooking water before draining.</p>
+      <h3>3. Toss and serve</h3><p>Combine everything off the heat, loosening with pasta water until glossy.</p>
+      <h2>Tips for the best sauce</h2><p>Add the cheese a little at a time so it melts instead of clumping.</p></div>` },
+  docs: { title:'Getting Started — Toolkit Docs', url:'docs.toolkit.example/getting-started',
+    html:`<div class="site docs">
+      <h1>Getting Started with the Toolkit</h1>
+      <p>This guide walks you through installing the toolkit and building your first project in about 10 minutes.</p>
+      <h2>Install and configure</h2>
+      <h3>Requirements</h3><p>You'll need Node 20 or newer.</p>
+      <pre>npm install toolkit</pre>
+      <h3>Configuration file</h3><p>Create <code>toolkit.config.js</code> at the root of your project.</p>
+      <h2>Your first project</h2><p>Run the starter command and open the local server in your browser.</p>
+      <h2>Next steps</h2><p>Explore plugins, themes, and the command line reference.</p></div>` }
+};
+
+/* ================= rendering ================= */
+const $ = s => document.querySelector(s);
+const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let cellIdx = 0;
+
+function cellHTML(bits, label, kind, extra=''){
+  const on = dotsOf(bits);
+  const dots = GRID.map(d => `<i class="${on.includes(d)?'on':''}"></i>`).join('');
+  return `<span class="bx ${kind} ${extra}" data-bits="${bits}" data-l="${esc(label)}" data-kind="${kind}" data-i="${cellIdx++}" aria-hidden="true">${dots}</span>`;
+}
+
+function transform(text){
+  const L = new Set(learned()), T = todayLetter();
+  const toks = text.match(/[A-Za-z]+|\d+|[^A-Za-z\d]+/g) || [];
+  return toks.map(tok => {
+    if (/^[A-Za-z]+$/.test(tok)){
+      const lw = tok.toLowerCase();
+      const caps = S.day >= 28;
+      if (S.day >= 29 && CONTR[lw]){
+        const cap = caps && tok[0] !== lw[0] ? cellHTML(SIGN.cap,'cap','sign') : '';
+        return `<span class="w">${cap}${cellHTML(CONTR[lw], lw, 'contraction')}</span>`;
+      }
+      let out = '';
+      for (const ch of tok){
+        const l = ch.toLowerCase();
+        if (!L.has(l)){ out += esc(ch); continue; }
+        if (caps && ch !== l) out += cellHTML(SIGN.cap,'cap','sign');
+        out += cellHTML(BITS[l], l, l === T ? 'today' : 'letter', (l === T && S.celebrate) ? 'celebrate' : '');
+      }
+      return `<span class="w">${out}</span>`;
+    }
+    if (/^\d+$/.test(tok) && S.day >= 27){
+      return `<span class="w">${cellHTML(SIGN.num,'num','sign')}${[...tok].map(d => cellHTML(BITS['jabcdefghi'[d]], d, 'digit')).join('')}</span>`;
+    }
+    return esc(tok);
+  }).join('');
+}
+
+function inScope(h){
+  const tag = h.tagName;
+  if (S.scope === 'h1') return tag === 'H1';
+  if (S.scope === 'h12') return tag === 'H1' || tag === 'H2';
+  if (S.scope === 'all') return true;
+  if (S.scope === 'big') return parseFloat(getComputedStyle(h).fontSize) >= 22;
+}
+
+function renderPage(){
+  const site = SITES[S.site];
+  $('#tabTitle').textContent = site.title;
+  $('#url').textContent = site.url;
+  const page = $('#page');
+  page.innerHTML = site.html;
+  cellIdx = 0;
+  const active = S.compare === 'on' && !S.snooze;
+  page.firstElementChild.classList.toggle('ghost', S.level <= 2);
+  page.firstElementChild.classList.toggle('labels', S.level === 1);
+  page.querySelectorAll('h1,h2,h3,h4').forEach(h => {
+    if (!active || !inScope(h)) return;
+    const orig = h.textContent;
+    h.setAttribute('aria-label', orig);   // screen readers still get the real heading
+    h.innerHTML = transform(orig);
+  });
+  renderChrome();
+}
+
+function todayCells(){ return [...document.querySelectorAll('#page .bx.today')]; }
+
+function renderChrome(){
+  const T = todayLetter();
+  const icon = T ? cellHTML(BITS[T], T, 'x') : cellHTML(63, 'for', 'x');
+  $('#extIcon').innerHTML = icon;
+  const btn = $('#extBtn');
+  btn.classList.toggle('snoozed', !!S.snooze);
+  btn.classList.toggle('open', S.popupOpen);
+  const total = todayCells().length, left = total - S.found.size;
+  $('#badge').textContent = S.snooze ? 'zz' : (T && left > 0 ? left : '');
+  $('#badge').style.display = $('#badge').textContent ? '' : 'none';
+  renderPopup();
+}
+
+const SPECIALS = {
+  27: ['Number Day', 'Digits in headings now show up in braille. Surprise: numbers are just a–j with the number sign ⠼ in front!'],
+  28: ['Capitals Day', 'A capital sign (dot 6) now appears before capital letters.'],
+  29: ['Shortcut Day', 'The words “and”, “the”, “for”, “of”, “with” each shrink to a single cell — a first taste of contracted braille.'],
+  30: ['Graduation', 'You’ve met all 26 letters. Headings are now fully in braille. Share your card!'],
+  31: ['Bonus Day', 'Free play. Next month: level up to whole words and short phrases.']
+};
+
+function monthName(){ return 'September'; }
+
+function renderPopup(){
+  const p = $('#popup');
+  p.classList.toggle('open', S.popupOpen);
+  if (!S.popupOpen) return;
+  const T = todayLetter(), L = learned();
+  let today = '';
+  if (T){
+    const on = dotsOf(BITS[T]);
+    today = `<div class="today-card">
+      <div class="bigcell">${GRID.map(d => `<i class="${on.includes(d)?'on':''}">${d}</i>`).join('')}</div>
+      <div><div class="letter">${T}</div><div class="dots">dots ${on.join(' · ')}</div><div class="hint">${hint(T)}</div></div></div>`;
+    const total = todayCells().length;
+    today += `<div class="spot">${S.snooze ? 'Snoozed — no spotting right now.' :
+      total ? `<b>Spot it:</b> ${S.found.size} of ${total} ${T}’s found on this page` : `No “${T}” in this page’s headings — try another site.`}
+      ${total && !S.snooze ? `<div class="bar"><i style="width:${100*S.found.size/total}%"></i></div>` : ''}</div>`;
+  }
+  const sp = SPECIALS[S.day];
+  const special = sp ? `<div class="special"><b>${sp[0]}</b>${sp[1]}${S.day >= 30 ? gradCard() : ''}</div>` : '';
+
+  const alpha = 'abcdefghijklmnopqrstuvwxyz'.split('').map(l => {
+    const has = L.includes(l);
+    return `<div class="slot ${has ? '' : 'future'}" title="${has ? l : 'coming soon'}">${cellHTML(has ? BITS[l] : 0, l, l === T ? 'today' : 'letter')}<small>${has ? l : '·'}</small></div>`;
+  }).join('');
+
+  const snooze = S.snooze
+    ? `<div class="btnrow"><span style="flex:1;align-self:center">Snoozed ${({hour:'for 1 hour',today:'for the rest of today',site:'on this site'})[S.snooze]}</span><button class="btn primary" data-act="resume">Resume</button></div>`
+    : `<div class="btnrow"><button class="btn" data-snooze="hour">1 hour</button><button class="btn" data-snooze="today">Rest of today</button><button class="btn" data-snooze="site">On this site</button></div>`;
+
+  const settings = S.settingsOpen ? `<div class="sec"><h5>Settings</h5>
+    <div class="setting"><label>Difficulty</label><select data-set="level">
+      <option value="1" ${S.level==1?'selected':''}>1 · Training wheels (print letter under each cell)</option>
+      <option value="2" ${S.level==2?'selected':''}>2 · Ghost dots (hover or tap to peek)</option>
+      <option value="3" ${S.level==3?'selected':''}>3 · Clean braille (no ghost dots)</option></select></div>
+    <div class="setting"><label>Which headings</label><select data-set="scope">
+      <option value="h1" ${S.scope=='h1'?'selected':''}>Page title only (H1)</option>
+      <option value="h12" ${S.scope=='h12'?'selected':''}>Main headings (H1–H2)</option>
+      <option value="big" ${S.scope=='big'?'selected':''}>Anything 22px or larger</option>
+      <option value="all" ${S.scope=='all'?'selected':''}>All headings</option></select></div>
+    <div class="setting"><label>Letter order</label><select data-set="order">
+      <option value="alpha" ${S.order=='alpha'?'selected':''}>Alphabetical — learn the a–j → k–t → u–z pattern</option>
+      <option value="freq" ${S.order=='freq'?'selected':''}>Most common first — see more dots sooner</option></select></div>
+    <div class="setting"><label><input type="checkbox" data-set="celebrate" ${S.celebrate?'checked':''}> Animate today’s letter</label></div>
+  </div>` : '';
+
+  p.innerHTML = `
+    <div class="pp-head"><img src="../imgs/ico.svg" width="22" height="22" alt=""><b>Braille a Day</b><span>${monthName()} ${S.day} · Day ${S.day}</span></div>
+    ${today}${special}
+    <div class="sec"><h5>Your alphabet · ${L.length}/26</h5><div class="alpha">${alpha}</div></div>
+    <div class="sec"><h5>Snooze</h5>${snooze}</div>
+    <div class="sec" style="padding-top:8px;padding-bottom:8px"><button class="btn" data-act="settings" style="width:100%">⚙ ${S.settingsOpen ? 'Hide settings' : 'Settings'}</button></div>
+    ${settings}
+    <div class="sec links">
+      <a href="https://brailletoolbox.com/" target="_blank" rel="noopener">${T ? `Practice “${T}” in Braille Toolbox` : 'Play in Braille Toolbox'} <span>↗</span></a>
+      <a href="https://brailletoolbox.com/" target="_blank" rel="noopener">Open Braille Toolbox <span>↗</span></a>
+    </div>`;
+}
+
+function gradCard(){
+  const word = 'braille';
+  return `<div class="gradcard">${[...word].map(l => cellHTML(BITS[l], l, 'x')).join('')}
+    <small>I learned the braille alphabet in one month · brailletoolbox.com</small></div>
+    <div class="btnrow" style="margin-top:8px"><button class="btn" data-act="share">Copy share text</button></div>`;
+}
+
+/* ================= interactions ================= */
+const tip = $('#tip');
+function showTip(el){
+  const bits = +el.dataset.bits, l = el.dataset.l, kind = el.dataset.kind, on = dotsOf(bits);
+  let title = l, body = '';
+  if (kind === 'sign') body = l === 'num' ? 'Number sign — the next cells are digits (a=1 … j=0).' : 'Capital sign — the next letter is uppercase.';
+  else if (kind === 'contraction') body = `One cell for the whole word “${l}”.`;
+  else if (kind === 'digit') body = `Digit ${l} — same shape as “${'jabcdefghi'[l]}”.`;
+  else body = hint(l) + (kind === 'today' ? '<br><b style="font-size:11px;color:#ffb38a;display:inline">New today — click to spot it!</b>' : '');
+  if (S.level === 3 && kind !== 'today') { title = '?'; body = 'Clean mode: click to peek.'; }
+  tip.innerHTML = `<div class="bigcell">${GRID.map(d => `<i class="${on.includes(d)?'on':''}"></i>`).join('')}</div>
+    <div><b>${title}</b>dots ${on.join(' ')}<br>${body}</div>`;
+  tip.style.display = 'flex';
+  const r = el.getBoundingClientRect();
+  const tw = tip.offsetWidth;
+  tip.style.left = Math.max(8, Math.min(innerWidth - tw - 8, r.left + r.width/2 - tw/2)) + 'px';
+  tip.style.top = (r.bottom + 10) + 'px';
+}
+document.addEventListener('mouseover', e => {
+  const c = e.target.closest('#page .bx');
+  if (c) showTip(c); else tip.style.display = 'none';
+});
+
+$('#page').addEventListener('click', e => {
+  const c = e.target.closest('.bx'); if (!c) return;
+  if (c.classList.contains('today')){
+    if (!c.classList.contains('found')){
+      c.classList.add('found'); S.found.add(c.dataset.i);
+      const total = todayCells().length;
+      if (S.found.size === total) toast(`All ${total} found! ${cellHTML(BITS[todayLetter()], '', 'x')} streak +1 🔥`);
+      renderChrome();
+    }
+  } else {
+    S.peeks++;
+    c.classList.add('peek'); setTimeout(() => c.classList.remove('peek'), 1200);
+  }
+});
+
+$('#popup').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.snooze){ S.snooze = b.dataset.snooze; toast('Snoozed — headings are back to normal'); renderPage(); }
+  if (b.dataset.act === 'resume'){ S.snooze = null; S.found.clear(); renderPage(); }
+  if (b.dataset.act === 'settings'){ S.settingsOpen = !S.settingsOpen; renderPopup(); }
+  if (b.dataset.act === 'share'){
+    navigator.clipboard?.writeText('⠃⠗⠁⠊⠇⠇⠑ — I learned the braille alphabet one letter a day with Braille Toolbox. brailletoolbox.com');
+    toast('Copied!');
+  }
+});
+$('#popup').addEventListener('change', e => {
+  const k = e.target.dataset.set; if (!k) return;
+  S[k] = e.target.type === 'checkbox' ? e.target.checked : (k === 'level' ? +e.target.value : e.target.value);
+  S.found.clear(); renderPage();
+});
+
+$('#extBtn').addEventListener('click', () => { S.popupOpen = !S.popupOpen; renderChrome(); });
+
+let toastT;
+function toast(html){
+  const t = $('#toast'); t.innerHTML = html; t.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+function updateDayLabel(){
+  const T = todayLetter();
+  $('#dayLabel').innerHTML = `${monthName()} ${S.day} — ` + (T ? `new letter: <b>${T}</b> (${learned().length} learned)` : `<b>${SPECIALS[S.day][0]}</b>`);
+}
+$('#day').addEventListener('input', e => {
+  S.day = +e.target.value; S.found.clear(); updateDayLabel(); renderPage();
+});
+$('#day').addEventListener('change', () => {
+  const T = todayLetter();
+  if (T && !S.snooze) toast(`New letter today: ${cellHTML(BITS[T], T, 'x')} <b>${T}</b> — ${todayCells().length} on this page`);
+});
+document.querySelectorAll('#siteSeg button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#siteSeg button').forEach(x => x.classList.toggle('on', x === b));
+  S.site = b.dataset.site; S.found.clear(); renderPage();
+});
+document.querySelectorAll('#cmpSeg button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#cmpSeg button').forEach(x => x.classList.toggle('on', x === b));
+  S.compare = b.dataset.v; renderPage();
+});
+
+updateDayLabel(); renderPage();
+</script>
+</body>
+</html>
